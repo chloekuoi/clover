@@ -19,10 +19,12 @@ import FriendRequestCard from '../../components/friends/FriendRequestCard';
 import FriendCard from '../../components/friends/FriendCard';
 import FadeInRow from '../../components/common/FadeInRow';
 import { SkeletonSectionCard } from '../../components/common/SkeletonListItem';
+import SwipeActionRow from '../../components/common/SwipeActionRow';
 import CollapsibleSection from '../../components/friends/CollapsibleSection';
 import FriendProfileModal from '../../components/friends/FriendProfileModal';
 import { useAuth } from '../../context/AuthContext';
 import { fetchFriends, fetchPendingRequests, PendingRequestItem, respondToFriendRequest } from '../../services/friendsService';
+import { unmatchMatch } from '../../services/messagingService';
 import { getFullProfile } from '../../services/profileService';
 import { getTodayIntent } from '../../services/discoveryService';
 import { FriendListItem, MatchPreviewOtherUser, Profile, ProfilePhoto, WorkIntent } from '../../types';
@@ -166,6 +168,33 @@ export default function FriendsScreen({ navigation }: Props) {
     openChat(targetFriend);
   }, [handleDismissProfileModal, openChat, profileModalFriend]);
 
+  const handleUnmatch = useCallback(
+    (friend: FriendListItem) => {
+      if (!user || !friend.match_id) return;
+
+      Alert.alert(
+        `Unmatch ${friend.name || 'this person'}?`,
+        'This removes them from Chats and Friends. Past messages and sessions will be hidden.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Unmatch',
+            style: 'destructive',
+            onPress: async () => {
+              const ok = await unmatchMatch(friend.match_id, user.id);
+              if (!ok) {
+                Alert.alert('Unable to unmatch', 'Please try again.');
+                return;
+              }
+              void loadData(false);
+            },
+          },
+        ]
+      );
+    },
+    [loadData, user]
+  );
+
   const availableFriends = useMemo(() => friends.filter((friend) => friend.has_intent_today), [friends]);
   const notAvailableFriends = useMemo(() => friends.filter((friend) => !friend.has_intent_today), [friends]);
 
@@ -250,12 +279,18 @@ export default function FriendsScreen({ navigation }: Props) {
               ) : (
                 availableFriends.map((friend, index) => (
                   <FadeInRow key={friend.user_id} index={index}>
-                    <FriendCard
-                      friend={friend}
-                      variant="available"
-                      onPress={() => openChat(friend)}
-                      onProfilePress={() => void handleOpenProfile(friend)}
-                    />
+                    <SwipeActionRow
+                      enabled={Boolean(friend.match_id)}
+                      actionLabel="Unmatch"
+                      onActionPress={() => handleUnmatch(friend)}
+                    >
+                      <FriendCard
+                        friend={friend}
+                        variant="available"
+                        onPress={() => openChat(friend)}
+                        onProfilePress={() => void handleOpenProfile(friend)}
+                      />
+                    </SwipeActionRow>
                   </FadeInRow>
                 ))
               )}
@@ -272,12 +307,18 @@ export default function FriendsScreen({ navigation }: Props) {
               ) : (
                 notAvailableFriends.map((friend, index) => (
                   <FadeInRow key={friend.user_id} index={index}>
-                    <FriendCard
-                      friend={friend}
-                      variant="simple"
-                      onPress={() => openChat(friend)}
-                      onProfilePress={() => void handleOpenProfile(friend)}
-                    />
+                    <SwipeActionRow
+                      enabled={Boolean(friend.match_id)}
+                      actionLabel="Unmatch"
+                      onActionPress={() => handleUnmatch(friend)}
+                    >
+                      <FriendCard
+                        friend={friend}
+                        variant="simple"
+                        onPress={() => openChat(friend)}
+                        onProfilePress={() => void handleOpenProfile(friend)}
+                      />
+                    </SwipeActionRow>
                   </FadeInRow>
                 ))
               )}

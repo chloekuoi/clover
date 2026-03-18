@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { theme, spacing } from '../../constants';
 import { useAuth } from '../../context/AuthContext';
-import { fetchMessages, markChatRead, sendMessage, subscribeToMessages } from '../../services/messagingService';
+import { fetchMessages, isActiveMatch, markChatRead, sendMessage, subscribeToMessages } from '../../services/messagingService';
 import {
   cancelSession,
   createSession,
@@ -71,6 +71,30 @@ export default function ChatScreen({ navigation, route }: Props) {
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // null = AsyncStorage not yet loaded; Set = loaded (may be empty on first ever open)
   const [shownEventIds, setShownEventIds] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkMatchStatus = async () => {
+      const active = await isActiveMatch(matchId);
+      if (cancelled || active) return;
+
+      Alert.alert('Chat unavailable', 'This match is no longer active.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            navigation.goBack();
+          },
+        },
+      ]);
+    };
+
+    void checkMatchStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [matchId, navigation]);
 
   const totalSessions = useMemo(
     () => sessions.filter((s) => s.status === 'completed').length,

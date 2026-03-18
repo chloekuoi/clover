@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { theme, spacing } from '../../constants';
 import { useAuth } from '../../context/AuthContext';
-import { fetchMatches } from '../../services/messagingService';
+import { fetchMatches, unmatchMatch } from '../../services/messagingService';
 import { fetchGroupChats } from '../../services/groupChatsService';
 import { getTodayIntent } from '../../services/discoveryService';
 import { getFullProfile } from '../../services/profileService';
@@ -14,6 +14,7 @@ import MatchCard from '../../components/matches/MatchCard';
 import GroupChatCard from '../../components/matches/GroupChatCard';
 import FadeInRow from '../../components/common/FadeInRow';
 import SkeletonListItem from '../../components/common/SkeletonListItem';
+import SwipeActionRow from '../../components/common/SwipeActionRow';
 import FriendProfileModal from '../../components/friends/FriendProfileModal';
 import { MatchesStackParamList, useMatchesStack } from '../../navigation/MatchesStack';
 
@@ -127,6 +128,33 @@ export default function MatchesListScreen({ navigation }: Props) {
     openChat(targetMatch);
   }, [closeProfileModal, openChat, selectedMatch]);
 
+  const handleUnmatch = useCallback(
+    (match: MatchPreview) => {
+      if (!user) return;
+
+      Alert.alert(
+        `Unmatch ${match.other_user.name || 'this person'}?`,
+        'This removes them from Chats and Friends. Past messages and sessions will be hidden.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Unmatch',
+            style: 'destructive',
+            onPress: async () => {
+              const ok = await unmatchMatch(match.match_id, user.id);
+              if (!ok) {
+                Alert.alert('Unable to unmatch', 'Please try again.');
+                return;
+              }
+              await loadMatches(false);
+            },
+          },
+        ]
+      );
+    },
+    [loadMatches, user]
+  );
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -173,11 +201,13 @@ export default function MatchesListScreen({ navigation }: Props) {
         renderItem={({ item, index }) => (
           <FadeInRow index={index}>
             {item.type === 'dm' ? (
-              <MatchCard
-                matchPreview={item.data}
-                onPress={() => openChat(item.data)}
-                onAvatarPress={() => void handleOpenProfile(item.data)}
-              />
+              <SwipeActionRow actionLabel="Unmatch" onActionPress={() => handleUnmatch(item.data)}>
+                <MatchCard
+                  matchPreview={item.data}
+                  onPress={() => openChat(item.data)}
+                  onAvatarPress={() => void handleOpenProfile(item.data)}
+                />
+              </SwipeActionRow>
             ) : (
               <GroupChatCard
                 groupChat={item.data}

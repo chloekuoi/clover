@@ -14,6 +14,7 @@ type MatchRow = {
   id: string;
   user1_id: string;
   user2_id: string;
+  status?: 'active' | 'unmatched';
 };
 
 type ProfileLookupRow = {
@@ -240,8 +241,8 @@ export async function fetchFriends(
     { data: friendshipsData, error: friendshipsError },
   ] =
     await Promise.all([
-      supabase.from('matches').select('id,user1_id,user2_id').eq('user1_id', userId),
-      supabase.from('matches').select('id,user1_id,user2_id').eq('user2_id', userId),
+      supabase.from('matches').select('id,user1_id,user2_id,status').eq('user1_id', userId).eq('status', 'active'),
+      supabase.from('matches').select('id,user1_id,user2_id,status').eq('user2_id', userId).eq('status', 'active'),
       supabase
         .from('friendships')
         .select('id,requester_id,recipient_id,status,created_at,updated_at')

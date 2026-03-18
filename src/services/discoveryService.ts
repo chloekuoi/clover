@@ -88,13 +88,29 @@ export async function fetchDiscoveryCards(
   if (!intents) return [];
 
   // Get users already swiped today
-  const { data: swipes } = await supabase
-    .from('swipes')
-    .select('swiped_id')
-    .eq('swiper_id', userId)
-    .eq('swipe_date', getTodayDate());
+  const [{ data: swipes }, { data: activeMatchesAsUser1 }, { data: activeMatchesAsUser2 }] = await Promise.all([
+    supabase
+      .from('swipes')
+      .select('swiped_id')
+      .eq('swiper_id', userId)
+      .eq('swipe_date', getTodayDate()),
+    supabase
+      .from('matches')
+      .select('user2_id')
+      .eq('user1_id', userId)
+      .eq('status', 'active'),
+    supabase
+      .from('matches')
+      .select('user1_id')
+      .eq('user2_id', userId)
+      .eq('status', 'active'),
+  ]);
 
-  const swipedIds = new Set((swipes || []).map(s => s.swiped_id));
+  const swipedIds = new Set((swipes || []).map((s) => s.swiped_id));
+  const activeMatchIds = new Set([
+    ...((activeMatchesAsUser1 || []) as Array<{ user2_id: string }>).map((match) => match.user2_id),
+    ...((activeMatchesAsUser2 || []) as Array<{ user1_id: string }>).map((match) => match.user1_id),
+  ]);
 
   // Filter by distance and exclude already swiped users
   const cards: DiscoveryCard[] = [];
@@ -102,6 +118,7 @@ export async function fetchDiscoveryCards(
   for (const intent of intents) {
     // Skip if already swiped
     if (swipedIds.has(intent.user_id)) continue;
+    if (activeMatchIds.has(intent.user_id)) continue;
 
     // Calculate distance
     const distance = calculateDistance(

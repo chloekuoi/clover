@@ -73,11 +73,16 @@ export type DiscoveryCard = {
 };
 
 // Matches & messaging types
+export type MatchStatus = 'active' | 'unmatched';
+
 export type Match = {
   id: string;
   user1_id: string;
   user2_id: string;
   matched_at: string;
+  status: MatchStatus;
+  unmatched_by: string | null;
+  unmatched_at: string | null;
   user1_last_read_at: string;
   user2_last_read_at: string;
 };

@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase';
-import { MatchPreview, Message } from '../types';
+import { Match, MatchPreview, Message } from '../types';
 
 type MatchPreviewRow = {
   match_id: string;
@@ -26,6 +26,11 @@ type MatchReadRow = {
   user2_id: string;
   user1_last_read_at: string | null;
   user2_last_read_at: string | null;
+};
+
+type MatchStatusRow = {
+  id: string;
+  status: 'active' | 'unmatched';
 };
 
 function toEpoch(value: string | null | undefined): number {
@@ -156,6 +161,37 @@ export async function fetchMessages(matchId: string): Promise<Message[]> {
   return (data || []) as Message[];
 }
 
+export async function fetchMatch(matchId: string): Promise<Match | null> {
+  const { data, error } = await supabase
+    .from('matches')
+    .select('*')
+    .eq('id', matchId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching match:', error);
+    return null;
+  }
+
+  return (data as Match | null) || null;
+}
+
+export async function isActiveMatch(matchId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('matches')
+    .select('id, status')
+    .eq('id', matchId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error checking match status:', error);
+    return false;
+  }
+
+  const match = data as MatchStatusRow | null;
+  return match?.status === 'active';
+}
+
 export async function sendMessage(
   matchId: string,
   senderId: string,
@@ -187,6 +223,20 @@ export async function markChatRead(matchId: string, userId: string): Promise<boo
 
   if (error) {
     console.error('Error marking chat as read:', error);
+    return false;
+  }
+
+  return true;
+}
+
+export async function unmatchMatch(matchId: string, userId: string): Promise<boolean> {
+  const { error } = await supabase.rpc('unmatch_user', {
+    p_match_id: matchId,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    console.error('Error unmatching user:', error);
     return false;
   }
 
