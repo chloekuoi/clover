@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
-import OnboardingScreen from '../screens/auth/OnboardingScreen';
+import { CinematicOnboardingFlow } from '../screens/auth/onboarding/CinematicOnboardingFlow';
 import { theme } from '../constants';
 
 export type AuthStackParamList = {
@@ -29,7 +29,11 @@ export default function AuthStack({ needsOnboarding }: Props) {
       }}
     >
       {needsOnboarding ? (
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen
+          name="Onboarding"
+          component={CinematicOnboardingFlow}
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
       ) : (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />

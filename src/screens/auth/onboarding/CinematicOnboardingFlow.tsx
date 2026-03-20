@@ -3,10 +3,14 @@ import { StyleSheet, View } from 'react-native';
 import { loadClickSound, unloadClickSound } from './audioService';
 import { GrainOverlay } from './components/GrainOverlay';
 import { onboardingTheme as t } from './theme';
-
-// Screen components — imported once each is created
-// Placeholder imports will be replaced when screens are implemented
-// For now, CinematicOnboardingFlow exports the state interface and navigation contract
+import { HookScreen } from './screens/HookScreen';
+import { IdentityScreen } from './screens/IdentityScreen';
+import { BirthdayScreen } from './screens/BirthdayScreen';
+import { MissionScreen } from './screens/MissionScreen';
+import { WorkContextScreen } from './screens/WorkContextScreen';
+import { NotificationsScreen } from './screens/NotificationsScreen';
+import { ContactSyncScreen } from './screens/ContactSyncScreen';
+import { SuccessScreen } from './screens/SuccessScreen';
 
 export interface OnboardingState {
   name: string;
@@ -79,12 +83,19 @@ export function CinematicOnboardingFlow({ onComplete }: CinematicOnboardingFlowP
     onComplete,
   };
 
-  // Screens will be imported and rendered here (P9-09 through P9-16)
-  // Placeholder: render a bare dark background while screens are being implemented
   const renderScreen = () => {
-    // This will be filled in once individual screens exist
-    // Return null for now — screens P9-09 to P9-16 add the content
-    return null;
+    const props: ScreenProps = screenProps;
+    switch (currentStep) {
+      case 0: return <HookScreen {...props} />;
+      case 1: return <IdentityScreen {...props} />;
+      case 2: return <BirthdayScreen {...props} />;
+      case 3: return <MissionScreen {...props} />;
+      case 4: return <WorkContextScreen {...props} />;
+      case 5: return <NotificationsScreen {...props} />;
+      case 6: return <ContactSyncScreen {...props} />;
+      case 7: return <SuccessScreen {...props} />;
+      default: return null;
+    }
   };
 
   return (

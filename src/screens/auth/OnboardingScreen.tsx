@@ -1,3 +1,5 @@
+// DEPRECATED: Replaced by CinematicOnboardingFlow in Phase 9.
+// Kept for reference. Do not use.
 import React, { useMemo, useState } from 'react';
 import {
   View,
