@@ -15,7 +15,14 @@ function isAtLeast18(dd: string, mm: string, yyyy: string): boolean {
   const month = parseInt(mm, 10) - 1;
   const year = parseInt(yyyy, 10);
   if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
+
   const dob = new Date(year, month, day);
+
+  // Guard against JS date overflow (e.g. Feb 31 → Mar 3)
+  if (dob.getFullYear() !== year || dob.getMonth() !== month || dob.getDate() !== day) {
+    return false;
+  }
+
   const now = new Date();
   const age = now.getFullYear() - dob.getFullYear();
   const monthDiff = now.getMonth() - dob.getMonth();

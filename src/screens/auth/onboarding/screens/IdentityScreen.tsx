@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Image,
   StyleSheet,
@@ -14,8 +14,6 @@ import { TypewriterText } from '../components/TypewriterText';
 import type { ScreenProps } from '../CinematicOnboardingFlow';
 
 export function IdentityScreen({ state, setState, onNext, onBack, currentStep, totalSteps }: ScreenProps) {
-  const [typingDone, setTypingDone] = useState(false);
-
   const pickPhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') return;
@@ -43,7 +41,6 @@ export function IdentityScreen({ state, setState, onNext, onBack, currentStep, t
         text="who are you?"
         style={styles.question}
         startDelay={300}
-        onFinished={() => setTypingDone(true)}
       />
 
       {/* Photo circle */}

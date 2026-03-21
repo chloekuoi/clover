@@ -25,10 +25,10 @@ export function ContactSyncScreen({ state, setState, onNext, onBack, currentStep
       setState(s => ({ ...s, contactsGranted: true }));
     } catch {
       // Sync failed — still advance
-    } finally {
-      setSyncing(false);
-      onNext();
     }
+    // setSyncing before onNext so state setter runs while component is still mounted
+    setSyncing(false);
+    onNext();
   };
 
   return (

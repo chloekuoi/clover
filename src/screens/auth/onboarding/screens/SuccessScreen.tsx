@@ -31,13 +31,22 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
     () => ARCHETYPES[Math.floor(Math.random() * ARCHETYPES.length)]
   );
   const badgeOpacity = useRef(new Animated.Value(0)).current;
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const save = async () => {
     if (!user) return;
+    if (!isMounted.current) return;
     setSaving(true);
     setError(null);
     try {
       await completeOnboarding(user.id, state);
+      if (!isMounted.current) return;
       setSaving(false);
       // Fade in the badge
       Animated.timing(badgeOpacity, {
@@ -45,9 +54,10 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
         duration: 800,
         useNativeDriver: true,
       }).start();
-    } catch (err: any) {
-      setError(err?.message ?? 'something went wrong');
-      setSaving(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'something went wrong';
+      if (isMounted.current) setError(msg);
+      if (isMounted.current) setSaving(false);
     }
   };
 

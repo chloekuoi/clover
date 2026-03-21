@@ -22,6 +22,11 @@ export function TypewriterText({
   const [displayed, setDisplayed] = useState('');
   const indexRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onFinishedRef = useRef(onFinished);
+
+  useEffect(() => {
+    onFinishedRef.current = onFinished;
+  });
 
   useEffect(() => {
     // Reset when text changes
@@ -30,7 +35,7 @@ export function TypewriterText({
 
     const reveal = () => {
       if (indexRef.current >= text.length) {
-        onFinished?.();
+        onFinishedRef.current?.();
         return;
       }
 
@@ -50,7 +55,7 @@ export function TypewriterText({
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [text, charDelay, startDelay]); // intentionally excluding onFinished to avoid re-triggering
+  }, [text, charDelay, startDelay]); // intentionally excluding onFinished — using ref instead
 
   return (
     <Text

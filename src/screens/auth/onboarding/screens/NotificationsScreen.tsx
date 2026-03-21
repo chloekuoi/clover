@@ -22,10 +22,10 @@ export function NotificationsScreen({ state, setState, onNext, onBack, currentSt
       setState(s => ({ ...s, notificationsGranted: status === 'granted' }));
     } catch {
       // permission failed — still advance
-    } finally {
-      setRequesting(false);
-      onNext();
     }
+    // setRequesting before onNext so state setter runs while component is still mounted
+    setRequesting(false);
+    onNext();
   };
 
   return (
