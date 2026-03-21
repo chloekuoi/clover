@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../../context/AuthContext';
 import { onboardingTheme as t } from '../theme';
 import { TypewriterText } from '../components/TypewriterText';
 import { completeOnboarding } from '../onboardingService';

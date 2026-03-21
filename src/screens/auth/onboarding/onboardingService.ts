@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Contacts from 'expo-contacts';
 import * as Crypto from 'expo-crypto';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../../lib/supabase';
 import { uploadPhoto } from '../../../services/photoService';
 import type { OnboardingState } from './CinematicOnboardingFlow';
 
