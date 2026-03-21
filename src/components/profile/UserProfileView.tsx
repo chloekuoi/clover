@@ -313,15 +313,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   nameText: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 32,
+    fontWeight: '300',
     color: theme.text,
     letterSpacing: -0.3,
   },
   ageText: {
-    fontSize: 22,
-    fontWeight: '400',
-    color: theme.textSecondary,
+    fontFamily: 'Inter-Light',
+    fontSize: 18,
+    fontWeight: '300',
+    color: theme.textMuted,
   },
   // Pills
   pillsRow: {
@@ -361,9 +363,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   fieldLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: theme.text,
+    fontFamily: 'Inter-Regular',
+    fontSize: 11,
+    fontWeight: '400',
+    color: theme.textMuted,
+    letterSpacing: 0.5,
     marginBottom: 2,
   },
   fieldValue: {

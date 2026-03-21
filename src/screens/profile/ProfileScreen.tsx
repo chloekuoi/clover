@@ -189,8 +189,9 @@ const styles = StyleSheet.create({
     minWidth: 44,
   },
   headerTitle: {
-    fontSize: 17,
-    fontWeight: '600',
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 20,
+    fontWeight: '300',
     color: theme.text,
   },
   headerAction: {

@@ -91,9 +91,11 @@ const styles = StyleSheet.create({
     marginRight: spacing[2],
   },
   title: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: theme.text,
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    fontWeight: '400',
+    color: theme.textSecondary,
+    letterSpacing: 0.4,
   },
   dot: {
     width: 8,

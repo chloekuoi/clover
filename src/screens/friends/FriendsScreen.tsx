@@ -354,8 +354,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   title: {
-    fontSize: 26,
-    fontWeight: '700',
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 32,
+    fontWeight: '300',
     color: theme.text,
   },
   addButton: {

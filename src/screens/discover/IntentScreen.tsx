@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  Animated,
+  Easing,
   View,
   Text,
   TextInput,
@@ -65,6 +67,19 @@ export default function IntentScreen({
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+
+  const spinAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(spinAnim, {
+        toValue: 1,
+        duration: 2400,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [spinAnim]);
+  const spin = spinAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
   const timeOptions = getTimeOptions();
   const endTimeOptions = timeOptions.filter(option => option.value > startTime);
@@ -205,7 +220,12 @@ export default function IntentScreen({
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.subtitle}>Set availability to connect</Text>
-          <Text style={styles.title}>Today's focus</Text>
+          <View style={styles.titleRow}>
+            <Animated.Text style={[styles.star, { transform: [{ rotate: spin }] }]}>
+              ✦
+            </Animated.Text>
+            <Text style={styles.title}>what are we cooking today?</Text>
+          </View>
 
           <View style={styles.section}>
             <TextInput
@@ -374,16 +394,31 @@ const styles = StyleSheet.create({
     padding: spacing[5],
     paddingBottom: spacing[10],
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: theme.text,
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     marginBottom: spacing[2],
   },
+  star: {
+    fontSize: 22,
+    color: '#C97B4B',
+    lineHeight: 28,
+  },
+  title: {
+    flex: 1,
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 28,
+    fontWeight: '300',
+    color: theme.text,
+    lineHeight: 34,
+    letterSpacing: -0.2,
+  },
   subtitle: {
-    fontSize: 16,
-    color: theme.textSecondary,
-    marginBottom: spacing[6],
+    fontFamily: 'Inter-Regular',
+    fontSize: 13,
+    color: theme.textMuted,
+    marginBottom: spacing[3],
   },
   section: {
     marginBottom: spacing[5],
@@ -414,9 +449,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing[6],
   },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.text,
+    fontFamily: 'Inter-Regular',
+    fontSize: 11,
+    fontWeight: '400',
+    color: theme.textMuted,
+    letterSpacing: 0.5,
     marginBottom: spacing[2],
   },
   textInput: {
