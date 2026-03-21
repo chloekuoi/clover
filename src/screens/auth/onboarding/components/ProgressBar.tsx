@@ -78,21 +78,23 @@ const styles = StyleSheet.create({
     borderRadius: 1,
   },
   arrow: {
-    width: 30,
+    minWidth: 30,
     height: 30,
     borderRadius: 15,
     borderWidth: 1,
     borderColor: t.divider,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 8,
   },
   arrowHidden: {
     opacity: 0,
   },
   arrowText: {
     fontFamily: t.fontSans.regular,
-    fontSize: 12,
+    fontSize: 11,
     color: t.placeholder,
+    textAlign: 'center',
   },
   arrowActive: {
     color: t.accent,

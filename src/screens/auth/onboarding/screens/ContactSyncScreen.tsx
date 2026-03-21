@@ -67,7 +67,7 @@ export function ContactSyncScreen({ state, setState, onNext, onBack, currentStep
         totalSteps={totalSteps}
         onBack={onBack}
         onNext={onNext}
-        nextLabel="skip →"
+        nextLabel="skip"
       />
     </View>
   );

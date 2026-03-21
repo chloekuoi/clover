@@ -56,7 +56,7 @@ export function NotificationsScreen({ state, setState, onNext, onBack, currentSt
         totalSteps={totalSteps}
         onBack={onBack}
         onNext={onNext}
-        nextLabel="skip →"
+        nextLabel="skip"
       />
     </View>
   );
