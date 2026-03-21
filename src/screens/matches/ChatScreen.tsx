@@ -26,6 +26,8 @@ import {
   subscribeToSession,
   subscribeToSessionEvents,
 } from '../../services/sessionService';
+import { formatLocalDate } from '../../services/localDate';
+import { isSessionVisible } from '../../services/sessionVisibility';
 import { getTodayIntent } from '../../services/discoveryService';
 import { getFullProfile } from '../../services/profileService';
 import { ChatTimelineItem, Message, Profile, ProfilePhoto, SessionEvent, SessionRecord, WorkIntent } from '../../types';
@@ -252,18 +254,8 @@ export default function ChatScreen({ navigation, route }: Props) {
   }, [sessions, user]);
 
   const timelineItems = useMemo<ChatTimelineItem[]>(() => {
-    const now = Date.now();
     const visibleSessions = sessions.filter((session) => {
-      if (session.status === 'completed' && session.completed_ack) {
-        return false;
-      }
-      if (session.status === 'declined') {
-        return false;
-      }
-      if (session.status === 'cancelled') {
-        return false;
-      }
-      return true;
+      return isSessionVisible(session);
     });
 
     const sessionItems: ChatTimelineItem[] = visibleSessions.map((session) => ({
@@ -431,7 +423,7 @@ export default function ChatScreen({ navigation, route }: Props) {
     for (let i = 0; i < 7; i += 1) {
       const date = new Date();
       date.setDate(date.getDate() + i);
-      const value = date.toISOString().split('T')[0];
+      const value = formatLocalDate(date);
       const label =
         i === 0
           ? 'Today'
@@ -465,7 +457,7 @@ export default function ChatScreen({ navigation, route }: Props) {
   };
 
   const hasMatchSession = sessions.some(
-    (session) => session.status === 'pending' || session.status === 'active'
+    (session) => isSessionVisible(session)
   );
 
   const handleAcceptSession = async (sessionId: string) => {

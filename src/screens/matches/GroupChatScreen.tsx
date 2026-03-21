@@ -34,6 +34,8 @@ import {
   subscribeToGroupSessions,
   cancelGroupSession,
 } from '../../services/groupChatsService';
+import { isGroupSessionVisible } from '../../services/groupSessionVisibility';
+import { formatLocalDate } from '../../services/localDate';
 import { getFullProfile } from '../../services/profileService';
 import {
   GroupMember,
@@ -141,10 +143,12 @@ export default function GroupChatScreen({ navigation, route }: Props) {
       type: 'message',
       message,
     }));
-    const sessionItems: GroupTimelineItem[] = sessions.map((session) => ({
-      type: 'session',
-      session,
-    }));
+    const sessionItems: GroupTimelineItem[] = sessions
+      .filter((session) => isGroupSessionVisible(session))
+      .map((session) => ({
+        type: 'session',
+        session,
+      }));
 
     return [...messageItems, ...sessionItems]
       .sort((a, b) => {
@@ -166,7 +170,7 @@ export default function GroupChatScreen({ navigation, route }: Props) {
     for (let i = 0; i < 7; i += 1) {
       const date = new Date();
       date.setDate(date.getDate() + i);
-      const value = date.toISOString().split('T')[0];
+      const value = formatLocalDate(date);
       const label =
         i === 0
           ? 'Today'

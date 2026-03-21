@@ -1,10 +1,11 @@
 import { supabase } from '../../lib/supabase';
 import { WorkIntent, DiscoveryCard, WorkStyle, LocationType, Profile } from '../types';
 import { calculateDistance } from '../hooks/useLocation';
+import { formatLocalDate } from './localDate';
 
 // Get today's date in YYYY-MM-DD format
 function getTodayDate(): string {
-  return new Date().toISOString().split('T')[0];
+  return formatLocalDate();
 }
 
 // Fetch user's work intent for today

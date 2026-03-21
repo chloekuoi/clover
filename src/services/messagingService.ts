@@ -16,6 +16,7 @@ type SessionPreviewRow = {
   initiated_by: string;
   status: 'pending' | 'active' | 'declined' | 'completed' | 'cancelled';
   scheduled_date: string | null;
+  session_date: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -41,9 +42,44 @@ function toEpoch(value: string | null | undefined): number {
 
 function formatSessionDate(value: string | null): string {
   if (!value) return 'today';
-  const date = new Date(value);
+  const [yearString, monthString, dayString] = value.split('-');
+  const year = Number(yearString);
+  const month = Number(monthString);
+  const day = Number(dayString);
+  const date = !year || !month || !day ? new Date('invalid') : new Date(year, month - 1, day);
   if (Number.isNaN(date.getTime())) return 'today';
   return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function getPreviewSessionDate(session: SessionPreviewRow): string | null {
+  return session.scheduled_date || session.session_date;
+}
+
+function isPastSessionPreviewDate(value: string | null, now = new Date()): boolean {
+  if (!value) {
+    return true;
+  }
+
+  const [yearString, monthString, dayString] = value.split('-');
+  const year = Number(yearString);
+  const month = Number(monthString);
+  const day = Number(dayString);
+
+  if (!year || !month || !day) {
+    return true;
+  }
+
+  const scheduled = new Date(year, month - 1, day);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return scheduled.getTime() < today.getTime();
+}
+
+function isVisibleSessionPreview(session: SessionPreviewRow, now = new Date()): boolean {
+  if (session.status !== 'pending' && session.status !== 'active') {
+    return false;
+  }
+
+  return !isPastSessionPreviewDate(getPreviewSessionDate(session), now);
 }
 
 function toSessionPreviewText(session: SessionPreviewRow, userId: string): string {
@@ -67,6 +103,29 @@ function toSessionPreviewText(session: SessionPreviewRow, userId: string): strin
   }
 }
 
+function shouldUseSessionPreview(
+  session: SessionPreviewRow | undefined,
+  lastMessage: string | null,
+  lastMessageAt: string | null
+): boolean {
+  if (!session) {
+    return false;
+  }
+
+  if (!isVisibleSessionPreview(session)) {
+    return false;
+  }
+
+  const sessionTime = toEpoch(session.updated_at);
+  const lastMessageTime = toEpoch(lastMessageAt);
+
+  if (session.status === 'declined' && lastMessage) {
+    return false;
+  }
+
+  return sessionTime > lastMessageTime;
+}
+
 export async function fetchMatches(userId: string): Promise<MatchPreview[]> {
   const { data, error } = await supabase.rpc('fetch_match_previews', {
     p_user_id: userId,
@@ -86,7 +145,7 @@ export async function fetchMatches(userId: string): Promise<MatchPreview[]> {
     await Promise.all([
       supabase
         .from('sessions')
-        .select('match_id, initiated_by, status, scheduled_date, created_at, updated_at')
+        .select('match_id, initiated_by, status, scheduled_date, session_date, created_at, updated_at')
         .in('match_id', matchIds)
         .order('updated_at', { ascending: false }),
       supabase
@@ -117,13 +176,16 @@ export async function fetchMatches(userId: string): Promise<MatchPreview[]> {
 
   return rows.map((row) => {
     const latestSession = latestSessionByMatch.get(row.match_id);
-    const lastMessageTime = toEpoch(row.last_message_at);
-    const sessionTime = toEpoch(latestSession?.updated_at);
-    const sessionWinsPreview = !!latestSession && sessionTime > lastMessageTime;
+    const sessionWinsPreview = shouldUseSessionPreview(
+      latestSession,
+      row.last_message,
+      row.last_message_at
+    );
     const myLastRead = lastReadByMatch.get(row.match_id);
 
     const hasUnreadInvite =
       !!latestSession &&
+      isVisibleSessionPreview(latestSession) &&
       latestSession.status === 'pending' &&
       latestSession.initiated_by !== userId &&
       toEpoch(latestSession.created_at) > toEpoch(myLastRead);

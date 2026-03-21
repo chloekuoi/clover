@@ -1,4 +1,6 @@
 import { supabase } from '../../lib/supabase';
+import { fetchMatches } from './messagingService';
+import { formatLocalDate } from './localDate';
 import { FriendListItem, RelationshipStatus, UserSearchResult } from '../types';
 
 type FriendshipRow = {
@@ -8,13 +10,6 @@ type FriendshipRow = {
   status: 'pending' | 'accepted' | 'declined';
   created_at: string;
   updated_at: string;
-};
-
-type MatchRow = {
-  id: string;
-  user1_id: string;
-  user2_id: string;
-  status?: 'active' | 'unmatched';
 };
 
 type ProfileLookupRow = {
@@ -53,7 +48,7 @@ type RelationshipDetail = {
 };
 
 function getTodayDate(): string {
-  return new Date().toISOString().split('T')[0];
+  return formatLocalDate();
 }
 
 function normalizeQuery(query: string): string {
@@ -80,41 +75,16 @@ async function getRelationshipDetails(
     statuses[userId] = { status: 'none', friendshipId: null };
   }
 
-  const [{ data: matchesAsUser1, error: matchError1 }, { data: matchesAsUser2, error: matchError2 }] =
-    await Promise.all([
-      supabase
-        .from('matches')
-        .select('id,user1_id,user2_id,status')
-        .eq('user1_id', currentUserId)
-        .in('user2_id', userIds),
-      supabase
-        .from('matches')
-        .select('id,user1_id,user2_id,status')
-        .eq('user2_id', currentUserId)
-        .in('user1_id', userIds),
-    ]);
+  const activeMatches = await fetchMatches(currentUserId);
+  const activeMatchUserIds = new Set(
+    activeMatches
+      .map((match) => match.other_user.id)
+      .filter((id): id is string => Boolean(id))
+  );
 
-  if (matchError1 || matchError2) {
-    const message = extractSupabaseErrorMessage(matchError1 || matchError2, 'Failed to determine matches');
-    console.error('Error determining match relationships:', message);
-    return { data: statuses, error: message };
-  }
-
-  const matchRows = [...((matchesAsUser1 || []) as MatchRow[]), ...((matchesAsUser2 || []) as MatchRow[])];
-
-  const unmatchedUserIds = new Set<string>();
-
-  for (const match of matchRows) {
-    const otherId = match.user1_id === currentUserId ? match.user2_id : match.user1_id;
-    if (!statuses[otherId]) continue;
-
-    if (match.status === 'unmatched') {
-      unmatchedUserIds.add(otherId);
-      continue;
-    }
-
-    if (match.status === 'active') {
-      statuses[otherId] = { status: 'friends', friendshipId: statuses[otherId].friendshipId };
+  for (const otherId of userIds) {
+    if (activeMatchUserIds.has(otherId)) {
+      statuses[otherId] = { status: 'friends', friendshipId: null };
     }
   }
 
@@ -138,10 +108,9 @@ async function getRelationshipDetails(
     if (!statuses[otherId]) continue;
 
     if (friendship.status === 'accepted') {
-      if (unmatchedUserIds.has(otherId)) {
-        continue;
+      if (activeMatchUserIds.has(otherId)) {
+        statuses[otherId] = { status: 'friends', friendshipId: friendship.id };
       }
-      statuses[otherId] = { status: 'friends', friendshipId: friendship.id };
       continue;
     }
 
@@ -247,61 +216,12 @@ export async function respondToFriendRequest(
 export async function fetchFriends(
   userId: string
 ): Promise<{ data: FriendListItem[]; error: string | null }> {
-  const [
-    { data: matchesAsUser1, error: matchError1 },
-    { data: matchesAsUser2, error: matchError2 },
-    { data: friendshipsData, error: friendshipsError },
-  ] = await Promise.all([
-    supabase.from('matches').select('id,user1_id,user2_id,status').eq('user1_id', userId),
-    supabase.from('matches').select('id,user1_id,user2_id,status').eq('user2_id', userId),
-    supabase
-      .from('friendships')
-      .select('id,requester_id,recipient_id,status,created_at,updated_at')
-      .eq('status', 'accepted')
-      .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`),
-  ]);
-
-  if (matchError1 || matchError2 || friendshipsError) {
-    const message = extractSupabaseErrorMessage(
-      matchError1 || matchError2 || friendshipsError,
-      'Failed to fetch friends'
-    );
-    console.error('Error fetching friend matches:', message);
-    return { data: [], error: message };
-  }
-
-  const allMatches = [...((matchesAsUser1 || []) as MatchRow[]), ...((matchesAsUser2 || []) as MatchRow[])];
-  const acceptedFriendships = (friendshipsData || []) as FriendshipRow[];
-
-  const unmatchedUserIds = new Set<string>();
+  const activeMatches = await fetchMatches(userId);
   const friendMap = new Map<string, { matchId: string }>();
 
-  for (const match of allMatches) {
-    const otherUserId = match.user1_id === userId ? match.user2_id : match.user1_id;
-
-    if (match.status === 'unmatched') {
-      unmatchedUserIds.add(otherUserId);
-      friendMap.delete(otherUserId);
-      continue;
-    }
-
-    if (!friendMap.has(otherUserId)) {
-      friendMap.set(otherUserId, { matchId: match.id });
-    }
-  }
-
-  for (const friendship of acceptedFriendships) {
-    const otherUserId =
-      friendship.requester_id === userId ? friendship.recipient_id : friendship.requester_id;
-
-    if (unmatchedUserIds.has(otherUserId)) {
-      continue;
-    }
-
-    if (!friendMap.has(otherUserId)) {
-      friendMap.set(otherUserId, { matchId: '' });
-    }
-  }
+  activeMatches.forEach((match) => {
+    friendMap.set(match.other_user.id, { matchId: match.match_id });
+  });
 
   const friendIds = Array.from(friendMap.keys());
   if (friendIds.length === 0) {
