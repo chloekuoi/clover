@@ -63,6 +63,11 @@ BEGIN
     unmatched_at = NOW()
   WHERE id = p_match_id;
 
+  DELETE FROM friendships
+  WHERE LEAST(requester_id, recipient_id) = LEAST(v_user1, v_user2)
+    AND GREATEST(requester_id, recipient_id) = GREATEST(v_user1, v_user2)
+    AND status = 'accepted';
+
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -107,6 +112,70 @@ BEGIN
   END IF;
 
   RETURN v_match_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 6b. Update send_friend_request so only active matches count as already friends
+CREATE OR REPLACE FUNCTION send_friend_request(p_requester_id UUID, p_recipient_id UUID)
+RETURNS UUID AS $$
+DECLARE
+  v_friendship friendships%ROWTYPE;
+  v_friendship_id UUID;
+BEGIN
+  IF p_requester_id = p_recipient_id THEN
+    RAISE EXCEPTION 'Cannot send request to yourself';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM profiles
+    WHERE id = p_recipient_id
+  ) THEN
+    RAISE EXCEPTION 'Recipient not found';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM matches m
+    WHERE m.user1_id = LEAST(p_requester_id, p_recipient_id)
+      AND m.user2_id = GREATEST(p_requester_id, p_recipient_id)
+      AND m.status = 'active'
+  ) THEN
+    RAISE EXCEPTION 'Already friends';
+  END IF;
+
+  SELECT * INTO v_friendship
+  FROM friendships
+  WHERE LEAST(requester_id, recipient_id) = LEAST(p_requester_id, p_recipient_id)
+    AND GREATEST(requester_id, recipient_id) = GREATEST(p_requester_id, p_recipient_id)
+  LIMIT 1;
+
+  IF FOUND THEN
+    IF v_friendship.status = 'accepted' THEN
+      DELETE FROM friendships WHERE id = v_friendship.id;
+    ELSIF v_friendship.status = 'declined' THEN
+      DELETE FROM friendships WHERE id = v_friendship.id;
+    ELSIF v_friendship.status = 'pending' THEN
+      IF v_friendship.requester_id = p_requester_id AND v_friendship.recipient_id = p_recipient_id THEN
+        RAISE EXCEPTION 'Friend request already sent';
+      END IF;
+
+      UPDATE friendships
+      SET status = 'accepted', updated_at = NOW()
+      WHERE id = v_friendship.id
+      RETURNING id INTO v_friendship_id;
+
+      PERFORM create_match(p_requester_id, p_recipient_id);
+
+      RETURN v_friendship_id;
+    END IF;
+  END IF;
+
+  INSERT INTO friendships (requester_id, recipient_id, status)
+  VALUES (p_requester_id, p_recipient_id, 'pending')
+  RETURNING id INTO v_friendship_id;
+
+  RETURN v_friendship_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
