@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { borderRadius, colors, spacing, shadows } from '../../constants';
+import { formatLocalDate } from '../../services/localDate';
 
 type DateOption = {
   label: string;
@@ -27,7 +28,7 @@ export default function InviteComposerCard({
     for (let i = 0; i < 7; i += 1) {
       const date = new Date();
       date.setDate(date.getDate() + i);
-      const value = date.toISOString().split('T')[0];
+      const value = formatLocalDate(date);
       const dayLabel = i === 0 ? 'Today' : date.toLocaleDateString(undefined, { weekday: 'short' });
       const dateLabel = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
       rows.push({ value, dayLabel, dateLabel });

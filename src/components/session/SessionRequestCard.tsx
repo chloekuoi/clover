@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { borderRadius, colors, spacing, theme, touchTarget, shadows } from '../../constants';
+import { getSessionScheduledDate, isSessionVisible } from '../../services/sessionVisibility';
 import { SessionRecord } from '../../types';
 import SessionReceiptCard from './SessionReceiptCard';
 
@@ -59,7 +60,7 @@ export default function SessionRequestCard({
   const otherUserLocked = isInitiator
     ? !!session.locked_by_invitee_at
     : !!session.locked_by_initiator_at;
-  const scheduledLabel = formatDateLabel(session.scheduled_date || session.session_date);
+  const scheduledLabel = formatDateLabel(getSessionScheduledDate(session));
   const bothLocked = currentUserLocked && otherUserLocked;
 
   const statusDotPulse = useRef(new Animated.Value(0)).current;
@@ -146,7 +147,7 @@ export default function SessionRequestCard({
   // Capture status before TypeScript narrows it via early returns below.
   const statusForDisplay = session.status as SessionRecord['status'];
 
-  if (session.status === 'cancelled') {
+  if (!isSessionVisible(session)) {
     return null;
   }
 

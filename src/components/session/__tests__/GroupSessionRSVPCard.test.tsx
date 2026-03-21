@@ -9,10 +9,10 @@ const baseSession: GroupSession = {
   id: 'session-1',
   group_chat_id: 'group-1',
   proposed_by: 'user-other',
-  scheduled_date: '2026-03-16',
+  scheduled_date: '2099-03-16',
   status: 'proposed',
-  created_at: '2026-03-15T00:00:00Z',
-  updated_at: '2026-03-15T00:00:00Z',
+  created_at: '2099-03-15T00:00:00Z',
+  updated_at: '2099-03-15T00:00:00Z',
 };
 
 function makeRsvp(userId: string, response: 'yes' | 'no'): GroupSessionRsvp {
@@ -56,10 +56,30 @@ it('returns null for cancelled session', () => {
   expect(toJSON()).toBeNull();
 });
 
+it('returns null for completed session', () => {
+  const { toJSON } = render(
+    <GroupSessionRSVPCard
+      {...defaultProps}
+      session={{ ...baseSession, status: 'completed' }}
+    />
+  );
+  expect(toJSON()).toBeNull();
+});
+
+it('returns null for a past-date proposed session', () => {
+  const { toJSON } = render(
+    <GroupSessionRSVPCard
+      {...defaultProps}
+      session={{ ...baseSession, scheduled_date: '2000-01-01' }}
+    />
+  );
+  expect(toJSON()).toBeNull();
+});
+
 // ── formatDateLabel (tested via rendered meta line) ──────────────────────────
 
 describe('meta line date format', () => {
-  // '2026-03-16' is a Monday
+  // '2099-03-16' is a Monday
   it('uses short weekday — shows "Mon,"', () => {
     const { getByText } = render(<GroupSessionRSVPCard {...defaultProps} />);
     expect(getByText(/Mon,/)).toBeTruthy();
@@ -96,16 +116,6 @@ describe('count line', () => {
     expect(getByText('1 going · 1 not going · 2 pending')).toBeTruthy();
   });
 
-  it('count line is absent in completed state', () => {
-    const { queryByText } = render(
-      <GroupSessionRSVPCard
-        {...defaultProps}
-        session={{ ...baseSession, status: 'completed' }}
-      />
-    );
-    // Neither format should appear
-    expect(queryByText(/going ·/)).toBeNull();
-  });
 });
 
 // ── State 1: awaiting response ────────────────────────────────────────────────
@@ -290,36 +300,5 @@ describe('touch targets', () => {
     };
     const { getByText } = render(<GroupSessionRSVPCard {...props} />);
     expect(getByText('Cancel').parent?.parent).toHaveStyle({ minHeight: 44 });
-  });
-});
-
-// ── State 4: completed ────────────────────────────────────────────────────────
-
-describe('State 4 — completed', () => {
-  const props = {
-    ...defaultProps,
-    session: { ...baseSession, status: 'completed' as const },
-  };
-
-  it('shows CONFIRMED badge', () => {
-    const { getByText } = render(<GroupSessionRSVPCard {...props} />);
-    expect(getByText('CONFIRMED')).toBeTruthy();
-  });
-
-  it('shows "Session confirmed" label', () => {
-    const { getByText } = render(<GroupSessionRSVPCard {...props} />);
-    expect(getByText('Session confirmed')).toBeTruthy();
-  });
-
-  it('does NOT show action buttons', () => {
-    const { queryByText } = render(<GroupSessionRSVPCard {...props} />);
-    expect(queryByText('☕️ Count me in')).toBeNull();
-    expect(queryByText('Pass')).toBeNull();
-  });
-
-  it('does NOT show Change or Cancel', () => {
-    const { queryByText } = render(<GroupSessionRSVPCard {...props} />);
-    expect(queryByText('Change')).toBeNull();
-    expect(queryByText('Cancel')).toBeNull();
   });
 });

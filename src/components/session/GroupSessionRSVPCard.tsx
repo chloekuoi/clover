@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { borderRadius, colors, shadows, spacing, theme, touchTarget } from '../../constants';
+import { isGroupSessionVisible } from '../../services/groupSessionVisibility';
 import { GroupSession, GroupSessionRsvp } from '../../types';
 
 // No errorBg token exists in the design system — hardcoded to match the
@@ -38,7 +39,7 @@ export default function GroupSessionRSVPCard({
 }: GroupSessionRSVPCardProps) {
   const [isChanging, setIsChanging] = useState(false);
 
-  if (session.status === 'cancelled') {
+  if (!isGroupSessionVisible(session)) {
     return null;
   }
 
@@ -47,7 +48,6 @@ export default function GroupSessionRSVPCard({
   const noCount = rsvps.filter((item) => item.response === 'no').length;
   const pendingCount = Math.max(0, memberCount - yesCount - noCount);
   const isProposer = session.proposed_by === currentUserId;
-  const isCompleted = session.status === 'completed';
 
   const metaDate = formatDateLabel(session.scheduled_date);
   const metaWho = isProposer ? 'You proposed' : `${proposedByName} proposed`;
@@ -75,10 +75,8 @@ export default function GroupSessionRSVPCard({
         <View style={styles.cardContent}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>Group Session</Text>
-            <View style={[styles.badge, isCompleted && styles.badgeConfirmed]}>
-              <Text style={[styles.badgeText, isCompleted && styles.badgeTextConfirmed]}>
-                {isCompleted ? 'CONFIRMED' : 'PENDING'}
-              </Text>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>PENDING</Text>
             </View>
           </View>
           <Text style={styles.meta}>{metaDate} · {metaWho}</Text>
@@ -90,13 +88,10 @@ export default function GroupSessionRSVPCard({
 
       {/* ── card-bottom ── */}
       <View style={styles.cardBottom}>
-        {/* Count line — hidden in completed state */}
-        {!isCompleted && (
-          <Text style={styles.countText}>{countText}</Text>
-        )}
+        <Text style={styles.countText}>{countText}</Text>
 
-        {/* Action area — varies by state */}
-        {showButtons && !isCompleted ? (
+        {/* Action area — varies by RSVP state */}
+        {showButtons ? (
           // State 1: action buttons
           <View style={styles.btnRow}>
             <TouchableOpacity
@@ -113,14 +108,6 @@ export default function GroupSessionRSVPCard({
             >
               <Text style={styles.btnNoText}>Pass</Text>
             </TouchableOpacity>
-          </View>
-        ) : isCompleted ? (
-          // State 4: session confirmed
-          <View style={styles.statusRow}>
-            <View style={[styles.statusCircle, styles.statusCircleDone]}>
-              <Text style={[styles.statusCircleText, styles.statusCircleTextDone]}>🎉</Text>
-            </View>
-            <Text style={[styles.statusLabel, styles.statusLabelDone]}>Session confirmed</Text>
           </View>
         ) : myRsvp?.response === 'yes' ? (
           // State 2: responded yes
@@ -227,18 +214,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
-  badgeConfirmed: {
-    backgroundColor: colors.statusConfirmedBg,
-  },
   badgeText: {
     fontSize: 9,
     fontWeight: '700',
     color: colors.statusPendingText,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-  },
-  badgeTextConfirmed: {
-    color: colors.statusConfirmedText,
   },
   meta: {
     fontSize: 12,
@@ -296,7 +277,7 @@ const styles = StyleSheet.create({
     color: colors.textTertiary,
   },
 
-  // ── States 2, 3, 4: circle icon + text row ────────────────────────────────────
+  // ── States 2, 3: circle icon + text row ───────────────────────────────────────
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -316,9 +297,6 @@ const styles = StyleSheet.create({
   statusCircleNo: {
     backgroundColor: ERROR_BG,
   },
-  statusCircleDone: {
-    backgroundColor: colors.statusConfirmedBg,
-  },
   statusCircleText: {
     fontSize: 14,
   },
@@ -329,9 +307,6 @@ const styles = StyleSheet.create({
   statusCircleTextNo: {
     color: theme.error,
   },
-  statusCircleTextDone: {
-    color: colors.statusConfirmedText,
-  },
   statusLabel: {
     fontSize: 13,
     fontWeight: '700',
@@ -341,9 +316,6 @@ const styles = StyleSheet.create({
   },
   statusLabelNo: {
     color: theme.error,
-  },
-  statusLabelDone: {
-    color: colors.statusConfirmedText,
   },
   spacer: {
     flex: 1,
