@@ -24,7 +24,7 @@ const ARCHETYPES = [
 ];
 
 export function SuccessScreen({ state, onComplete }: ScreenProps) {
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const [saving, setSaving] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [archetype] = useState(
@@ -104,7 +104,7 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
         <Text style={styles.badgeValue}>{archetype}</Text>
       </Animated.View>
 
-      <TouchableOpacity onPress={onComplete} style={styles.cta} activeOpacity={0.7}>
+      <TouchableOpacity onPress={refreshProfile} style={styles.cta} activeOpacity={0.7}>
         <Text style={styles.ctaText}>let's find your people →</Text>
       </TouchableOpacity>
     </View>
