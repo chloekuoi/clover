@@ -23,15 +23,15 @@ import { upsertIntent, IntentInput, getTodayIntent } from '../../services/discov
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 
-const WORK_STYLES: { value: WorkStyle; emoji: string; label: string }[] = [
-  { value: 'Deep focus', emoji: '🎧', label: 'Deep focus' },
-  { value: 'Chat mode', emoji: '💬', label: 'Chat mode' },
-  { value: 'Flexible', emoji: '✌️', label: 'Flexible' },
+const WORK_STYLES: { value: WorkStyle; label: string }[] = [
+  { value: 'Deep focus', label: 'Deep focus' },
+  { value: 'Chat mode', label: 'Chat mode' },
+  { value: 'Flexible', label: 'Flexible' },
 ];
-const LOCATION_TYPES: { value: LocationType; emoji: string; label: string }[] = [
-  { value: 'Cafe', emoji: '☕️', label: 'Cafe' },
-  { value: 'Library', emoji: '📚', label: 'Library' },
-  { value: 'Anywhere', emoji: '📍', label: 'Anywhere' },
+const LOCATION_TYPES: { value: LocationType; label: string }[] = [
+  { value: 'Cafe', label: 'Cafe' },
+  { value: 'Library', label: 'Library' },
+  { value: 'Anywhere', label: 'Anywhere' },
 ];
 
 const TIME_START_MINUTES = 7 * 60; // 07:00
@@ -138,11 +138,6 @@ export default function IntentScreen({
   }, [user]);
 
   const handleSubmit = async () => {
-    if (!taskDescription.trim()) {
-      Alert.alert('Missing info', 'Please describe what you\'ll be working on');
-      return;
-    }
-
     if (endTime <= startTime) {
       Alert.alert('Invalid time', 'End time must be after start time');
       return;
@@ -257,9 +252,6 @@ export default function IntentScreen({
                         !isLast && styles.chipSpacer,
                       ]}
                     >
-                      <Text style={[styles.chipEmoji, selected && styles.chipTextSelected]}>
-                        {style.emoji}
-                      </Text>
                       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                         {style.label}
                       </Text>
@@ -285,9 +277,6 @@ export default function IntentScreen({
                         !isLast && styles.chipSpacer,
                       ]}
                     >
-                      <Text style={[styles.chipEmoji, selected && styles.chipTextSelected]}>
-                        {type.emoji}
-                      </Text>
                       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                         {type.label}
                       </Text>
@@ -314,28 +303,23 @@ export default function IntentScreen({
           <View style={styles.section}>
             <Text style={styles.label}>Available</Text>
             <View style={styles.timeRow}>
-              <View style={styles.timeColumn}>
-                <Text style={styles.timeLabel}>Start</Text>
-                <TouchableOpacity
-                  style={styles.timePicker}
-                  onPress={() => setIsStartPickerOpen(true)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.timePickerText}>{formatDisplayTime(startTime)}</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.timeColumn}>
-                <Text style={styles.timeLabel}>End</Text>
-                <TouchableOpacity
-                  style={styles.timePicker}
-                  onPress={() => setIsEndPickerOpen(true)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.timePickerText}>
-                    {endTimeOptions.length > 0 ? formatDisplayTime(endTime) : '--'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={styles.timePicker}
+                onPress={() => setIsStartPickerOpen(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.timePickerText}>{formatDisplayTime(startTime)}</Text>
+              </TouchableOpacity>
+              <Text style={styles.timeSeparator}>→</Text>
+              <TouchableOpacity
+                style={styles.timePicker}
+                onPress={() => setIsEndPickerOpen(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.timePickerText}>
+                  {endTimeOptions.length > 0 ? formatDisplayTime(endTime) : '--'}
+                </Text>
+              </TouchableOpacity>
               {durationLabel !== '--' && (
                 <View style={styles.durationBadge}>
                   <Text style={styles.durationBadgeText}>{durationLabel}</Text>
@@ -345,7 +329,7 @@ export default function IntentScreen({
           </View>
 
           <Button
-            title="Find Co-Workers"
+            title="Save focus"
             onPress={handleSubmit}
             loading={loading}
             style={styles.button}
@@ -503,11 +487,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
   },
-  chipEmoji: {
-    fontSize: 14,
-    marginBottom: 2,
-    textAlign: 'center',
-  },
   chipTextSelected: {
     color: colors.textInverse,
   },
@@ -527,15 +506,12 @@ const styles = StyleSheet.create({
   timeRow: {
     flexDirection: 'row',
     gap: spacing[4],
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
-  timeColumn: {
-    flex: 1,
-  },
-  timeLabel: {
+  timeSeparator: {
     fontSize: 14,
-    color: theme.textSecondary,
-    marginBottom: spacing[2],
+    color: theme.textMuted,
+    alignSelf: 'center',
   },
   timePicker: {
     backgroundColor: colors.bgCard,
