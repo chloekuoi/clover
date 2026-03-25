@@ -9,7 +9,7 @@ import {
 import { colors, theme, spacing, borderRadius, touchTarget, shadows } from '../../constants';
 import PressableScale from './PressableScale';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'pill';
 
 type ButtonProps = {
   title: string;
@@ -45,7 +45,7 @@ export default function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'primary' ? theme.surface : theme.primary}
+          color={variant === 'primary' || variant === 'pill' ? theme.surface : theme.primary}
         />
       ) : (
         <Text
@@ -82,6 +82,24 @@ const styles = StyleSheet.create({
   },
   ghost: {
     backgroundColor: 'transparent',
+  },
+  pill: {
+    height: 58,
+    borderRadius: 9999,
+    backgroundColor: '#0c1f0e',  // CLOVER_FOREST — inlined to avoid circular dep with clover.ts
+    paddingVertical: 0,           // reset base's paddingVertical: 15 so height is respected
+    paddingHorizontal: 0,         // full-width; caller controls width via style prop
+    shadowColor: '#0c1f0e',       // CLOVER_FOREST — inlined for same reason
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.30,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  pillText: {
+    fontFamily: 'DMSans_500Medium',  // FONT_DM_SANS_MEDIUM — inlined to avoid circular dep
+    fontSize: 15,
+    letterSpacing: 0.75,   // 0.05em at 15px
+    color: '#ede8ff',      // CLOVER_BG — inlined for same reason
   },
   disabled: {
     opacity: 0.5,
