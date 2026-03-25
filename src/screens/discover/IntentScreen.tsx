@@ -19,7 +19,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, theme, spacing, borderRadius } from '../../constants';
 import { WorkStyle, LocationType } from '../../types';
-import { upsertIntent, IntentInput, getTodayIntent } from '../../services/discoveryService';
+import { upsertIntent, IntentInput, getTodayIntent, getDefaultIntentTimes } from '../../services/discoveryService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 
@@ -120,7 +120,7 @@ export default function IntentScreen({
         setStartTime(existingIntent.available_from);
         setEndTime(existingIntent.available_until);
       } else if (isMounted) {
-        const { defaultStart, defaultEnd } = getDefaultTimes();
+        const { defaultStart, defaultEnd } = getDefaultIntentTimes();
         setStartTime(defaultStart);
         setEndTime(defaultEnd);
       }
@@ -602,22 +602,6 @@ function getTimeOptions(): TimeOption[] {
   return options;
 }
 
-function getDefaultTimes(): { defaultStart: string; defaultEnd: string } {
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const rounded = Math.ceil(currentMinutes / TIME_INTERVAL) * TIME_INTERVAL;
-  const clampedStart = clampMinutes(rounded, TIME_START_MINUTES, TIME_END_MINUTES);
-  const defaultStart = formatValueTime(clampedStart);
-  const defaultEndMinutes = clampMinutes(clampedStart + DEFAULT_SESSION_MINUTES, TIME_START_MINUTES, TIME_END_MINUTES);
-  const defaultEnd = formatValueTime(defaultEndMinutes);
-
-  if (defaultEnd <= defaultStart) {
-    return { defaultStart, defaultEnd: formatValueTime(TIME_END_MINUTES) };
-  }
-
-  return { defaultStart, defaultEnd };
-}
-
 function getNextValidEndTime(
   newStart: string,
   currentEnd: string,
@@ -629,10 +613,6 @@ function getNextValidEndTime(
   }
   const currentEndStillValid = validOptions.some(option => option.value === currentEnd);
   return currentEndStillValid ? currentEnd : validOptions[0].value;
-}
-
-function clampMinutes(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
 }
 
 function formatValueTime(totalMinutes: number): string {
