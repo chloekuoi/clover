@@ -254,9 +254,9 @@ export function getDefaultIntentTimes(): { defaultStart: string; defaultEnd: str
   const rounded = Math.ceil(currentMins / INTENT_INTERVAL) * INTENT_INTERVAL;
   const startMins = Math.min(Math.max(rounded, INTENT_TIME_START), INTENT_TIME_END);
   const endMins   = Math.min(startMins + INTENT_DURATION, INTENT_TIME_END);
-  const defaultStart = _fmtTime(startMins);
-  const defaultEnd   = endMins > startMins ? _fmtTime(endMins) : _fmtTime(INTENT_TIME_END);
-  return { defaultStart, defaultEnd };
+  // Guarantee end is always after start (e.g. if startMins clamps to 23:00, allow 23:30)
+  const safeEnd   = endMins > startMins ? endMins : startMins + INTENT_INTERVAL;
+  return { defaultStart: _fmtTime(startMins), defaultEnd: _fmtTime(safeEnd) };
 }
 
 function _fmtTime(totalMinutes: number): string {
