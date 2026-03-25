@@ -41,7 +41,7 @@ export default function AuthStack({ needsOnboarding }: Props) {
             name="Login"
             component={LoginScreen}
             options={{
-              headerShown: true,
+              headerShown: false,
               headerTitle: '',
               headerBackTitle: 'Back',
               headerTintColor: theme.accent,
