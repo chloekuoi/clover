@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { theme, spacing } from '../../constants';
+import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../hooks/useLocation';
 import {
   getTodayIntent,
   fetchDiscoveryCards,
   recordSwipe,
+  upsertIntent,
+  getDefaultIntentTimes,
 } from '../../services/discoveryService';
-import { DiscoveryCard, WorkIntent, Profile } from '../../types';
+import { DiscoveryCard, Profile } from '../../types';
 import IntentScreen from './IntentScreen';
 import CardStack from '../../components/discover/CardStack';
 import MatchModal from '../../components/matches/MatchModal';
 import { MainTabsParamList } from '../../navigation/MainTabs';
-type DiscoverState = 'loading' | 'needs_intent' | 'discovering' | 'empty';
+type DiscoverState = 'loading' | 'error' | 'discovering' | 'empty';
 
 export default function DiscoverScreen() {
   const { user, profile } = useAuth();
@@ -23,8 +26,8 @@ export default function DiscoverScreen() {
   const navigation = useNavigation<NavigationProp<MainTabsParamList>>();
 
   const [state, setState] = useState<DiscoverState>('loading');
-  const [intent, setIntent] = useState<WorkIntent | null>(null);
   const [cards, setCards] = useState<DiscoveryCard[]>([]);
+  const [isFocusModalVisible, setIsFocusModalVisible] = useState(false);
   const [matchModal, setMatchModal] = useState<{
     visible: boolean;
     matchId: string | null;
@@ -38,24 +41,26 @@ export default function DiscoverScreen() {
   // Check intent and load cards
   const loadDiscoveryData = useCallback(async () => {
     if (!user || latitude === null || longitude === null) return;
-
     setState('loading');
 
-    // Check if user has set today's intent
     const todayIntent = await getTodayIntent(user.id);
-
     if (!todayIntent) {
-      setState('needs_intent');
-      return;
+      const { defaultStart, defaultEnd } = getDefaultIntentTimes();
+      await upsertIntent(user.id, {
+        task_description: '',
+        work_style: 'Flexible',
+        location_type: 'Anywhere',
+        location_name: null,
+        available_from: defaultStart,
+        available_until: defaultEnd,
+        latitude: latitude,
+        longitude: longitude,
+      });
     }
 
-    setIntent(todayIntent);
-
-    // Fetch discovery cards
     const discoveryCards = await fetchDiscoveryCards(user.id, latitude, longitude);
-
-    setCards(discoveryCards);
     setState(discoveryCards.length > 0 ? 'discovering' : 'empty');
+    setCards(discoveryCards);
   }, [user, latitude, longitude]);
 
   // Initial load and when location becomes available
@@ -66,7 +71,7 @@ export default function DiscoverScreen() {
     }
 
     if (locationError) {
-      setState('needs_intent');
+      setState('error');
       return;
     }
 
@@ -105,11 +110,6 @@ export default function DiscoverScreen() {
     setState('empty');
   };
 
-  // Handle intent set
-  const handleIntentSet = () => {
-    loadDiscoveryData();
-  };
-
   const renderMatchModal = () => {
     if (!profile || !matchModal.matchedUser || !matchModal.matchId) return null;
     return (
@@ -143,19 +143,19 @@ export default function DiscoverScreen() {
     );
   }
 
-  if (state === 'needs_intent') {
+  if (state === 'error') {
     return (
-      <>
-        <IntentScreen
-          latitude={latitude ?? 0}
-          longitude={longitude ?? 0}
-          onIntentSet={handleIntentSet}
-          locationLoading={locationLoading}
-          locationError={locationError}
-          onRequestLocation={refreshLocation}
-        />
-        {renderMatchModal()}
-      </>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.centeredMessage}>
+          <Text style={styles.errorTitle}>Location Required</Text>
+          <Text style={styles.errorText}>
+            Clover needs your location to find co-workers nearby.
+          </Text>
+          <TouchableOpacity style={styles.errorButton} onPress={refreshLocation}>
+            <Text style={styles.errorButtonText}>Enable Location</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -187,11 +187,31 @@ export default function DiscoverScreen() {
         <Text style={styles.headerTitle}>Discover</Text>
       </View>
 
-      <CardStack
-        cards={cards}
-        onSwipe={handleSwipe}
-        onEmpty={handleEmpty}
-      />
+      <CardStack cards={cards} onSwipe={handleSwipe} onEmpty={handleEmpty} />
+
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setIsFocusModalVisible(true)}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.fabIcon}>✎</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={isFocusModalVisible}
+        animationType="slide"
+        onRequestClose={() => setIsFocusModalVisible(false)}
+      >
+        <IntentScreen
+          latitude={latitude ?? 0}
+          longitude={longitude ?? 0}
+          onIntentSet={() => {
+            setIsFocusModalVisible(false);
+            loadDiscoveryData();
+          }}
+        />
+      </Modal>
+
       {renderMatchModal()}
     </SafeAreaView>
   );
@@ -244,5 +264,57 @@ const styles = StyleSheet.create({
   },
   button: {
     minWidth: 200,
+  },
+  centeredMessage: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing[6],
+  },
+  errorTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: theme.text,
+    marginBottom: spacing[2],
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    color: theme.textSecondary,
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: spacing[6],
+  },
+  errorButton: {
+    backgroundColor: theme.primary,
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[3],
+    borderRadius: 100,
+  },
+  errorButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 96,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: CLOVER_FOREST,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  fabIcon: {
+    fontSize: 22,
+    color: CLOVER_BG,
+    lineHeight: 28,
   },
 });
