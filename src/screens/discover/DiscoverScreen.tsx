@@ -1,5 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  Dimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { theme, spacing } from '../../constants';
@@ -18,6 +27,9 @@ import IntentScreen from './IntentScreen';
 import CardStack from '../../components/discover/CardStack';
 import MatchModal from '../../components/matches/MatchModal';
 import { MainTabsParamList } from '../../navigation/MainTabs';
+
+const SHEET_HEIGHT = Dimensions.get('window').height * 0.82;
+
 type DiscoverState = 'loading' | 'error' | 'discovering' | 'empty';
 
 export default function DiscoverScreen() {
@@ -37,6 +49,27 @@ export default function DiscoverScreen() {
     matchId: null,
     matchedUser: null,
   });
+
+  const sheetAnim = useRef(new Animated.Value(SHEET_HEIGHT)).current;
+
+  const openSheet = () => {
+    setIsFocusModalVisible(true);
+    Animated.spring(sheetAnim, {
+      toValue: 0,
+      damping: 25,
+      stiffness: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeSheet = () => {
+    Animated.timing(sheetAnim, {
+      toValue: SHEET_HEIGHT,
+      duration: 220,
+      easing: Easing.in(Easing.ease),
+      useNativeDriver: true,
+    }).start(() => setIsFocusModalVisible(false));
+  };
 
   // Check intent and load cards
   const loadDiscoveryData = useCallback(async () => {
@@ -130,6 +163,49 @@ export default function DiscoverScreen() {
     );
   };
 
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <Text style={styles.headerTitle}>Discover</Text>
+      <TouchableOpacity
+        style={styles.focusPill}
+        onPress={openSheet}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.focusPillText}>✎ Focus</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderFocusSheet = () => {
+    if (!isFocusModalVisible) return null;
+    return (
+      <>
+        <TouchableOpacity
+          style={styles.sheetOverlay}
+          activeOpacity={1}
+          onPress={closeSheet}
+        />
+        <Animated.View
+          style={[styles.sheetContainer, { transform: [{ translateY: sheetAnim }] }]}
+        >
+          <View style={styles.sheetHandle} />
+          <Text style={styles.sheetSubtitle}>Set availability to connect</Text>
+          <View style={{ flex: 1 }}>
+            <IntentScreen
+              latitude={latitude ?? 0}
+              longitude={longitude ?? 0}
+              onIntentSet={() => {
+                closeSheet();
+                loadDiscoveryData();
+              }}
+              isBottomSheet
+            />
+          </View>
+        </Animated.View>
+      </>
+    );
+  };
+
   // Render based on state
   if (state === 'loading') {
     return (
@@ -164,9 +240,7 @@ export default function DiscoverScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         {!matchModal.visible && (
           <>
-            <View style={styles.header}>
-              <Text style={styles.headerTitle}>Discover</Text>
-            </View>
+            {renderHeader()}
             <View style={styles.centerContent}>
               <Text style={styles.emptyTitle}>No one nearby right now</Text>
               <Text style={styles.emptyText}>
@@ -176,6 +250,7 @@ export default function DiscoverScreen() {
           </>
         )}
         {renderMatchModal()}
+        {renderFocusSheet()}
       </SafeAreaView>
     );
   }
@@ -183,36 +258,10 @@ export default function DiscoverScreen() {
   // State: discovering
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Discover</Text>
-      </View>
-
+      {renderHeader()}
       <CardStack cards={cards} onSwipe={handleSwipe} onEmpty={handleEmpty} />
-
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => setIsFocusModalVisible(true)}
-        activeOpacity={0.85}
-      >
-        <Text style={styles.fabIcon}>✎</Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={isFocusModalVisible}
-        animationType="slide"
-        onRequestClose={() => setIsFocusModalVisible(false)}
-      >
-        <IntentScreen
-          latitude={latitude ?? 0}
-          longitude={longitude ?? 0}
-          onIntentSet={() => {
-            setIsFocusModalVisible(false);
-            loadDiscoveryData();
-          }}
-        />
-      </Modal>
-
       {renderMatchModal()}
+      {renderFocusSheet()}
     </SafeAreaView>
   );
 }
@@ -234,6 +283,9 @@ const styles = StyleSheet.create({
     color: theme.textSecondary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing[5],
     paddingTop: spacing[2],
     paddingBottom: spacing[4],
@@ -288,25 +340,49 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  fab: {
-    position: 'absolute',
-    bottom: 96,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  focusPill: {
     backgroundColor: CLOVER_FOREST,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    borderRadius: 100,
+    paddingHorizontal: spacing[3],
+    paddingVertical: 6,
   },
-  fabIcon: {
-    fontSize: 22,
+  focusPillText: {
     color: CLOVER_BG,
-    lineHeight: 28,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  sheetOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    zIndex: 10,
+    elevation: 10,
+  },
+  sheetContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: SHEET_HEIGHT,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    backgroundColor: theme.background,
+    zIndex: 11,
+    elevation: 11,
+    overflow: 'hidden',
+  },
+  sheetHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(0,0,0,0.12)',
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  sheetSubtitle: {
+    fontSize: 12,
+    color: theme.textMuted,
+    textAlign: 'center',
+    marginBottom: 4,
   },
 });
