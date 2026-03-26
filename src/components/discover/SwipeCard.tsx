@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
+import { BlurView } from 'expo-blur';
 import { theme, spacing, borderRadius, colors } from '../../constants';
 import { DiscoveryCard } from '../../types';
 import { formatDistance } from '../../hooks/useLocation';
@@ -95,28 +96,27 @@ export default function SwipeCard({ card, translateX, isTopCard = false }: Swipe
         </View>
       )}
 
-      {/* Dark overlay at bottom */}
-      <View style={styles.gradientOverlay} />
-
-      {/* Info overlay */}
-      <View style={styles.infoOverlay}>
-        <Text style={styles.distance}>📍 {formatDistance(distance)}</Text>
-        <View style={styles.nameRow}>
-          <Text style={styles.name}>{profile.name || 'Anonymous'}</Text>
-          {age ? <Text style={styles.age}>{age}</Text> : null}
+      {/* Glass overlay */}
+      <BlurView intensity={55} tint="dark" style={styles.glassOverlay}>
+        <View style={styles.glassInner}>
+          <Text style={styles.distance}>📍 {formatDistance(distance)}</Text>
+          <View style={styles.nameRow}>
+            <Text style={styles.name}>{profile.name || 'Anonymous'}</Text>
+            {age ? <Text style={styles.age}>{age}</Text> : null}
+          </View>
+          {profile.work_type ? (
+            <Text style={styles.profession}>{profile.work_type}</Text>
+          ) : null}
+          {intent.task_description ? (
+            <>
+              <View style={styles.divider} />
+              <Text style={styles.intent} numberOfLines={2}>
+                {intent.task_description}
+              </Text>
+            </>
+          ) : null}
         </View>
-        {profile.work_type ? (
-          <Text style={styles.profession}>{profile.work_type}</Text>
-        ) : null}
-        {intent.task_description ? (
-          <>
-            <View style={styles.divider} />
-            <Text style={styles.intent} numberOfLines={2}>
-              {intent.task_description}
-            </Text>
-          </>
-        ) : null}
-      </View>
+      </BlurView>
     </View>
   );
 }
@@ -155,20 +155,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: 'rgba(255,255,255,0.25)',
   },
-  gradientOverlay: {
+  glassOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 140,
-    backgroundColor: 'rgba(20,32,22,0.78)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.18)',
+    overflow: 'hidden',
   },
-  infoOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+  glassInner: {
     padding: spacing[4],
+    backgroundColor: 'rgba(255,255,255,0.06)',
   },
   distance: {
     fontSize: 10,

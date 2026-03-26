@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { theme, spacing } from '../../constants';
+import { theme, spacing, colors } from '../../constants';
 import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../hooks/useLocation';
@@ -269,7 +269,7 @@ export default function DiscoverScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: colors.accentSecondaryLight,
   },
   centerContent: {
     flex: 1,
@@ -291,9 +291,10 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[4],
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: theme.text,
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 32,
+    fontWeight: '300',
+    color: colors.accentSecondaryText,
   },
   emptyTitle: {
     fontSize: 24,

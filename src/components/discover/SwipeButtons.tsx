@@ -1,12 +1,38 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { theme, spacing, colors, touchTarget } from '../../constants';
+import Svg, { Circle, Rect } from 'react-native-svg';
+import { theme, spacing, colors } from '../../constants';
+import { CLOVER_FOREST } from '../../constants/clover';
 import PressableScale from '../common/PressableScale';
 
 type SwipeButtonsProps = {
   onSwipeLeft: () => void;
   onSwipeRight: () => void;
 };
+
+function CloverIcon({ size = 26 }: { size?: number }) {
+  const c = size / 2;
+  const r = size * 0.21;
+  const offset = size * 0.19;
+  return (
+    <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {/* 4 petals */}
+      <Circle cx={c}          cy={c - offset} r={r} fill="rgba(255,255,255,0.92)" />
+      <Circle cx={c + offset} cy={c}          r={r} fill="rgba(255,255,255,0.92)" />
+      <Circle cx={c}          cy={c + offset} r={r} fill="rgba(255,255,255,0.92)" />
+      <Circle cx={c - offset} cy={c}          r={r} fill="rgba(255,255,255,0.92)" />
+      {/* stem */}
+      <Rect
+        x={c - 2}
+        y={c + offset + r - 3}
+        width={4}
+        height={size * 0.18}
+        rx={2}
+        fill="rgba(255,255,255,0.7)"
+      />
+    </Svg>
+  );
+}
 
 export default function SwipeButtons({ onSwipeLeft, onSwipeRight }: SwipeButtonsProps) {
   return (
@@ -22,7 +48,7 @@ export default function SwipeButtons({ onSwipeLeft, onSwipeRight }: SwipeButtons
         style={[styles.button, styles.likeButton]}
         onPress={onSwipeRight}
       >
-        <Text style={styles.likeIcon}>✓</Text>
+        <CloverIcon size={26} />
       </PressableScale>
     </View>
   );
@@ -54,20 +80,16 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(184,92,77,0.4)',
   },
   likeButton: {
-    backgroundColor: colors.accentSuccess,
-    shadowColor: colors.accentSuccess,
-    shadowOpacity: 0.42,
-    shadowRadius: 12,
-    elevation: 4,
+    backgroundColor: CLOVER_FOREST,
+    shadowColor: CLOVER_FOREST,
+    shadowOpacity: 0.5,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
   },
   nopeIcon: {
     fontSize: 17,
     fontWeight: '600',
     color: colors.accentDanger,
-  },
-  likeIcon: {
-    fontSize: 19,
-    fontWeight: '700',
-    color: theme.surface,
   },
 });
