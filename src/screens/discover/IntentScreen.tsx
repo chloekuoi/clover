@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing[4],
-    paddingBottom: spacing[5],
+    paddingBottom: spacing[2],
   },
   titleRow: {
     flexDirection: 'row',
