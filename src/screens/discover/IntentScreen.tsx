@@ -219,7 +219,6 @@ export default function IntentScreen({
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.subtitle}>Set availability to connect</Text>
           <View style={styles.titleRow}>
             <Animated.Text style={[styles.star, { transform: [{ rotate: spin }] }]}>
               ✦
@@ -381,7 +380,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing[4],
-    paddingBottom: spacing[10],
+    paddingBottom: spacing[5],
   },
   titleRow: {
     flexDirection: 'row',
@@ -402,12 +401,6 @@ const styles = StyleSheet.create({
     color: theme.text,
     lineHeight: 34,
     letterSpacing: -0.2,
-  },
-  subtitle: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 13,
-    color: theme.textMuted,
-    marginBottom: spacing[2],
   },
   section: {
     marginBottom: spacing[4],
