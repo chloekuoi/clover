@@ -17,7 +17,7 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, theme, spacing, borderRadius } from '../../constants';
+import { colors, theme, spacing, borderRadius, shadows } from '../../constants';
 import { WorkStyle, LocationType } from '../../types';
 import { upsertIntent, IntentInput, getTodayIntent, getDefaultIntentTimes } from '../../services/discoveryService';
 import { useAuth } from '../../context/AuthContext';
@@ -34,10 +34,10 @@ const LOCATION_TYPES: { value: LocationType; label: string }[] = [
   { value: 'Anywhere', label: 'Anywhere' },
 ];
 
-const TIME_START_MINUTES = 7 * 60; // 07:00
-const TIME_END_MINUTES = 23 * 60; // 23:00
+const TIME_START_MINUTES = 7 * 60;    // 07:00
+const TIME_MAX_START = 23 * 60;       // 23:00 — latest allowed start
+const TIME_MAX_END = 23 * 60 + 30;    // 23:30 — latest allowed end (so 23:00 start always has a valid end)
 const TIME_INTERVAL = 30;
-const DEFAULT_SESSION_MINUTES = 120;
 
 type IntentScreenProps = {
   latitude: number;
@@ -83,8 +83,9 @@ export default function IntentScreen({
   }, [spinAnim]);
   const spin = spinAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
-  const timeOptions = getTimeOptions();
-  const endTimeOptions = timeOptions.filter(option => option.value > startTime);
+  const startTimeOptions = getTimeOptions(TIME_MAX_START);
+  const allEndOptions = getTimeOptions(TIME_MAX_END);
+  const endTimeOptions = allEndOptions.filter(option => option.value > startTime);
   const durationLabel = getDurationLabel(startTime, endTime);
 
   useEffect(() => {
@@ -218,9 +219,7 @@ export default function IntentScreen({
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          {!isBottomSheet && (
-            <Text style={styles.subtitle}>Set availability to connect</Text>
-          )}
+          <Text style={styles.subtitle}>Set availability to connect</Text>
           <View style={styles.titleRow}>
             <Animated.Text style={[styles.star, { transform: [{ rotate: spin }] }]}>
               ✦
@@ -346,13 +345,13 @@ export default function IntentScreen({
       <TimePickerModal
         visible={isStartPickerOpen}
         title="Select start time"
-        options={timeOptions}
+        options={startTimeOptions}
         selectedValue={startTime}
         onClose={() => setIsStartPickerOpen(false)}
         onSelect={(value) => {
           setIsStartPickerOpen(false);
           setStartTime(value);
-          const nextValidEnd = getNextValidEndTime(value, endTime, timeOptions);
+          const nextValidEnd = getNextValidEndTime(value, endTime, allEndOptions);
           setEndTime(nextValidEnd);
         }}
       />
@@ -382,13 +381,13 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing[5],
-    paddingBottom: spacing[10],
+    paddingBottom: spacing[12],
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: spacing[2],
+    marginBottom: spacing[4],
   },
   star: {
     fontSize: 22,
@@ -408,7 +407,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 13,
     color: theme.textMuted,
-    marginBottom: spacing[3],
+    marginBottom: spacing[4],
   },
   section: {
     marginBottom: spacing[5],
@@ -447,14 +446,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   textInput: {
-    backgroundColor: colors.bgInput,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.borderDefault,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
     padding: spacing[4],
     fontSize: 16,
     color: theme.text,
     minHeight: 50,
+    ...shadows.card,
   },
   singleLineInput: {
     minHeight: 48,
@@ -532,12 +532,10 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
   durationBadge: {
-    alignSelf: 'flex-end',
     backgroundColor: colors.accentPrimaryLight,
     borderRadius: borderRadius.full,
     paddingHorizontal: 10,
     paddingVertical: 3,
-    marginTop: spacing[3],
   },
   durationBadgeText: {
     fontSize: 11,
@@ -596,9 +594,9 @@ type TimeOption = {
   value: string; // HH:MM:SS
 };
 
-function getTimeOptions(): TimeOption[] {
+function getTimeOptions(maxMinutes: number): TimeOption[] {
   const options: TimeOption[] = [];
-  for (let minutes = TIME_START_MINUTES; minutes <= TIME_END_MINUTES; minutes += TIME_INTERVAL) {
+  for (let minutes = TIME_START_MINUTES; minutes <= maxMinutes; minutes += TIME_INTERVAL) {
     const value = formatValueTime(minutes);
     options.push({
       value,

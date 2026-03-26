@@ -191,7 +191,6 @@ export default function DiscoverScreen() {
         pointerEvents={isFocusModalVisible ? 'auto' : 'none'}
       >
         <View style={styles.sheetHandle} />
-        <Text style={styles.sheetSubtitle}>Set availability to connect</Text>
         <View style={styles.sheetContent}>
           <IntentScreen
             latitude={latitude ?? 0}
@@ -372,19 +371,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   sheetHandle: {
-    width: 36,
+    width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(0,0,0,0.12)',
+    backgroundColor: 'rgba(0,0,0,0.18)',
     alignSelf: 'center',
     marginTop: 10,
-    marginBottom: 4,
-  },
-  sheetSubtitle: {
-    fontSize: 12,
-    color: theme.textMuted,
-    textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   sheetContent: {
     flex: 1,
