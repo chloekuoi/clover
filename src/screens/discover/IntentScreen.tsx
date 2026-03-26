@@ -176,8 +176,9 @@ export default function IntentScreen({
     onIntentSet();
   };
 
+  const Wrapper = isBottomSheet ? View : SafeAreaView;
+
   if (locationLoading || initialLoading) {
-    const Wrapper = isBottomSheet ? View : SafeAreaView;
     return (
       <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
         <View style={styles.loadingContainer}>
@@ -189,7 +190,6 @@ export default function IntentScreen({
   }
 
   if (locationError) {
-    const Wrapper = isBottomSheet ? View : SafeAreaView;
     return (
       <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
         <View style={styles.loadingContainer}>
@@ -207,7 +207,6 @@ export default function IntentScreen({
     );
   }
 
-  const Wrapper = isBottomSheet ? View : SafeAreaView;
   return (
     <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
       <KeyboardAvoidingView
