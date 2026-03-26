@@ -28,7 +28,7 @@ import CardStack from '../../components/discover/CardStack';
 import MatchModal from '../../components/matches/MatchModal';
 import { MainTabsParamList } from '../../navigation/MainTabs';
 
-const SHEET_HEIGHT = Dimensions.get('window').height * 0.82;
+const SHEET_HEIGHT = Dimensions.get('window').height * 0.65;
 
 type DiscoverState = 'loading' | 'error' | 'discovering' | 'empty';
 
