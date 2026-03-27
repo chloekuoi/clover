@@ -79,7 +79,7 @@ export default function SignupScreen({ navigation }: Props) {
       {/* Back button */}
       <View style={[styles.backRow, { paddingTop: insets.top + 16 }]}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Welcome')}
           style={styles.backBtn}
           activeOpacity={0.6}
         >
