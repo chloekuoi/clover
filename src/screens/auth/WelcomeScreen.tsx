@@ -1,12 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   StatusBar,
-  Animated,
-  Easing,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,26 +23,6 @@ type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Welcome'>;
 };
 
-function SpinningClover() {
-  const spin = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(spin, {
-        toValue: 1,
-        duration: 8000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
-  }, [spin]);
-  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
-  return (
-    <Animated.View style={{ transform: [{ rotate }] }}>
-      <CloverMark size={80} color={CLOVER_FOREST} bg={CLOVER_BG} />
-    </Animated.View>
-  );
-}
-
 export default function WelcomeScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
 
@@ -62,7 +40,7 @@ export default function WelcomeScreen({ navigation }: Props) {
 
       {/* Logo lockup — centred in the screen */}
       <View style={[styles.logoArea, { paddingTop: insets.top + 16 }]}>
-        <SpinningClover />
+        <CloverMark size={80} color={CLOVER_FOREST} bg={CLOVER_BG} />
         <Text style={styles.wordmark}>clover</Text>
         <Text style={styles.tagline}>find your clover</Text>
       </View>
