@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   Alert,
   StatusBar,
+  Animated,
+  Easing,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +30,21 @@ import {
 type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Signup'>;
 };
+
+function SpinningMiniClover() {
+  const spin = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(spin, { toValue: 1, duration: 8000, easing: Easing.linear, useNativeDriver: true })
+    ).start();
+  }, [spin]);
+  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  return (
+    <Animated.View style={{ transform: [{ rotate }] }}>
+      <CloverMark size={20} color={CLOVER_FOREST} bg={CLOVER_BG} />
+    </Animated.View>
+  );
+}
 
 export default function SignupScreen({ navigation }: Props) {
   const { signUp } = useAuth();
@@ -90,7 +107,7 @@ export default function SignupScreen({ navigation }: Props) {
 
       {/* Mini logo lockup */}
       <View style={styles.miniLockup}>
-        <CloverMark size={20} color={CLOVER_FOREST} bg={CLOVER_BG} />
+        <SpinningMiniClover />
         <Text style={styles.miniWordmark}>clover</Text>
       </View>
 
