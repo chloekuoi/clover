@@ -89,6 +89,7 @@ export default function DiscoverScreen() {
       }, 2500);
     });
     return () => {
+      toastOpacity.stopAnimation(); // cancel any in-flight fade
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
