@@ -1,21 +1,52 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  Dimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { theme, spacing } from '../../constants';
+import { theme, spacing, colors } from '../../constants';
+import { CLOVER_FOREST, CLOVER_BG, FONT_DM_SANS_MEDIUM } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../hooks/useLocation';
 import {
   getTodayIntent,
   fetchDiscoveryCards,
   recordSwipe,
+  upsertIntent,
+  getDefaultIntentTimes,
 } from '../../services/discoveryService';
-import { DiscoveryCard, WorkIntent, Profile } from '../../types';
+import { DiscoveryCard, Profile } from '../../types';
 import IntentScreen from './IntentScreen';
 import CardStack from '../../components/discover/CardStack';
 import MatchModal from '../../components/matches/MatchModal';
 import { MainTabsParamList } from '../../navigation/MainTabs';
-type DiscoverState = 'loading' | 'needs_intent' | 'discovering' | 'empty';
+
+const SHEET_HEIGHT = Dimensions.get('window').height * 0.65;
+
+type DiscoverState = 'loading' | 'error' | 'discovering' | 'empty';
+
+// ── Toast banner ──────────────────────────────────────────────────────────────
+
+interface ToastBannerProps {
+  visible: boolean;
+  opacity: Animated.Value;
+}
+
+function ToastBanner({ visible, opacity }: ToastBannerProps) {
+  if (!visible) return null;
+  return (
+    <Animated.View style={[styles.toastBanner, { opacity }]} pointerEvents="none">
+      <Text style={styles.toastText}>Your focus for today is set 🌟</Text>
+    </Animated.View>
+  );
+}
 
 export default function DiscoverScreen() {
   const { user, profile } = useAuth();
@@ -23,8 +54,8 @@ export default function DiscoverScreen() {
   const navigation = useNavigation<NavigationProp<MainTabsParamList>>();
 
   const [state, setState] = useState<DiscoverState>('loading');
-  const [intent, setIntent] = useState<WorkIntent | null>(null);
   const [cards, setCards] = useState<DiscoveryCard[]>([]);
+  const [isFocusModalVisible, setIsFocusModalVisible] = useState(false);
   const [matchModal, setMatchModal] = useState<{
     visible: boolean;
     matchId: string | null;
@@ -35,27 +66,83 @@ export default function DiscoverScreen() {
     matchedUser: null,
   });
 
+  const sheetAnim = useRef(new Animated.Value(SHEET_HEIGHT)).current;
+  const [showToast, setShowToast] = useState(false);
+  const toastOpacity = useRef(new Animated.Value(0)).current;
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Toast animation: fade in → hold → fade out
+  useEffect(() => {
+    if (!showToast) return;
+    toastOpacity.setValue(0); // reset in case of rapid re-trigger
+    Animated.timing(toastOpacity, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      timerRef.current = setTimeout(() => {
+        Animated.timing(toastOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start(() => setShowToast(false));
+      }, 2500);
+    });
+    return () => {
+      toastOpacity.stopAnimation(); // cancel any in-flight fade
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [showToast]);
+
+  const openSheet = () => {
+    sheetAnim.setValue(SHEET_HEIGHT);
+    setIsFocusModalVisible(true);
+    Animated.spring(sheetAnim, {
+      toValue: 0,
+      damping: 25,
+      stiffness: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeSheet = (onComplete?: () => void) => {
+    Animated.timing(sheetAnim, {
+      toValue: SHEET_HEIGHT,
+      duration: 220,
+      easing: Easing.in(Easing.ease),
+      useNativeDriver: true,
+    }).start(() => {
+      setIsFocusModalVisible(false);
+      onComplete?.();
+    });
+  };
+
   // Check intent and load cards
   const loadDiscoveryData = useCallback(async () => {
     if (!user || latitude === null || longitude === null) return;
-
     setState('loading');
 
-    // Check if user has set today's intent
     const todayIntent = await getTodayIntent(user.id);
-
     if (!todayIntent) {
-      setState('needs_intent');
-      return;
+      const { defaultStart, defaultEnd } = getDefaultIntentTimes();
+      await upsertIntent(user.id, {
+        task_description: '',
+        work_style: 'Flexible',
+        location_type: 'Anywhere',
+        location_name: null,
+        available_from: defaultStart,
+        available_until: defaultEnd,
+        latitude: latitude,
+        longitude: longitude,
+      });
     }
 
-    setIntent(todayIntent);
-
-    // Fetch discovery cards
     const discoveryCards = await fetchDiscoveryCards(user.id, latitude, longitude);
-
-    setCards(discoveryCards);
     setState(discoveryCards.length > 0 ? 'discovering' : 'empty');
+    setCards(discoveryCards);
   }, [user, latitude, longitude]);
 
   // Initial load and when location becomes available
@@ -66,7 +153,7 @@ export default function DiscoverScreen() {
     }
 
     if (locationError) {
-      setState('needs_intent');
+      setState('error');
       return;
     }
 
@@ -105,11 +192,6 @@ export default function DiscoverScreen() {
     setState('empty');
   };
 
-  // Handle intent set
-  const handleIntentSet = () => {
-    loadDiscoveryData();
-  };
-
   const renderMatchModal = () => {
     if (!profile || !matchModal.matchedUser || !matchModal.matchId) return null;
     return (
@@ -130,6 +212,48 @@ export default function DiscoverScreen() {
     );
   };
 
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <Text style={styles.headerTitle}>Discover</Text>
+      <TouchableOpacity
+        style={styles.focusPill}
+        onPress={openSheet}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.focusPillText}>✎ Focus</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderFocusSheet = () => (
+    <>
+      {isFocusModalVisible && (
+        <TouchableOpacity
+          style={styles.sheetOverlay}
+          activeOpacity={1}
+          onPress={() => closeSheet()}
+        />
+      )}
+      <Animated.View
+        style={[styles.sheetContainer, { transform: [{ translateY: sheetAnim }] }]}
+        pointerEvents={isFocusModalVisible ? 'auto' : 'none'}
+      >
+        <View style={styles.sheetHandle} />
+        <View style={styles.sheetContent}>
+          <IntentScreen
+            latitude={latitude ?? 0}
+            longitude={longitude ?? 0}
+            onIntentSet={() => {
+              setShowToast(true);
+              closeSheet(() => loadDiscoveryData());
+            }}
+            isBottomSheet
+          />
+        </View>
+      </Animated.View>
+    </>
+  );
+
   // Render based on state
   if (state === 'loading') {
     return (
@@ -139,23 +263,25 @@ export default function DiscoverScreen() {
           <Text style={styles.loadingText}>Finding co-workers nearby...</Text>
         </View>
         {renderMatchModal()}
+        <ToastBanner visible={showToast} opacity={toastOpacity} />
       </SafeAreaView>
     );
   }
 
-  if (state === 'needs_intent') {
+  if (state === 'error') {
     return (
-      <>
-        <IntentScreen
-          latitude={latitude ?? 0}
-          longitude={longitude ?? 0}
-          onIntentSet={handleIntentSet}
-          locationLoading={locationLoading}
-          locationError={locationError}
-          onRequestLocation={refreshLocation}
-        />
-        {renderMatchModal()}
-      </>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.centeredMessage}>
+          <Text style={styles.errorTitle}>Location Required</Text>
+          <Text style={styles.errorText}>
+            Clover needs your location to find co-workers nearby.
+          </Text>
+          <TouchableOpacity style={styles.errorButton} onPress={refreshLocation}>
+            <Text style={styles.errorButtonText}>Enable Location</Text>
+          </TouchableOpacity>
+        </View>
+        <ToastBanner visible={showToast} opacity={toastOpacity} />
+      </SafeAreaView>
     );
   }
 
@@ -164,9 +290,7 @@ export default function DiscoverScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         {!matchModal.visible && (
           <>
-            <View style={styles.header}>
-              <Text style={styles.headerTitle}>Discover</Text>
-            </View>
+            {renderHeader()}
             <View style={styles.centerContent}>
               <Text style={styles.emptyTitle}>No one nearby right now</Text>
               <Text style={styles.emptyText}>
@@ -176,6 +300,8 @@ export default function DiscoverScreen() {
           </>
         )}
         {renderMatchModal()}
+        {renderFocusSheet()}
+        <ToastBanner visible={showToast} opacity={toastOpacity} />
       </SafeAreaView>
     );
   }
@@ -183,16 +309,11 @@ export default function DiscoverScreen() {
   // State: discovering
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Discover</Text>
-      </View>
-
-      <CardStack
-        cards={cards}
-        onSwipe={handleSwipe}
-        onEmpty={handleEmpty}
-      />
+      {renderHeader()}
+      <CardStack cards={cards} onSwipe={handleSwipe} onEmpty={handleEmpty} />
       {renderMatchModal()}
+      {renderFocusSheet()}
+      <ToastBanner visible={showToast} opacity={toastOpacity} />
     </SafeAreaView>
   );
 }
@@ -214,19 +335,18 @@ const styles = StyleSheet.create({
     color: theme.textSecondary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing[5],
     paddingTop: spacing[2],
     paddingBottom: spacing[4],
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: theme.text,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: theme.textSecondary,
-    marginTop: spacing[1],
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 32,
+    fontWeight: '300',
+    color: colors.accentSecondaryText,
   },
   emptyTitle: {
     fontSize: 24,
@@ -242,7 +362,98 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: spacing[6],
   },
-  button: {
-    minWidth: 200,
+  centeredMessage: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing[6],
+  },
+  errorTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: theme.text,
+    marginBottom: spacing[2],
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    color: theme.textSecondary,
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: spacing[6],
+  },
+  errorButton: {
+    backgroundColor: theme.primary,
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[3],
+    borderRadius: 100,
+  },
+  errorButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  focusPill: {
+    backgroundColor: CLOVER_FOREST,
+    borderRadius: 100,
+    paddingHorizontal: spacing[3],
+    paddingVertical: 6,
+  },
+  focusPillText: {
+    color: CLOVER_BG,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  sheetOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    zIndex: 10,
+    elevation: 10,
+  },
+  sheetContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: SHEET_HEIGHT,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    backgroundColor: theme.background,
+    zIndex: 11,
+    elevation: 11,
+    overflow: 'hidden',
+  },
+  sheetHandle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(0,0,0,0.18)',
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 8,
+  },
+  sheetContent: {
+    flex: 1,
+  },
+  toastBanner: {
+    position: 'absolute',
+    top: 108,
+    alignSelf: 'center',
+    zIndex: 99,
+    backgroundColor: CLOVER_FOREST,
+    borderRadius: 9999,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    shadowColor: CLOVER_FOREST,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  toastText: {
+    fontFamily: FONT_DM_SANS_MEDIUM,
+    fontSize: 13,
+    letterSpacing: 0.3,
+    color: CLOVER_BG,
   },
 });

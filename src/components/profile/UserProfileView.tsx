@@ -149,8 +149,8 @@ export default function UserProfileView({
     ));
   }, []);
 
-  // Show intent card: always if active; only for own profile if empty
-  const showIntentCard = todayIntent !== null || isOwnProfile;
+  // Show intent card on others' profiles only
+  const showIntentCard = !isOwnProfile && todayIntent !== null;
 
   return (
     <>

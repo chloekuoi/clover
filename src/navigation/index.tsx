@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { Animated, Easing, View, StyleSheet } from 'react-native';
 import AuthStack from './AuthStack';
 import MainTabs from './MainTabs';
 import { useAuth } from '../context/AuthContext';
-import { theme } from '../constants';
+import CloverMark from '../components/common/CloverMark';
+import { CLOVER_BG } from '../constants/clover';
+
+function SpinningClover() {
+  const spin = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(spin, {
+        toValue: 1,
+        duration: 3000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [spin]);
+  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  return (
+    <Animated.View style={{ transform: [{ rotate }] }}>
+      <CloverMark size={72} />
+    </Animated.View>
+  );
+}
 
 export default function RootNavigator() {
   const { user, profile, loading } = useAuth();
@@ -12,7 +33,7 @@ export default function RootNavigator() {
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color={theme.primary} />
+        <SpinningClover />
       </View>
     );
   }
@@ -36,6 +57,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.background,
+    backgroundColor: CLOVER_BG,
   },
 });

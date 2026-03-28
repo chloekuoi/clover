@@ -235,3 +235,32 @@ export async function recordSwipe(
 
   return { isMatch: true, matchId: matchId || null, matchedUser: matchedUser || null, error: null };
 }
+
+// ─── Time utilities ──────────────────────────────────────────────────────────
+
+const INTENT_TIME_START = 7 * 60;  // 07:00
+const INTENT_TIME_END   = 23 * 60; // 23:00
+const INTENT_INTERVAL   = 30;
+const INTENT_DURATION   = 120; // 2 hours default
+
+/**
+ * Returns default start/end times for a new intent.
+ * Start = current time rounded up to the next 30-min interval (clamped 07:00–23:00).
+ * End   = start + 2 hours (clamped to 23:00).
+ */
+export function getDefaultIntentTimes(): { defaultStart: string; defaultEnd: string } {
+  const now = new Date();
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+  const rounded = Math.ceil(currentMins / INTENT_INTERVAL) * INTENT_INTERVAL;
+  const startMins = Math.min(Math.max(rounded, INTENT_TIME_START), INTENT_TIME_END);
+  const endMins   = Math.min(startMins + INTENT_DURATION, INTENT_TIME_END);
+  // Guarantee end is always after start (e.g. if startMins clamps to 23:00, allow 23:30)
+  const safeEnd   = endMins > startMins ? endMins : startMins + INTENT_INTERVAL;
+  return { defaultStart: _fmtTime(startMins), defaultEnd: _fmtTime(safeEnd) };
+}
+
+function _fmtTime(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
+}

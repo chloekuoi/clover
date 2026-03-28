@@ -17,27 +17,27 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, theme, spacing, borderRadius } from '../../constants';
+import { colors, theme, spacing, borderRadius, shadows } from '../../constants';
 import { WorkStyle, LocationType } from '../../types';
-import { upsertIntent, IntentInput, getTodayIntent } from '../../services/discoveryService';
+import { upsertIntent, IntentInput, getTodayIntent, getDefaultIntentTimes } from '../../services/discoveryService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 
-const WORK_STYLES: { value: WorkStyle; emoji: string; label: string }[] = [
-  { value: 'Deep focus', emoji: '🎧', label: 'Deep focus' },
-  { value: 'Chat mode', emoji: '💬', label: 'Chat mode' },
-  { value: 'Flexible', emoji: '✌️', label: 'Flexible' },
+const WORK_STYLES: { value: WorkStyle; label: string }[] = [
+  { value: 'Deep focus', label: 'Deep focus' },
+  { value: 'Chat mode', label: 'Chat mode' },
+  { value: 'Flexible', label: 'Flexible' },
 ];
-const LOCATION_TYPES: { value: LocationType; emoji: string; label: string }[] = [
-  { value: 'Cafe', emoji: '☕️', label: 'Cafe' },
-  { value: 'Library', emoji: '📚', label: 'Library' },
-  { value: 'Anywhere', emoji: '📍', label: 'Anywhere' },
+const LOCATION_TYPES: { value: LocationType; label: string }[] = [
+  { value: 'Cafe', label: 'Cafe' },
+  { value: 'Library', label: 'Library' },
+  { value: 'Anywhere', label: 'Anywhere' },
 ];
 
-const TIME_START_MINUTES = 7 * 60; // 07:00
-const TIME_END_MINUTES = 23 * 60; // 23:00
+const TIME_START_MINUTES = 7 * 60;    // 07:00
+const TIME_MAX_START = 23 * 60;       // 23:00 — latest allowed start
+const TIME_MAX_END = 23 * 60 + 30;    // 23:30 — latest allowed end (so 23:00 start always has a valid end)
 const TIME_INTERVAL = 30;
-const DEFAULT_SESSION_MINUTES = 120;
 
 type IntentScreenProps = {
   latitude: number;
@@ -46,6 +46,7 @@ type IntentScreenProps = {
   locationLoading?: boolean;
   locationError?: string | null;
   onRequestLocation?: () => void;
+  isBottomSheet?: boolean;
 };
 
 export default function IntentScreen({
@@ -55,6 +56,7 @@ export default function IntentScreen({
   locationLoading = false,
   locationError = null,
   onRequestLocation,
+  isBottomSheet = false,
 }: IntentScreenProps) {
   const { user } = useAuth();
   const [taskDescription, setTaskDescription] = useState('');
@@ -81,8 +83,9 @@ export default function IntentScreen({
   }, [spinAnim]);
   const spin = spinAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
-  const timeOptions = getTimeOptions();
-  const endTimeOptions = timeOptions.filter(option => option.value > startTime);
+  const startTimeOptions = getTimeOptions(TIME_MAX_START);
+  const allEndOptions = getTimeOptions(TIME_MAX_END);
+  const endTimeOptions = allEndOptions.filter(option => option.value > startTime);
   const durationLabel = getDurationLabel(startTime, endTime);
 
   useEffect(() => {
@@ -120,7 +123,7 @@ export default function IntentScreen({
         setStartTime(existingIntent.available_from);
         setEndTime(existingIntent.available_until);
       } else if (isMounted) {
-        const { defaultStart, defaultEnd } = getDefaultTimes();
+        const { defaultStart, defaultEnd } = getDefaultIntentTimes();
         setStartTime(defaultStart);
         setEndTime(defaultEnd);
       }
@@ -138,11 +141,6 @@ export default function IntentScreen({
   }, [user]);
 
   const handleSubmit = async () => {
-    if (!taskDescription.trim()) {
-      Alert.alert('Missing info', 'Please describe what you\'ll be working on');
-      return;
-    }
-
     if (endTime <= startTime) {
       Alert.alert('Invalid time', 'End time must be after start time');
       return;
@@ -179,20 +177,22 @@ export default function IntentScreen({
     onIntentSet();
   };
 
+  const Wrapper = isBottomSheet ? View : SafeAreaView;
+
   if (locationLoading || initialLoading) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
-      </SafeAreaView>
+      </Wrapper>
     );
   }
 
   if (locationError) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
         <View style={styles.loadingContainer}>
           <Text style={styles.errorTitle}>Location Required</Text>
           <Text style={styles.errorText}>
@@ -204,14 +204,14 @@ export default function IntentScreen({
             style={styles.button}
           />
         </View>
-      </SafeAreaView>
+      </Wrapper>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={isBottomSheet ? 'padding' : (Platform.OS === 'ios' ? 'padding' : 'height')}
         style={styles.flex}
       >
         <ScrollView
@@ -219,7 +219,6 @@ export default function IntentScreen({
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.subtitle}>Set availability to connect</Text>
           <View style={styles.titleRow}>
             <Animated.Text style={[styles.star, { transform: [{ rotate: spin }] }]}>
               ✦
@@ -257,9 +256,6 @@ export default function IntentScreen({
                         !isLast && styles.chipSpacer,
                       ]}
                     >
-                      <Text style={[styles.chipEmoji, selected && styles.chipTextSelected]}>
-                        {style.emoji}
-                      </Text>
                       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                         {style.label}
                       </Text>
@@ -285,9 +281,6 @@ export default function IntentScreen({
                         !isLast && styles.chipSpacer,
                       ]}
                     >
-                      <Text style={[styles.chipEmoji, selected && styles.chipTextSelected]}>
-                        {type.emoji}
-                      </Text>
                       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                         {type.label}
                       </Text>
@@ -314,28 +307,23 @@ export default function IntentScreen({
           <View style={styles.section}>
             <Text style={styles.label}>Available</Text>
             <View style={styles.timeRow}>
-              <View style={styles.timeColumn}>
-                <Text style={styles.timeLabel}>Start</Text>
-                <TouchableOpacity
-                  style={styles.timePicker}
-                  onPress={() => setIsStartPickerOpen(true)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.timePickerText}>{formatDisplayTime(startTime)}</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.timeColumn}>
-                <Text style={styles.timeLabel}>End</Text>
-                <TouchableOpacity
-                  style={styles.timePicker}
-                  onPress={() => setIsEndPickerOpen(true)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.timePickerText}>
-                    {endTimeOptions.length > 0 ? formatDisplayTime(endTime) : '--'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={styles.timePicker}
+                onPress={() => setIsStartPickerOpen(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.timePickerText}>{formatDisplayTime(startTime)}</Text>
+              </TouchableOpacity>
+              <Text style={styles.timeSeparator}>→</Text>
+              <TouchableOpacity
+                style={styles.timePicker}
+                onPress={() => setIsEndPickerOpen(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.timePickerText}>
+                  {endTimeOptions.length > 0 ? formatDisplayTime(endTime) : '--'}
+                </Text>
+              </TouchableOpacity>
               {durationLabel !== '--' && (
                 <View style={styles.durationBadge}>
                   <Text style={styles.durationBadgeText}>{durationLabel}</Text>
@@ -345,7 +333,7 @@ export default function IntentScreen({
           </View>
 
           <Button
-            title="Find Co-Workers"
+            title="Save focus"
             onPress={handleSubmit}
             loading={loading}
             style={styles.button}
@@ -356,13 +344,13 @@ export default function IntentScreen({
       <TimePickerModal
         visible={isStartPickerOpen}
         title="Select start time"
-        options={timeOptions}
+        options={startTimeOptions}
         selectedValue={startTime}
         onClose={() => setIsStartPickerOpen(false)}
         onSelect={(value) => {
           setIsStartPickerOpen(false);
           setStartTime(value);
-          const nextValidEnd = getNextValidEndTime(value, endTime, timeOptions);
+          const nextValidEnd = getNextValidEndTime(value, endTime, allEndOptions);
           setEndTime(nextValidEnd);
         }}
       />
@@ -378,7 +366,7 @@ export default function IntentScreen({
           setEndTime(value);
         }}
       />
-    </SafeAreaView>
+    </Wrapper>
   );
 }
 
@@ -391,14 +379,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: spacing[5],
-    paddingBottom: spacing[10],
+    padding: spacing[4],
+    paddingBottom: spacing[2],
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: spacing[2],
+    marginBottom: spacing[3],
   },
   star: {
     fontSize: 22,
@@ -414,14 +402,8 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     letterSpacing: -0.2,
   },
-  subtitle: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 13,
-    color: theme.textMuted,
-    marginBottom: spacing[3],
-  },
   section: {
-    marginBottom: spacing[5],
+    marginBottom: spacing[4],
   },
   loadingContainer: {
     flex: 1,
@@ -457,14 +439,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   textInput: {
-    backgroundColor: colors.bgInput,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.borderDefault,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
     padding: spacing[4],
     fontSize: 16,
     color: theme.text,
     minHeight: 50,
+    ...shadows.card,
   },
   singleLineInput: {
     minHeight: 48,
@@ -472,17 +455,17 @@ const styles = StyleSheet.create({
   optionsCard: {
     backgroundColor: colors.bgCard,
     borderRadius: borderRadius.lg,
-    padding: 20,
-    marginBottom: spacing[5],
+    padding: 16,
+    marginBottom: spacing[4],
   },
   chipRow: {
     flexDirection: 'row',
-    marginTop: spacing[2],
+    marginTop: spacing[1],
   },
   chip: {
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.borderDefault,
@@ -503,18 +486,13 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
   },
-  chipEmoji: {
-    fontSize: 14,
-    marginBottom: 2,
-    textAlign: 'center',
-  },
   chipTextSelected: {
     color: colors.textInverse,
   },
   divider: {
     height: 1,
     backgroundColor: colors.divider,
-    marginVertical: spacing[4],
+    marginVertical: spacing[3],
   },
   availabilityText: {
     fontSize: 16,
@@ -527,15 +505,12 @@ const styles = StyleSheet.create({
   timeRow: {
     flexDirection: 'row',
     gap: spacing[4],
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
-  timeColumn: {
-    flex: 1,
-  },
-  timeLabel: {
+  timeSeparator: {
     fontSize: 14,
-    color: theme.textSecondary,
-    marginBottom: spacing[2],
+    color: theme.textMuted,
+    alignSelf: 'center',
   },
   timePicker: {
     backgroundColor: colors.bgCard,
@@ -550,12 +525,10 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
   durationBadge: {
-    alignSelf: 'flex-end',
     backgroundColor: colors.accentPrimaryLight,
     borderRadius: borderRadius.full,
     paddingHorizontal: 10,
     paddingVertical: 3,
-    marginTop: spacing[3],
   },
   durationBadgeText: {
     fontSize: 11,
@@ -565,7 +538,7 @@ const styles = StyleSheet.create({
     color: colors.accentPrimary,
   },
   button: {
-    marginTop: spacing[4],
+    marginTop: spacing[2],
   },
   modalOverlay: {
     flex: 1,
@@ -614,9 +587,9 @@ type TimeOption = {
   value: string; // HH:MM:SS
 };
 
-function getTimeOptions(): TimeOption[] {
+function getTimeOptions(maxMinutes: number): TimeOption[] {
   const options: TimeOption[] = [];
-  for (let minutes = TIME_START_MINUTES; minutes <= TIME_END_MINUTES; minutes += TIME_INTERVAL) {
+  for (let minutes = TIME_START_MINUTES; minutes <= maxMinutes; minutes += TIME_INTERVAL) {
     const value = formatValueTime(minutes);
     options.push({
       value,
@@ -624,22 +597,6 @@ function getTimeOptions(): TimeOption[] {
     });
   }
   return options;
-}
-
-function getDefaultTimes(): { defaultStart: string; defaultEnd: string } {
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const rounded = Math.ceil(currentMinutes / TIME_INTERVAL) * TIME_INTERVAL;
-  const clampedStart = clampMinutes(rounded, TIME_START_MINUTES, TIME_END_MINUTES);
-  const defaultStart = formatValueTime(clampedStart);
-  const defaultEndMinutes = clampMinutes(clampedStart + DEFAULT_SESSION_MINUTES, TIME_START_MINUTES, TIME_END_MINUTES);
-  const defaultEnd = formatValueTime(defaultEndMinutes);
-
-  if (defaultEnd <= defaultStart) {
-    return { defaultStart, defaultEnd: formatValueTime(TIME_END_MINUTES) };
-  }
-
-  return { defaultStart, defaultEnd };
 }
 
 function getNextValidEndTime(
@@ -653,10 +610,6 @@ function getNextValidEndTime(
   }
   const currentEndStillValid = validOptions.some(option => option.value === currentEnd);
   return currentEndStillValid ? currentEnd : validOptions[0].value;
-}
-
-function clampMinutes(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
 }
 
 function formatValueTime(totalMinutes: number): string {

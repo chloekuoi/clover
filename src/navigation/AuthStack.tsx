@@ -37,30 +37,8 @@ export default function AuthStack({ needsOnboarding }: Props) {
       ) : (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{
-              headerShown: false,
-              headerTitle: '',
-              headerBackTitle: 'Back',
-              headerTintColor: theme.accent,
-              headerShadowVisible: false,
-              headerStyle: { backgroundColor: theme.background },
-            }}
-          />
-          <Stack.Screen
-            name="Signup"
-            component={SignupScreen}
-            options={{
-              headerShown: true,
-              headerTitle: '',
-              headerBackTitle: 'Back',
-              headerTintColor: theme.accent,
-              headerShadowVisible: false,
-              headerStyle: { backgroundColor: theme.background },
-            }}
-          />
+          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />
         </>
       )}
     </Stack.Navigator>
