@@ -43,7 +43,7 @@ function ToastBanner({ visible, opacity }: ToastBannerProps) {
   if (!visible) return null;
   return (
     <Animated.View style={[styles.toastBanner, { opacity }]} pointerEvents="none">
-      <Text style={styles.toastText}>Your focus for today is set ✦</Text>
+      <Text style={styles.toastText}>Your focus for today is set 🌟</Text>
     </Animated.View>
   );
 }
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
   },
   toastBanner: {
     position: 'absolute',
-    top: 72,
+    top: 108,
     alignSelf: 'center',
     zIndex: 99,
     backgroundColor: CLOVER_FOREST,
