@@ -107,7 +107,7 @@ export default function SwipeCard({ card, translateX, isTopCard = false }: Swipe
           {profile.work_type ? (
             <Text style={styles.profession}>{profile.work_type}</Text>
           ) : null}
-          {intent.task_description ? (
+          {intent?.task_description ? (
             <>
               <View style={styles.divider} />
               <Text style={styles.intent} numberOfLines={2}>

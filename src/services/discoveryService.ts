@@ -64,100 +64,72 @@ export async function upsertIntent(
   return { data, error: null };
 }
 
-// Fetch discovery cards (nearby users with intents for today)
+// Fetch discovery cards — all users regardless of intent, sorted by distance
 export async function fetchDiscoveryCards(
   userId: string,
   latitude: number,
   longitude: number,
   maxDistanceKm: number = 50
 ): Promise<DiscoveryCard[]> {
-  // Fetch all intents for today, excluding the current user
-  const { data: intents, error } = await supabase
-    .from('work_intents')
-    .select(`
-      *,
-      profiles:user_id (*)
-    `)
-    .eq('intent_date', getTodayDate())
-    .neq('user_id', userId);
+  // Fetch all profiles and today's intents in parallel
+  const [
+    { data: profiles, error: profileError },
+    { data: intents },
+    { data: swipes },
+    { data: activeMatchesAsUser1 },
+    { data: activeMatchesAsUser2 },
+  ] = await Promise.all([
+    supabase.from('profiles').select('*').neq('id', userId),
+    supabase.from('work_intents').select('*').eq('intent_date', getTodayDate()).neq('user_id', userId),
+    supabase.from('swipes').select('swiped_id').eq('swiper_id', userId).eq('swipe_date', getTodayDate()),
+    supabase.from('matches').select('user2_id').eq('user1_id', userId).eq('status', 'active'),
+    supabase.from('matches').select('user1_id').eq('user2_id', userId).eq('status', 'active'),
+  ]);
 
-  if (error) {
-    console.error('Error fetching discovery cards:', error);
+  if (profileError || !profiles) {
+    console.error('Error fetching profiles:', profileError);
     return [];
   }
 
-  if (!intents) return [];
-
-  // Get users already swiped today
-  const [{ data: swipes }, { data: activeMatchesAsUser1 }, { data: activeMatchesAsUser2 }] = await Promise.all([
-    supabase
-      .from('swipes')
-      .select('swiped_id')
-      .eq('swiper_id', userId)
-      .eq('swipe_date', getTodayDate()),
-    supabase
-      .from('matches')
-      .select('user2_id')
-      .eq('user1_id', userId)
-      .eq('status', 'active'),
-    supabase
-      .from('matches')
-      .select('user1_id')
-      .eq('user2_id', userId)
-      .eq('status', 'active'),
-  ]);
-
+  // Build lookup sets
   const swipedIds = new Set((swipes || []).map((s) => s.swiped_id));
   const activeMatchIds = new Set([
-    ...((activeMatchesAsUser1 || []) as Array<{ user2_id: string }>).map((match) => match.user2_id),
-    ...((activeMatchesAsUser2 || []) as Array<{ user1_id: string }>).map((match) => match.user1_id),
+    ...((activeMatchesAsUser1 || []) as Array<{ user2_id: string }>).map((m) => m.user2_id),
+    ...((activeMatchesAsUser2 || []) as Array<{ user1_id: string }>).map((m) => m.user1_id),
   ]);
 
-  // Filter by distance and exclude already swiped users
-  const cards: DiscoveryCard[] = [];
-
-  for (const intent of intents) {
-    // Skip if already swiped
-    if (swipedIds.has(intent.user_id)) continue;
-    if (activeMatchIds.has(intent.user_id)) continue;
-
-    // Calculate distance
-    const distance = calculateDistance(
-      latitude,
-      longitude,
-      intent.latitude,
-      intent.longitude
-    );
-
-    // Skip if too far
-    if (distance > maxDistanceKm) continue;
-
-    // Skip if no profile
-    if (!intent.profiles) continue;
-
-    cards.push({
-      profile: intent.profiles,
-      intent: {
-        id: intent.id,
-        user_id: intent.user_id,
-        task_description: intent.task_description,
-        available_from: intent.available_from,
-        available_until: intent.available_until,
-        work_style: intent.work_style,
-        location_type: intent.location_type,
-        location_name: intent.location_name,
-        latitude: intent.latitude,
-        longitude: intent.longitude,
-        intent_date: intent.intent_date,
-        created_at: intent.created_at,
-        updated_at: intent.updated_at,
-      },
-      distance,
-    });
+  // Build intent map keyed by user_id
+  const intentMap = new Map<string, WorkIntent>();
+  for (const intent of intents || []) {
+    intentMap.set(intent.user_id, intent as WorkIntent);
   }
 
-  // Sort by distance
-  cards.sort((a, b) => a.distance - b.distance);
+  const cards: DiscoveryCard[] = [];
+
+  for (const profile of profiles) {
+    if (swipedIds.has(profile.id)) continue;
+    if (activeMatchIds.has(profile.id)) continue;
+
+    const intent = intentMap.get(profile.id) ?? null;
+
+    // Distance filtering: only apply when the user has a located intent
+    let distance = 0;
+    if (intent?.latitude != null && intent?.longitude != null) {
+      distance = calculateDistance(latitude, longitude, intent.latitude, intent.longitude);
+      if (distance > maxDistanceKm) continue;
+    }
+
+    cards.push({ profile, intent, distance });
+  }
+
+  // Sort: users with a located intent first (by distance), then the rest
+  cards.sort((a, b) => {
+    const aHasLocation = a.intent?.latitude != null;
+    const bHasLocation = b.intent?.latitude != null;
+    if (aHasLocation && !bHasLocation) return -1;
+    if (!aHasLocation && bHasLocation) return 1;
+    return a.distance - b.distance;
+  });
 
   return cards;
 }

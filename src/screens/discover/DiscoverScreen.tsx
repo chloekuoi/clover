@@ -17,11 +17,8 @@ import { CLOVER_FOREST, CLOVER_BG, FONT_DM_SANS_MEDIUM } from '../../constants/c
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../hooks/useLocation';
 import {
-  getTodayIntent,
   fetchDiscoveryCards,
   recordSwipe,
-  upsertIntent,
-  getDefaultIntentTimes,
 } from '../../services/discoveryService';
 import { DiscoveryCard, Profile } from '../../types';
 import IntentScreen from './IntentScreen';
@@ -132,25 +129,10 @@ export default function DiscoverScreen() {
     });
   };
 
-  // Check intent and load cards
+  // Load discovery cards
   const loadDiscoveryData = useCallback(async () => {
     if (!user || latitude === null || longitude === null) return;
     setState('loading');
-
-    const todayIntent = await getTodayIntent(user.id);
-    if (!todayIntent) {
-      const { defaultStart, defaultEnd } = getDefaultIntentTimes();
-      await upsertIntent(user.id, {
-        task_description: '',
-        work_style: 'Flexible',
-        location_type: 'Anywhere',
-        location_name: null,
-        available_from: defaultStart,
-        available_until: defaultEnd,
-        latitude: latitude,
-        longitude: longitude,
-      });
-    }
 
     const discoveryCards = await fetchDiscoveryCards(user.id, latitude, longitude);
     setState(discoveryCards.length > 0 ? 'discovering' : 'empty');
