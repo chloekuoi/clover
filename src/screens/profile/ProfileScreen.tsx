@@ -13,7 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { colors, theme, spacing, borderRadius } from '../../constants';
-import { CLOVER_FOREST, CLOVER_BG, FONT_DM_SANS_MEDIUM } from '../../constants/clover';
+import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { getFullProfile } from '../../services/profileService';
 import { getTodayIntent } from '../../services/discoveryService';
@@ -199,7 +199,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   editPillText: {
-    fontFamily: FONT_DM_SANS_MEDIUM,
     fontSize: 13,
     fontWeight: '600',
     color: CLOVER_BG,
