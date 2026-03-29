@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { theme, spacing } from '../../constants';
+import { CLOVER_FOREST } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { fetchMatches, unmatchMatch } from '../../services/messagingService';
 import { fetchGroupChats } from '../../services/groupChatsService';
@@ -191,7 +193,10 @@ export default function MatchesListScreen({ navigation }: Props) {
           onPress={() => navigation.navigate('CreateGroup')}
           activeOpacity={0.8}
         >
-          <Text style={styles.addButtonText}>+</Text>
+          <Svg width={14} height={14} viewBox="0 0 14 14">
+              <Rect x={6} y={1} width={2} height={12} rx={1} fill="rgba(255,255,255,0.92)" />
+              <Rect x={1} y={6} width={12} height={2} rx={1} fill="rgba(255,255,255,0.92)" />
+            </Svg>
         </TouchableOpacity>
       </View>
 
@@ -263,7 +268,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: theme.primary,
+    backgroundColor: CLOVER_FOREST,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -272,12 +277,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing[6],
-  },
-  addButtonText: {
-    color: theme.surface,
-    fontSize: 22,
-    lineHeight: 22,
-    marginTop: -1,
   },
   emptyTitle: {
     fontSize: 24,
