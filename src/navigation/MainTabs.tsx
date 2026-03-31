@@ -5,6 +5,7 @@ import { NavigatorScreenParams, useFocusEffect } from '@react-navigation/native'
 import Svg, { Path, Polygon } from 'react-native-svg';
 import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import { theme, spacing } from '../constants';
+import { CLOVER_BG, CLOVER_FOREST } from '../constants/clover';
 import MatchesStack, { MatchesStackParamList } from './MatchesStack';
 import FriendsStack, { FriendsStackParamList } from './FriendsStack';
 import ProfileStack, { ProfileStackParamList } from './ProfileStack';
@@ -20,7 +21,7 @@ export type MainTabsParamList = {
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
-const ACTIVE_COLOR = '#d0c8f0';
+const ACTIVE_COLOR = CLOVER_FOREST;
 const INACTIVE_COLOR = '#999999';
 const ICON_STROKE_WIDTH = 1.8;
 
@@ -175,8 +176,8 @@ export default function MainTabs() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: theme.surface,
-    borderTopColor: '#E2DDD6',
+    backgroundColor: CLOVER_BG,
+    borderTopColor: '#d0c8f0',
     borderTopWidth: 1,
     paddingTop: spacing[1],
     paddingBottom: spacing[6],

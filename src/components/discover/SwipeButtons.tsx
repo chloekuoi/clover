@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { theme, spacing, colors } from '../../constants';
-import { CLOVER_LAVENDER } from '../../constants/clover';
+import { CLOVER_FOREST } from '../../constants/clover';
 import PressableScale from '../common/PressableScale';
 
 type SwipeButtonsProps = {
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(184,92,77,0.4)',
   },
   likeButton: {
-    backgroundColor: CLOVER_LAVENDER,
-    shadowColor: CLOVER_LAVENDER,
+    backgroundColor: CLOVER_FOREST,
+    shadowColor: CLOVER_FOREST,
     shadowOpacity: 0.5,
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 4 },
