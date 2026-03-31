@@ -1,14 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import { theme, spacing, colors } from '../../constants';
-import { CLOVER_FOREST } from '../../constants/clover';
+import { View, StyleSheet } from 'react-native';
+import Svg, { Path, Line } from 'react-native-svg';
+import { theme, spacing } from '../../constants';
+import { CLOVER_FOREST, CLOVER_BG, CLOVER_VIOLET, CLOVER_LAVENDER } from '../../constants/clover';
 import PressableScale from '../common/PressableScale';
 
 type SwipeButtonsProps = {
   onSwipeLeft: () => void;
   onSwipeRight: () => void;
 };
+
+function XIcon({ size = 19 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 17 17" fill="none">
+      <Line x1="3" y1="3" x2="14" y2="14" stroke={CLOVER_VIOLET} strokeWidth={2.2} strokeLinecap="round" />
+      <Line x1="14" y1="3" x2="3" y2="14" stroke={CLOVER_VIOLET} strokeWidth={2.2} strokeLinecap="round" />
+    </Svg>
+  );
+}
 
 function HeartIcon({ size = 24 }: { size?: number }) {
   return (
@@ -20,7 +29,7 @@ function HeartIcon({ size = 24 }: { size?: number }) {
            1.59-3.968 4.464-4.447 5.726-4.447
            2.54 0 5.274 1.621 5.274 5.181
            0 4.069-5.136 8.625-11 14.402z"
-        fill="rgba(255,255,255,0.92)"
+        fill={CLOVER_BG}
       />
     </Svg>
   );
@@ -33,7 +42,7 @@ export default function SwipeButtons({ onSwipeLeft, onSwipeRight }: SwipeButtons
         style={[styles.button, styles.nopeButton]}
         onPress={onSwipeLeft}
       >
-        <Text style={styles.nopeIcon}>✕</Text>
+        <XIcon size={19} />
       </PressableScale>
 
       <PressableScale
@@ -69,7 +78,7 @@ const styles = StyleSheet.create({
   nopeButton: {
     backgroundColor: theme.surface,
     borderWidth: 1.5,
-    borderColor: 'rgba(184,92,77,0.4)',
+    borderColor: CLOVER_LAVENDER,
   },
   likeButton: {
     backgroundColor: CLOVER_FOREST,
@@ -78,10 +87,5 @@ const styles = StyleSheet.create({
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 4 },
     elevation: 5,
-  },
-  nopeIcon: {
-    fontSize: 19,
-    fontWeight: '600',
-    color: colors.accentDanger,
   },
 });
