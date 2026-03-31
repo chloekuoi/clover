@@ -13,7 +13,7 @@ import Svg, { Path } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { theme, spacing, colors } from '../../constants';
-import { CLOVER_FOREST, CLOVER_BG, FONT_DM_SANS_MEDIUM } from '../../constants/clover';
+import { CLOVER_VIOLET, CLOVER_BG, FONT_DM_SANS_MEDIUM } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../hooks/useLocation';
 import {
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   focusPill: {
-    backgroundColor: CLOVER_FOREST,
+    backgroundColor: CLOVER_VIOLET,
     borderRadius: 100,
     paddingHorizontal: spacing[3],
     paddingVertical: 6,
@@ -437,11 +437,11 @@ const styles = StyleSheet.create({
     top: 108,
     alignSelf: 'center',
     zIndex: 99,
-    backgroundColor: CLOVER_FOREST,
+    backgroundColor: CLOVER_VIOLET,
     borderRadius: 9999,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    shadowColor: CLOVER_FOREST,
+    shadowColor: CLOVER_VIOLET,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
