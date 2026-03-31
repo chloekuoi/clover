@@ -5,7 +5,7 @@ import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 type CloverMarkProps = {
   /** Rendered width and height in points */
   size: number;
-  /** Petal fill colour. Defaults to Forest #0c1f0e */
+  /** Petal fill colour. Defaults to Forest #1e3d28 */
   color?: string;
   /** Centre cutout fill colour. Defaults to Soft Lavender #ede8ff */
   bg?: string;

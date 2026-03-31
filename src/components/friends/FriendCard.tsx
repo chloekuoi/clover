@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, spacing, theme } from '../../constants';
 import { FriendListItem } from '../../types';
+import CloverMark from '../common/CloverMark';
 
 type FriendCardProps = {
   friend: FriendListItem;
@@ -64,7 +65,7 @@ export default function FriendCard({ friend, variant, onPress, onProfilePress }:
         </View>
       </View>
 
-      {variant === 'available' ? <View style={styles.availableDot} /> : null}
+      {variant === 'available' ? <CloverMark size={10} /> : null}
     </TouchableOpacity>
   );
 }
@@ -123,12 +124,5 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontSize: 12,
     color: theme.textSecondary,
-  },
-  availableDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: theme.success,
-    marginLeft: spacing[2],
   },
 });

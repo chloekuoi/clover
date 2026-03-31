@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { borderRadius, colors, spacing, theme } from '../../constants';
 import { MatchPreview } from '../../types';
+import CloverMark from '../common/CloverMark';
 
 type MatchCardProps = {
   matchPreview: MatchPreview;
@@ -94,7 +95,7 @@ export default function MatchCard({ matchPreview, onPress, onAvatarPress }: Matc
       </View>
 
       <View style={styles.rightStatus}>
-        {isUnread ? <View style={styles.unreadDot} /> : null}
+        {isUnread ? <CloverMark size={10} /> : null}
       </View>
     </TouchableOpacity>
   );
@@ -171,12 +172,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'flex-start',
     minWidth: 12,
-  },
-  unreadDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: theme.success,
   },
   invitePillInline: {
     marginLeft: spacing[2],

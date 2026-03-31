@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: {
-    backgroundColor: '#0c1f0e',  // CLOVER_FOREST — inlined to avoid circular dep with clover.ts
+    backgroundColor: '#1e3d28',  // CLOVER_FOREST — inlined to avoid circular dep with clover.ts
     ...shadows.button,
   },
   secondary: {
@@ -86,10 +86,10 @@ const styles = StyleSheet.create({
   pill: {
     height: 58,
     borderRadius: 9999,
-    backgroundColor: '#0c1f0e',  // CLOVER_FOREST — inlined to avoid circular dep with clover.ts
+    backgroundColor: '#1e3d28',  // CLOVER_FOREST — inlined to avoid circular dep with clover.ts
     paddingVertical: 0,           // reset base's paddingVertical: 15 so height is respected
     paddingHorizontal: 0,         // full-width; caller controls width via style prop
-    shadowColor: '#0c1f0e',       // CLOVER_FOREST — inlined for same reason
+    shadowColor: '#1e3d28',       // CLOVER_FOREST — inlined for same reason
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.30,
     shadowRadius: 24,

@@ -10,14 +10,14 @@ export const onboardingTheme = {
   surface: '#e4ddf7',     // slightly deeper lavender
 
   // Text
-  text: '#0c1f0e',        // forest — readable on lavender
+  text: '#1e3d28',        // forest — readable on lavender
   textSec: '#2c1f42',     // dark purple-brown
   muted: '#7c5cbf',       // violet
 
   // Interactive
   placeholder: '#9b8ab5', // muted violet
-  accent: '#0c1f0e',      // forest green — progress fill + forward button
-  accentDark: '#0c1f0e',  // forest green
+  accent: '#1e3d28',      // forest green — progress fill + forward button
+  accentDark: '#1e3d28',  // forest green
 
   // Structure
   divider: '#d0c8f0',     // soft lavender divider
