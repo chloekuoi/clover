@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { theme, spacing } from '../../constants';
+import { CLOVER_FOREST, CLOVER_BG, FONT_DM_SANS_MEDIUM } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { fetchMatches, unmatchMatch } from '../../services/messagingService';
 import { fetchGroupChats } from '../../services/groupChatsService';
@@ -191,7 +193,11 @@ export default function MatchesListScreen({ navigation }: Props) {
           onPress={() => navigation.navigate('CreateGroup')}
           activeOpacity={0.8}
         >
-          <Text style={styles.addButtonText}>+</Text>
+          <Svg width={12} height={12} viewBox="0 0 14 14">
+              <Rect x={6} y={1} width={2} height={12} rx={1} fill={CLOVER_BG} />
+              <Rect x={1} y={6} width={12} height={2} rx={1} fill={CLOVER_BG} />
+            </Svg>
+            <Text style={styles.addButtonText}> Group</Text>
         </TouchableOpacity>
       </View>
 
@@ -260,24 +266,24 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
   addButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: theme.primary,
+    backgroundColor: CLOVER_FOREST,
+    borderRadius: 100,
+    paddingHorizontal: spacing[3],
+    paddingVertical: 6,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  addButtonText: {
+    fontFamily: FONT_DM_SANS_MEDIUM,
+    fontSize: 13,
+    fontWeight: '600',
+    color: CLOVER_BG,
   },
   centerContent: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing[6],
-  },
-  addButtonText: {
-    color: theme.surface,
-    fontSize: 22,
-    lineHeight: 22,
-    marginTop: -1,
   },
   emptyTitle: {
     fontSize: 24,

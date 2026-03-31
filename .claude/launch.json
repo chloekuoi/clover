@@ -3,9 +3,21 @@
   "configurations": [
     {
       "name": "cowork-connect",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
+      "runtimeExecutable": "/usr/local/bin/node",
+      "runtimeArgs": ["node_modules/.bin/expo", "start"],
       "port": 8081
+    },
+    {
+      "name": "brainstorm",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "64430", ".superpowers/brainstorm/9645-1773587173"],
+      "port": 64430
+    },
+    {
+      "name": "mockup",
+      "runtimeExecutable": "/usr/local/bin/node",
+      "runtimeArgs": [".superpowers/brainstorm/server.js"],
+      "port": 3457
     }
   ]
 }

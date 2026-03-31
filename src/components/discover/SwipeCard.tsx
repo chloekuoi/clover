@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
 import { theme, spacing, borderRadius, colors } from '../../constants';
+import { CLOVER_BG, CLOVER_FOREST } from '../../constants/clover';
 import { DiscoveryCard } from '../../types';
 import { formatDistance } from '../../hooks/useLocation';
 import Animated, {
@@ -14,7 +15,7 @@ import Animated, {
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export const CARD_WIDTH = SCREEN_WIDTH - spacing[8];
-export const CARD_HEIGHT = CARD_WIDTH * 1.35;
+export const CARD_HEIGHT = CARD_WIDTH * 1.52;
 
 type SwipeCardProps = {
   card: DiscoveryCard;
@@ -107,7 +108,7 @@ export default function SwipeCard({ card, translateX, isTopCard = false }: Swipe
           {profile.work_type ? (
             <Text style={styles.profession}>{profile.work_type}</Text>
           ) : null}
-          {intent.task_description ? (
+          {intent?.task_description ? (
             <>
               <View style={styles.divider} />
               <Text style={styles.intent} numberOfLines={2}>
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    borderRadius: borderRadius.lg,
+    borderRadius: 22,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -146,14 +147,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#8fa893',
+    backgroundColor: CLOVER_BG,
     alignItems: 'center',
     justifyContent: 'center',
   },
   placeholderInitial: {
     fontSize: CARD_WIDTH * 0.22,
     fontWeight: '700',
-    color: 'rgba(255,255,255,0.25)',
+    color: CLOVER_FOREST,
   },
   glassOverlay: {
     position: 'absolute',

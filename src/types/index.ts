@@ -68,7 +68,7 @@ export type Swipe = {
 
 export type DiscoveryCard = {
   profile: Profile;
-  intent: WorkIntent;
+  intent: WorkIntent | null;
   distance: number; // in kilometers
 };
 

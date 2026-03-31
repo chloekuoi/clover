@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: {
-    backgroundColor: theme.primary,
+    backgroundColor: '#0c1f0e',  // CLOVER_FOREST — inlined to avoid circular dep with clover.ts
     ...shadows.button,
   },
   secondary: {

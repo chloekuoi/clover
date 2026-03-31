@@ -18,10 +18,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, theme, spacing, borderRadius, shadows } from '../../constants';
+import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 import { WorkStyle, LocationType } from '../../types';
 import { upsertIntent, IntentInput, getTodayIntent, getDefaultIntentTimes } from '../../services/discoveryService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
+import CloverMark from '../../components/common/CloverMark';
 
 const WORK_STYLES: { value: WorkStyle; label: string }[] = [
   { value: 'Deep focus', label: 'Deep focus' },
@@ -220,9 +222,9 @@ export default function IntentScreen({
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.titleRow}>
-            <Animated.Text style={[styles.star, { transform: [{ rotate: spin }] }]}>
-              ✦
-            </Animated.Text>
+            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+              <CloverMark size={22} />
+            </Animated.View>
             <Text style={styles.title}>what are we cooking today?</Text>
           </View>
 
@@ -477,8 +479,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   chipSelected: {
-    backgroundColor: colors.accentPrimary,
-    borderColor: colors.accentPrimary,
+    backgroundColor: CLOVER_FOREST,
+    borderColor: CLOVER_FOREST,
   },
   chipText: {
     fontSize: 12.5,
@@ -525,7 +527,7 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
   durationBadge: {
-    backgroundColor: colors.accentPrimaryLight,
+    backgroundColor: CLOVER_BG,
     borderRadius: borderRadius.full,
     paddingHorizontal: 10,
     paddingVertical: 3,
@@ -535,7 +537,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
-    color: colors.accentPrimary,
+    color: CLOVER_FOREST,
   },
   button: {
     marginTop: spacing[2],

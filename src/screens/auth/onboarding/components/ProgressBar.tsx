@@ -47,7 +47,7 @@ export function ProgressBar({
       <TouchableOpacity
         onPress={onNext}
         disabled={!onNext}
-        style={[styles.arrow, !onNext && styles.arrowHidden]}
+        style={[styles.arrow, onNext && styles.arrowActiveView, !onNext && styles.arrowHidden]}
         hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       >
         <Text style={[styles.arrowText, onNext && styles.arrowActive]}>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   track: {
     flex: 1,
     height: 1.5,
-    backgroundColor: t.divider,
+    backgroundColor: 'rgba(12,31,14,0.12)',
     borderRadius: 1,
     overflow: 'hidden',
   },
@@ -87,6 +87,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 8,
   },
+  arrowActiveView: {
+    borderColor: t.accentDark,
+  },
   arrowHidden: {
     opacity: 0,
   },
@@ -98,6 +101,5 @@ const styles = StyleSheet.create({
   },
   arrowActive: {
     color: t.accent,
-    borderColor: t.accentDark,
   },
 });

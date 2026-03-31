@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -32,6 +32,7 @@ export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const cardOpacity = useSharedValue(1);
 
   const currentCard = cards[currentIndex];
   const nextCard = cards[currentIndex + 1];
@@ -42,19 +43,21 @@ export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
       if (currentCard) {
         onSwipe(currentCard, direction);
       }
-
       const nextIndex = currentIndex + 1;
       if (nextIndex >= cards.length) {
         onEmpty();
       }
       setCurrentIndex(nextIndex);
-
-      // Reset position for next card
-      translateX.value = 0;
-      translateY.value = 0;
     },
-    [currentCard, currentIndex, cards.length, onSwipe, onEmpty, translateX, translateY]
+    [currentCard, currentIndex, cards.length, onSwipe, onEmpty]
   );
+
+  // Reset position + reveal new card AFTER index change, before native paint
+  useLayoutEffect(() => {
+    translateX.value = 0;
+    translateY.value = 0;
+    cardOpacity.value = 1;
+  }, [currentIndex]);
 
   useEffect(() => {
     if (currentIndex >= cards.length) {
@@ -78,12 +81,22 @@ export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
         event.velocityX < -SWIPE_VELOCITY_THRESHOLD;
 
       if (shouldSwipeRight) {
-        translateX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
-          runOnJS(handleSwipeComplete)('right');
+        translateX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 300 }, (finished) => {
+          if (finished) {
+            cardOpacity.value = 0;
+            translateX.value = 0;
+            translateY.value = 0;
+            runOnJS(handleSwipeComplete)('right');
+          }
         });
       } else if (shouldSwipeLeft) {
-        translateX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
-          runOnJS(handleSwipeComplete)('left');
+        translateX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 300 }, (finished) => {
+          if (finished) {
+            cardOpacity.value = 0;
+            translateX.value = 0;
+            translateY.value = 0;
+            runOnJS(handleSwipeComplete)('left');
+          }
         });
       } else {
         // Snap back
@@ -112,6 +125,7 @@ export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
     );
 
     return {
+      opacity: cardOpacity.value,
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
@@ -160,8 +174,13 @@ export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
 
   const handleButtonSwipe = (direction: 'left' | 'right') => {
     const targetX = direction === 'right' ? SCREEN_WIDTH * 1.5 : -SCREEN_WIDTH * 1.5;
-    translateX.value = withTiming(targetX, { duration: 300 }, () => {
-      runOnJS(handleSwipeComplete)(direction);
+    translateX.value = withTiming(targetX, { duration: 300 }, (finished) => {
+      if (finished) {
+        cardOpacity.value = 0;
+        translateX.value = 0;
+        translateY.value = 0;
+        runOnJS(handleSwipeComplete)(direction);
+      }
     });
   };
 

@@ -82,7 +82,7 @@ export function BirthdayScreen({ state, setState, onNext, onBack, currentStep, t
       <View style={styles.spacer} />
 
       <TypewriterText
-        text="when's your solar return?"
+        text="when's your birthday?"
         style={styles.question}
         startDelay={300}
       />

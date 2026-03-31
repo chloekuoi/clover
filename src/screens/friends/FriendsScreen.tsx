@@ -13,6 +13,8 @@ import { useFocusEffect, NavigationProp } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, theme } from '../../constants';
+import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
+import Svg, { Rect } from 'react-native-svg';
 import { FriendsStackParamList } from '../../navigation/FriendsStack';
 import { MainTabsParamList } from '../../navigation/MainTabs';
 import FriendRequestCard from '../../components/friends/FriendRequestCard';
@@ -223,7 +225,11 @@ export default function FriendsScreen({ navigation }: Props) {
           onPress={() => navigation.navigate('AddFriend')}
           activeOpacity={0.8}
         >
-          <Text style={styles.addButtonText}>+</Text>
+          <Svg width={12} height={12} viewBox="0 0 14 14">
+              <Rect x={6} y={1} width={2} height={12} rx={1} fill={CLOVER_BG} />
+              <Rect x={1} y={6} width={12} height={2} rx={1} fill={CLOVER_BG} />
+            </Svg>
+            <Text style={styles.addButtonText}> Add</Text>
         </TouchableOpacity>
       </View>
 
@@ -360,18 +366,17 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
   addButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: theme.primary,
+    backgroundColor: CLOVER_FOREST,
+    borderRadius: 100,
+    paddingHorizontal: spacing[3],
+    paddingVertical: 6,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   addButtonText: {
-    color: theme.surface,
-    fontSize: 22,
-    lineHeight: 22,
-    marginTop: -1,
+    fontSize: 13,
+    fontWeight: '600',
+    color: CLOVER_BG,
   },
   content: {
     paddingHorizontal: spacing[4],
@@ -399,7 +404,7 @@ const styles = StyleSheet.create({
   },
   emptyCta: {
     marginTop: spacing[4],
-    backgroundColor: theme.primary,
+    backgroundColor: CLOVER_FOREST,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[2],
     borderRadius: 999,

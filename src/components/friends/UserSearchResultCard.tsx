@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, spacing, theme, borderRadius } from '../../constants';
+import { CLOVER_FOREST } from '../../constants/clover';
 import { UserSearchResult } from '../../types';
 
 type UserSearchResultCardProps = {
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionPrimary: {
-    backgroundColor: theme.primary,
+    backgroundColor: CLOVER_FOREST,
   },
   actionMuted: {
     backgroundColor: colors.bgSecondary,

@@ -9,6 +9,7 @@ import {
   Easing,
   Dimensions,
 } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { theme, spacing, colors } from '../../constants';
@@ -16,11 +17,8 @@ import { CLOVER_FOREST, CLOVER_BG, FONT_DM_SANS_MEDIUM } from '../../constants/c
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../hooks/useLocation';
 import {
-  getTodayIntent,
   fetchDiscoveryCards,
   recordSwipe,
-  upsertIntent,
-  getDefaultIntentTimes,
 } from '../../services/discoveryService';
 import { DiscoveryCard, Profile } from '../../types';
 import IntentScreen from './IntentScreen';
@@ -45,6 +43,17 @@ function ToastBanner({ visible, opacity }: ToastBannerProps) {
     <Animated.View style={[styles.toastBanner, { opacity }]} pointerEvents="none">
       <Text style={styles.toastText}>Your focus for today is set 🌟</Text>
     </Animated.View>
+  );
+}
+
+function PencilIcon() {
+  return (
+    <Svg width={12} height={12} viewBox="0 0 24 24">
+      <Path
+        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+        fill={CLOVER_BG}
+      />
+    </Svg>
   );
 }
 
@@ -120,25 +129,10 @@ export default function DiscoverScreen() {
     });
   };
 
-  // Check intent and load cards
+  // Load discovery cards
   const loadDiscoveryData = useCallback(async () => {
     if (!user || latitude === null || longitude === null) return;
     setState('loading');
-
-    const todayIntent = await getTodayIntent(user.id);
-    if (!todayIntent) {
-      const { defaultStart, defaultEnd } = getDefaultIntentTimes();
-      await upsertIntent(user.id, {
-        task_description: '',
-        work_style: 'Flexible',
-        location_type: 'Anywhere',
-        location_name: null,
-        available_from: defaultStart,
-        available_until: defaultEnd,
-        latitude: latitude,
-        longitude: longitude,
-      });
-    }
 
     const discoveryCards = await fetchDiscoveryCards(user.id, latitude, longitude);
     setState(discoveryCards.length > 0 ? 'discovering' : 'empty');
@@ -220,7 +214,8 @@ export default function DiscoverScreen() {
         onPress={openSheet}
         activeOpacity={0.8}
       >
-        <Text style={styles.focusPillText}>✎ Focus</Text>
+        <PencilIcon />
+          <Text style={styles.focusPillText}> Focus</Text>
       </TouchableOpacity>
     </View>
   );
@@ -398,6 +393,8 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     paddingHorizontal: spacing[3],
     paddingVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   focusPillText: {
     color: CLOVER_BG,

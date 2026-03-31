@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Circle, Rect } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import { theme, spacing, colors } from '../../constants';
 import { CLOVER_FOREST } from '../../constants/clover';
 import PressableScale from '../common/PressableScale';
@@ -10,25 +10,17 @@ type SwipeButtonsProps = {
   onSwipeRight: () => void;
 };
 
-function CloverIcon({ size = 26 }: { size?: number }) {
-  const c = size / 2;
-  const r = size * 0.21;
-  const offset = size * 0.19;
+function HeartIcon({ size = 24 }: { size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      {/* 4 petals */}
-      <Circle cx={c}          cy={c - offset} r={r} fill="rgba(255,255,255,0.92)" />
-      <Circle cx={c + offset} cy={c}          r={r} fill="rgba(255,255,255,0.92)" />
-      <Circle cx={c}          cy={c + offset} r={r} fill="rgba(255,255,255,0.92)" />
-      <Circle cx={c - offset} cy={c}          r={r} fill="rgba(255,255,255,0.92)" />
-      {/* stem */}
-      <Rect
-        x={c - 2}
-        y={c + offset + r - 3}
-        width={4}
-        height={size * 0.18}
-        rx={2}
-        fill="rgba(255,255,255,0.7)"
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M12 21.593c-5.63-5.539-11-10.297-11-14.402
+           0-3.791 3.068-5.191 5.281-5.191
+           1.312 0 4.151.501 5.719 4.457
+           1.59-3.968 4.464-4.447 5.726-4.447
+           2.54 0 5.274 1.621 5.274 5.181
+           0 4.069-5.136 8.625-11 14.402z"
+        fill="rgba(255,255,255,0.92)"
       />
     </Svg>
   );
@@ -48,7 +40,7 @@ export default function SwipeButtons({ onSwipeLeft, onSwipeRight }: SwipeButtons
         style={[styles.button, styles.likeButton]}
         onPress={onSwipeRight}
       >
-        <CloverIcon size={26} />
+        <HeartIcon size={27} />
       </PressableScale>
     </View>
   );
@@ -59,13 +51,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: spacing[6],
-    gap: spacing[8],
+    marginTop: spacing[5],
+    gap: 36,
   },
   button: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -88,7 +80,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   nopeIcon: {
-    fontSize: 17,
+    fontSize: 19,
     fontWeight: '600',
     color: colors.accentDanger,
   },

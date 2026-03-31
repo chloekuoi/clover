@@ -6,21 +6,21 @@
 
 export const onboardingTheme = {
   // Backgrounds
-  bg: '#2D3A2D',         // sage-950
-  surface: '#3B4638',    // sage-900
+  bg: '#ede8ff',          // lavender — matches auth screens
+  surface: '#e4ddf7',     // slightly deeper lavender
 
   // Text
-  text: '#F7F5F2',       // neutral-50
-  textSec: '#E8DCD0',    // sand-100
-  muted: '#B8C7B3',      // sage-300
+  text: '#0c1f0e',        // forest — readable on lavender
+  textSec: '#2c1f42',     // dark purple-brown
+  muted: '#7c5cbf',       // violet
 
   // Interactive
-  placeholder: '#6F8268', // sage-600
-  accent: '#A8B5A2',      // sage-400
-  accentDark: '#5C6B57',  // sage-700
+  placeholder: '#9b8ab5', // muted violet
+  accent: '#0c1f0e',      // forest green — progress fill + forward button
+  accentDark: '#0c1f0e',  // forest green
 
   // Structure
-  divider: '#4A5745',     // sage-800
+  divider: '#d0c8f0',     // soft lavender divider
 
   // Typography
   fontSerif: {

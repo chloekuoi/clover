@@ -53,7 +53,7 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
         />
 
         {/* School field */}
-        <Text style={styles.fieldLabel}>where are/did you study?</Text>
+        <Text style={styles.fieldLabel}>where'd you go to school?</Text>
         <TextInput
           style={styles.input}
           value={state.school}

@@ -8,11 +8,41 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, theme, spacing, borderRadius } from '../../constants';
+import Svg, { Path, Rect, Circle } from 'react-native-svg';
 import { Profile, ProfilePhoto, WorkIntent, WorkStyle, LocationType } from '../../types';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const INTENT_CARD_BORDER = '#D4E4D8';
+
+const PILL_ICON_COLOR = '#6B6B6B';
+const PILL_ICON_SIZE = 13;
+
+function BriefcaseIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Rect x={2} y={7} width={20} height={14} rx={2} />
+      <Path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+    </Svg>
+  );
+}
+
+function PinIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 21C12 21 5 13.5 5 8.5a7 7 0 1 1 14 0c0 5-7 12.5-7 12.5z" />
+      <Circle cx={12} cy={8.5} r={2.5} fill={PILL_ICON_COLOR} stroke="none" />
+    </Svg>
+  );
+}
+
+function BuildingIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M3 21h18M6 21V6l6-3 6 3v15M9 10h1m4 0h1M9 14h1m4 0h1M9 18h1m4 0h1" />
+    </Svg>
+  );
+}
 
 const WORK_STYLE_EMOJI: Record<WorkStyle, string> = {
   'Deep focus': '🎧',
@@ -116,10 +146,10 @@ export default function UserProfileView({
   }, [profile.birthday]);
 
   // Only show pills that have values
-  const pills: { key: string; icon: string; label: string }[] = [
-    ...(profile.work_type ? [{ key: 'work_type', icon: '💼', label: profile.work_type }] : []),
-    ...(profile.neighborhood ? [{ key: 'neighborhood', icon: '📍', label: profile.neighborhood }] : []),
-    ...(profile.city ? [{ key: 'city', icon: '🏙️', label: profile.city }] : []),
+  const pills: { key: string; iconType: 'work' | 'location' | 'city'; label: string }[] = [
+    ...(profile.work_type ? [{ key: 'work_type', iconType: 'work' as const, label: profile.work_type }] : []),
+    ...(profile.neighborhood ? [{ key: 'neighborhood', iconType: 'location' as const, label: profile.neighborhood }] : []),
+    ...(profile.city ? [{ key: 'city', iconType: 'city' as const, label: profile.city }] : []),
   ];
 
   // Field groups — empty values are hidden
@@ -184,7 +214,7 @@ export default function UserProfileView({
           >
             {pills.map((pill) => (
               <View key={pill.key} style={styles.pill}>
-                <Text style={styles.pillIcon}>{pill.icon}</Text>
+                {pill.iconType === 'work' ? <BriefcaseIcon /> : pill.iconType === 'location' ? <PinIcon /> : <BuildingIcon />}
                 <Text style={styles.pillText}>{pill.label}</Text>
               </View>
             ))}
@@ -343,9 +373,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[3],
     paddingVertical: 5,
     borderRadius: borderRadius.full,
-  },
-  pillIcon: {
-    fontSize: 14,
   },
   pillText: {
     fontSize: 13,
