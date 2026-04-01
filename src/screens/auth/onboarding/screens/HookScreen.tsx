@@ -11,7 +11,7 @@ import { ProgressBar } from '../components/ProgressBar';
 import { TypewriterText } from '../components/TypewriterText';
 import type { ScreenProps } from '../CinematicOnboardingFlow';
 
-export function HookScreen({ onNext, currentStep, totalSteps }: ScreenProps) {
+export function HookScreen({ onNext, onBack, currentStep, totalSteps }: ScreenProps) {
   const [ctaVisible, setCtaVisible] = useState(false);
   const ctaOpacity = React.useRef(new Animated.Value(0)).current;
 
@@ -55,8 +55,8 @@ export function HookScreen({ onNext, currentStep, totalSteps }: ScreenProps) {
       <ProgressBar
         currentStep={currentStep}
         totalSteps={totalSteps}
+        onBack={onBack}
         onNext={ctaVisible ? onNext : undefined}
-        backDisabled
       />
     </View>
   );

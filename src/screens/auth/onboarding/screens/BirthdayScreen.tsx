@@ -1,14 +1,22 @@
 import React, { useRef, useState } from 'react';
 import {
+  InputAccessoryView,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { onboardingTheme as t } from '../theme';
 import { ProgressBar } from '../components/ProgressBar';
 import { TypewriterText } from '../components/TypewriterText';
 import type { ScreenProps } from '../CinematicOnboardingFlow';
+
+const KEYBOARD_ACCESSORY_ID = 'onboarding-birthday-keyboard-accessory';
 
 function isAtLeast18(dd: string, mm: string, yyyy: string): boolean {
   const day = parseInt(dd, 10);
@@ -77,66 +85,83 @@ export function BirthdayScreen({ state, setState, onNext, onBack, currentStep, t
   };
 
   return (
-    <View style={styles.screen}>
-      <Text style={styles.wordmark}>cowork</Text>
-      <View style={styles.spacer} />
+    <Pressable style={styles.screen} onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.screen}
+      >
+        <Text style={styles.wordmark}>cowork</Text>
+        <View style={styles.spacer} />
 
-      <TypewriterText
-        text="when's your birthday?"
-        style={styles.question}
-        startDelay={300}
-      />
-
-      {/* Date inputs row */}
-      <View style={styles.dateRow}>
-        <TextInput
-          style={styles.dateInput}
-          value={dd}
-          onChangeText={handleDdChange}
-          placeholder="DD"
-          placeholderTextColor={t.placeholder}
-          keyboardType="number-pad"
-          maxLength={2}
-          returnKeyType="next"
+        <TypewriterText
+          text="when's your birthday?"
+          style={styles.question}
+          startDelay={300}
         />
-        <Text style={styles.separator}>/</Text>
-        <TextInput
-          ref={mmRef}
-          style={styles.dateInput}
-          value={mm}
-          onChangeText={handleMmChange}
-          placeholder="MM"
-          placeholderTextColor={t.placeholder}
-          keyboardType="number-pad"
-          maxLength={2}
-          returnKeyType="next"
-        />
-        <Text style={styles.separator}>/</Text>
-        <TextInput
-          ref={yyyyRef}
-          style={[styles.dateInput, styles.yearInput]}
-          value={yyyy}
-          onChangeText={handleYyyyChange}
-          placeholder="YYYY"
-          placeholderTextColor={t.placeholder}
-          keyboardType="number-pad"
-          maxLength={4}
-          returnKeyType="done"
-          onSubmitEditing={handleNext}
-        />
-      </View>
 
-      {showError && (
-        <Text style={styles.error}>this space is for the grown-ups.</Text>
-      )}
+        <View style={styles.dateRow}>
+          <TextInput
+            style={styles.dateInput}
+            value={dd}
+            onChangeText={handleDdChange}
+            placeholder="DD"
+            placeholderTextColor={t.placeholder}
+            keyboardType="number-pad"
+            maxLength={2}
+            returnKeyType="next"
+            {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
+          />
+          <Text style={styles.separator}>/</Text>
+          <TextInput
+            ref={mmRef}
+            style={styles.dateInput}
+            value={mm}
+            onChangeText={handleMmChange}
+            placeholder="MM"
+            placeholderTextColor={t.placeholder}
+            keyboardType="number-pad"
+            maxLength={2}
+            returnKeyType="next"
+            {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
+          />
+          <Text style={styles.separator}>/</Text>
+          <TextInput
+            ref={yyyyRef}
+            style={[styles.dateInput, styles.yearInput]}
+            value={yyyy}
+            onChangeText={handleYyyyChange}
+            placeholder="YYYY"
+            placeholderTextColor={t.placeholder}
+            keyboardType="number-pad"
+            maxLength={4}
+            returnKeyType="done"
+            onSubmitEditing={handleNext}
+            {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
+          />
+        </View>
 
-      <ProgressBar
-        currentStep={currentStep}
-        totalSteps={totalSteps}
-        onBack={onBack}
-        onNext={allFilled ? handleNext : undefined}
-      />
-    </View>
+        {showError && (
+          <Text style={styles.error}>this space is for the grown-ups.</Text>
+        )}
+
+        <ProgressBar
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          onBack={onBack}
+          onNext={allFilled ? handleNext : undefined}
+        />
+      </KeyboardAvoidingView>
+
+      {Platform.OS === 'ios' ? (
+        <InputAccessoryView nativeID={KEYBOARD_ACCESSORY_ID}>
+          <View style={styles.keyboardAccessory}>
+            <TouchableOpacity onPress={Keyboard.dismiss} style={styles.keyboardDoneButton}>
+              <Text style={styles.keyboardDoneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </InputAccessoryView>
+      ) : null}
+    </Pressable>
   );
 }
 
@@ -192,5 +217,22 @@ const styles = StyleSheet.create({
     color: t.accent,
     marginBottom: 12,
     fontStyle: 'italic',
+  },
+  keyboardAccessory: {
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: t.divider,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignItems: 'flex-end',
+  },
+  keyboardDoneButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  keyboardDoneText: {
+    fontFamily: t.fontSans.medium,
+    fontSize: 16,
+    color: t.accentDark,
   },
 });

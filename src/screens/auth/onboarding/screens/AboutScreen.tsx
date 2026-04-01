@@ -1,5 +1,10 @@
 import React from 'react';
 import {
+  InputAccessoryView,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +16,8 @@ import { onboardingTheme as t } from '../theme';
 import { ProgressBar } from '../components/ProgressBar';
 import { TypewriterText } from '../components/TypewriterText';
 import type { ScreenProps } from '../CinematicOnboardingFlow';
+
+const KEYBOARD_ACCESSORY_ID = 'onboarding-about-keyboard-accessory';
 
 const WORK_OPTIONS = [
   'Founder',
@@ -35,78 +42,94 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
   };
 
   return (
-    <View style={styles.screen}>
-      <Text style={styles.wordmark}>cowork</Text>
-
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+    <Pressable style={styles.screen} onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.screen}
       >
-        <View style={styles.spacer} />
+        <Text style={styles.wordmark}>cowork</Text>
 
-        <TypewriterText
-          text="tell us a bit more."
-          style={styles.question}
-          startDelay={300}
-        />
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.spacer} />
 
-        {/* School field */}
-        <Text style={styles.fieldLabel}>where'd you go to school?</Text>
-        <TextInput
-          style={styles.input}
-          value={state.school}
-          onChangeText={v => setState(s => ({ ...s, school: v }))}
-          placeholderTextColor={t.placeholder}
-          autoCapitalize="words"
-          returnKeyType="next"
-          multiline={false}
-        />
+          <TypewriterText
+            text="tell us a bit more."
+            style={styles.question}
+            startDelay={300}
+          />
 
-        {/* Building field */}
-        <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>what are you building?</Text>
-        <TextInput
-          style={styles.input}
-          value={state.currentlyWorkingOn}
-          onChangeText={v => setState(s => ({ ...s, currentlyWorkingOn: v }))}
-          placeholder="a coworking app, fueled by excess matcha"
-          placeholderTextColor={t.placeholder}
-          autoCapitalize="none"
-          returnKeyType="done"
-          multiline={false}
-        />
+          <Text style={styles.fieldLabel}>where'd you go to school?</Text>
+          <TextInput
+            style={styles.input}
+            value={state.school}
+            onChangeText={v => setState(s => ({ ...s, school: v }))}
+            placeholderTextColor={t.placeholder}
+            autoCapitalize="words"
+            returnKeyType="next"
+            multiline={false}
+            {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
+          />
 
-        {/* Work type section heading */}
-        <Text style={styles.sectionHeading}>how do you spend your 9-to-5?</Text>
-        <View style={styles.divider} />
-        {WORK_OPTIONS.map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={styles.optionRow}
-            onPress={() => toggleWorkType(option)}
-            activeOpacity={0.7}
-          >
-            <Text
-              style={[
-                styles.optionLabel,
-                selectedTypes.includes(option) && styles.optionLabelSelected,
-              ]}
+          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>what are you building?</Text>
+          <TextInput
+            style={styles.input}
+            value={state.currentlyWorkingOn}
+            onChangeText={v => setState(s => ({ ...s, currentlyWorkingOn: v }))}
+            placeholder="a coworking app, fueled by excess matcha"
+            placeholderTextColor={t.placeholder}
+            autoCapitalize="none"
+            returnKeyType="done"
+            blurOnSubmit
+            onSubmitEditing={Keyboard.dismiss}
+            multiline={false}
+            {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
+          />
+
+          <Text style={styles.sectionHeading}>how do you spend your 9-to-5?</Text>
+          <View style={styles.divider} />
+          {WORK_OPTIONS.map((option) => (
+            <TouchableOpacity
+              key={option}
+              style={styles.optionRow}
+              onPress={() => toggleWorkType(option)}
+              activeOpacity={0.7}
             >
-              {option}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text
+                style={[
+                  styles.optionLabel,
+                  selectedTypes.includes(option) && styles.optionLabelSelected,
+                ]}
+              >
+                {option}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-      {/* ProgressBar always outside scroll, always enabled */}
-      <ProgressBar
-        currentStep={currentStep}
-        totalSteps={totalSteps}
-        onBack={onBack}
-        onNext={onNext}
-      />
-    </View>
+        <ProgressBar
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          onBack={onBack}
+          onNext={onNext}
+        />
+      </KeyboardAvoidingView>
+
+      {Platform.OS === 'ios' ? (
+        <InputAccessoryView nativeID={KEYBOARD_ACCESSORY_ID}>
+          <View style={styles.keyboardAccessory}>
+            <TouchableOpacity onPress={Keyboard.dismiss} style={styles.keyboardDoneButton}>
+              <Text style={styles.keyboardDoneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </InputAccessoryView>
+      ) : null}
+    </Pressable>
   );
 }
 
@@ -188,5 +211,22 @@ const styles = StyleSheet.create({
   optionLabelSelected: {
     fontFamily: t.fontSerif.regular,
     color: t.text,
+  },
+  keyboardAccessory: {
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: t.divider,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignItems: 'flex-end',
+  },
+  keyboardDoneButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  keyboardDoneText: {
+    fontFamily: t.fontSans.medium,
+    fontSize: 16,
+    color: t.accentDark,
   },
 });

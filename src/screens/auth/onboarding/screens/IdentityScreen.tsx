@@ -1,6 +1,11 @@
 import React from 'react';
 import {
   Image,
+  InputAccessoryView,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -12,6 +17,8 @@ import { onboardingTheme as t } from '../theme';
 import { ProgressBar } from '../components/ProgressBar';
 import { TypewriterText } from '../components/TypewriterText';
 import type { ScreenProps } from '../CinematicOnboardingFlow';
+
+const KEYBOARD_ACCESSORY_ID = 'onboarding-identity-keyboard-accessory';
 
 export function IdentityScreen({ state, setState, onNext, onBack, currentStep, totalSteps }: ScreenProps) {
   const pickPhoto = async () => {
@@ -33,44 +40,59 @@ export function IdentityScreen({ state, setState, onNext, onBack, currentStep, t
   const canAdvance = state.name.trim().length > 0;
 
   return (
-    <View style={styles.screen}>
-      <Text style={styles.wordmark}>cowork</Text>
-      <View style={styles.spacer} />
+    <Pressable style={styles.screen} onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.screen}
+      >
+        <Text style={styles.wordmark}>cowork</Text>
+        <View style={styles.spacer} />
 
-      <TypewriterText
-        text="who are you?"
-        style={styles.question}
-        startDelay={300}
-      />
+        <TypewriterText
+          text="who are you?"
+          style={styles.question}
+          startDelay={300}
+        />
 
-      {/* Photo circle */}
-      <TouchableOpacity onPress={pickPhoto} style={styles.photoCircle} activeOpacity={0.7}>
-        {state.photoUri ? (
-          <Image source={{ uri: state.photoUri }} style={styles.photoImage} />
-        ) : (
-          <Text style={styles.photoPlus}>+</Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity onPress={pickPhoto} style={styles.photoCircle} activeOpacity={0.7}>
+          {state.photoUri ? (
+            <Image source={{ uri: state.photoUri }} style={styles.photoImage} />
+          ) : (
+            <Text style={styles.photoPlus}>+</Text>
+          )}
+        </TouchableOpacity>
 
-      {/* Name input */}
-      <TextInput
-        style={styles.nameInput}
-        value={state.name}
-        onChangeText={name => setState(s => ({ ...s, name }))}
-        placeholder="your name..."
-        placeholderTextColor={t.placeholder}
-        autoCapitalize="words"
-        returnKeyType="done"
-        onSubmitEditing={canAdvance ? onNext : undefined}
-      />
+        <TextInput
+          style={styles.nameInput}
+          value={state.name}
+          onChangeText={name => setState(s => ({ ...s, name }))}
+          placeholder="your name..."
+          placeholderTextColor={t.placeholder}
+          autoCapitalize="words"
+          returnKeyType="done"
+          blurOnSubmit
+          onSubmitEditing={canAdvance ? onNext : Keyboard.dismiss}
+          {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
+        />
 
-      <ProgressBar
-        currentStep={currentStep}
-        totalSteps={totalSteps}
-        onBack={onBack}
-        onNext={canAdvance ? onNext : undefined}
-      />
-    </View>
+        <ProgressBar
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          onBack={onBack}
+          onNext={canAdvance ? onNext : undefined}
+        />
+      </KeyboardAvoidingView>
+
+      {Platform.OS === 'ios' ? (
+        <InputAccessoryView nativeID={KEYBOARD_ACCESSORY_ID}>
+          <View style={styles.keyboardAccessory}>
+            <TouchableOpacity onPress={Keyboard.dismiss} style={styles.keyboardDoneButton}>
+              <Text style={styles.keyboardDoneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </InputAccessoryView>
+      ) : null}
+    </Pressable>
   );
 }
 
@@ -125,5 +147,22 @@ const styles = StyleSheet.create({
     borderBottomColor: t.divider,
     paddingVertical: 8,
     marginBottom: 16,
+  },
+  keyboardAccessory: {
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: t.divider,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignItems: 'flex-end',
+  },
+  keyboardDoneButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  keyboardDoneText: {
+    fontFamily: t.fontSans.medium,
+    fontSize: 16,
+    color: t.accentDark,
   },
 });

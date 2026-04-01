@@ -16,6 +16,7 @@ import {
   FlatList,
   Pressable,
   Keyboard,
+  InputAccessoryView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, theme, spacing, borderRadius, shadows } from '../../constants';
@@ -41,6 +42,7 @@ const TIME_START_MINUTES = 7 * 60;    // 07:00
 const TIME_MAX_START = 23 * 60;       // 23:00 — latest allowed start
 const TIME_MAX_END = 23 * 60 + 30;    // 23:30 — latest allowed end (so 23:00 start always has a valid end)
 const TIME_INTERVAL = 30;
+const KEYBOARD_ACCESSORY_ID = 'intent-screen-keyboard-accessory';
 
 type IntentScreenProps = {
   latitude: number;
@@ -241,6 +243,10 @@ export default function IntentScreen({
               multiline
               numberOfLines={3}
               textAlignVertical="top"
+              returnKeyType="done"
+              blurOnSubmit
+              onSubmitEditing={Keyboard.dismiss}
+              {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
             />
           </View>
 
@@ -305,6 +311,10 @@ export default function IntentScreen({
                 placeholderTextColor={theme.textMuted}
                 value={locationName}
                 onChangeText={setLocationName}
+                returnKeyType="done"
+                blurOnSubmit
+                onSubmitEditing={Keyboard.dismiss}
+                {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
               />
             </View>
           )}
@@ -346,6 +356,16 @@ export default function IntentScreen({
           </ScrollView>
         </KeyboardAvoidingView>
       </Pressable>
+
+      {Platform.OS === 'ios' ? (
+        <InputAccessoryView nativeID={KEYBOARD_ACCESSORY_ID}>
+          <View style={styles.keyboardAccessory}>
+            <TouchableOpacity onPress={Keyboard.dismiss} style={styles.keyboardDoneButton}>
+              <Text style={styles.keyboardDoneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </InputAccessoryView>
+      ) : null}
 
       <TimePickerModal
         visible={isStartPickerOpen}
@@ -548,6 +568,23 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: spacing[2],
+  },
+  keyboardAccessory: {
+    backgroundColor: colors.bgCard,
+    borderTopWidth: 1,
+    borderTopColor: colors.borderDefault,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    alignItems: 'flex-end',
+  },
+  keyboardDoneButton: {
+    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[2],
+  },
+  keyboardDoneText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: CLOVER_FOREST,
   },
   modalOverlay: {
     flex: 1,

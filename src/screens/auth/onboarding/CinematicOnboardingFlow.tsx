@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useAuth } from '../../../context/AuthContext';
 import { loadClickSound, unloadClickSound } from './audioService';
 import { GrainOverlay } from './components/GrainOverlay';
 import { onboardingTheme as t } from './theme';
@@ -52,6 +53,7 @@ const INITIAL_STATE: OnboardingState = {
 export function CinematicOnboardingFlow({ onComplete }: CinematicOnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [state, setState] = useState<OnboardingState>(INITIAL_STATE);
+  const { signOut } = useAuth();
 
   useEffect(() => {
     loadClickSound();
@@ -69,8 +71,10 @@ export function CinematicOnboardingFlow({ onComplete }: CinematicOnboardingFlowP
   const handleBack = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(s => s - 1);
+      return;
     }
-  }, [currentStep]);
+    void signOut();
+  }, [currentStep, signOut]);
 
   const screenProps: ScreenProps = {
     state,
