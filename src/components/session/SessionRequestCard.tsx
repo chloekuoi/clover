@@ -195,7 +195,9 @@ export default function SessionRequestCard({
     return (
       <View style={styles.pendingRowCard}>
         <View style={styles.pendingIconBox}>
-          <Text style={styles.pendingIcon}>☕️</Text>
+          <Animated.View style={{ transform: [{ rotate: spinRotation }] }}>
+            <CloverMark size={26} color={CLOVER_FOREST} bg={colors.statusPendingBg} />
+          </Animated.View>
         </View>
         <View style={styles.pendingContent}>
           <View style={styles.pendingTitleRow}>
@@ -227,7 +229,9 @@ export default function SessionRequestCard({
         {/* ── TOP ROW ── */}
         <View style={styles.pendingRowInner}>
           <View style={styles.pendingIconBox}>
-            <Text style={styles.pendingIcon}>☕️</Text>
+            <Animated.View style={{ transform: [{ rotate: spinRotation }] }}>
+              <CloverMark size={26} color={CLOVER_FOREST} bg={colors.statusPendingBg} />
+            </Animated.View>
           </View>
           <View style={styles.pendingContent}>
             <View style={styles.pendingTitleRow}>
@@ -339,10 +343,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-  },
-  pendingIcon: {
-    fontSize: 22,
-    color: colors.statusPendingText,
   },
   pendingContent: {
     flex: 1,
