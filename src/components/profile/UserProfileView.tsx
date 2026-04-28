@@ -44,6 +44,17 @@ function BuildingIcon() {
   );
 }
 
+function PeopleIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <Circle cx={9} cy={7} r={4} />
+      <Path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <Path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </Svg>
+  );
+}
+
 const WORK_STYLE_EMOJI: Record<WorkStyle, string> = {
   'Deep focus': '🎧',
   'Chat mode': '💬',
@@ -146,10 +157,13 @@ export default function UserProfileView({
   }, [profile.birthday]);
 
   // Only show pills that have values
-  const pills: { key: string; iconType: 'work' | 'location' | 'city'; label: string }[] = [
+  const pills: { key: string; iconType: 'work' | 'location' | 'city' | 'people'; label: string }[] = [
     ...(profile.work_type ? [{ key: 'work_type', iconType: 'work' as const, label: profile.work_type }] : []),
     ...(profile.neighborhood ? [{ key: 'neighborhood', iconType: 'location' as const, label: profile.neighborhood }] : []),
     ...(profile.city ? [{ key: 'city', iconType: 'city' as const, label: profile.city }] : []),
+    ...(profile.desired_roles && profile.desired_roles !== 'Open to anyone'
+      ? [{ key: 'desired_roles', iconType: 'people' as const, label: `Looking for: ${profile.desired_roles}` }]
+      : []),
   ];
 
   // Field groups — empty values are hidden
@@ -214,7 +228,7 @@ export default function UserProfileView({
           >
             {pills.map((pill) => (
               <View key={pill.key} style={styles.pill}>
-                {pill.iconType === 'work' ? <BriefcaseIcon /> : pill.iconType === 'location' ? <PinIcon /> : <BuildingIcon />}
+                {pill.iconType === 'work' ? <BriefcaseIcon /> : pill.iconType === 'location' ? <PinIcon /> : pill.iconType === 'city' ? <BuildingIcon /> : <PeopleIcon />}
                 <Text style={styles.pillText}>{pill.label}</Text>
               </View>
             ))}

@@ -106,7 +106,9 @@ export default function SwipeCard({ card, translateX, isTopCard = false }: Swipe
             {age ? <Text style={styles.age}>{age}</Text> : null}
           </View>
           {profile.work_type ? (
-            <Text style={styles.profession}>{profile.work_type}</Text>
+            <View style={styles.roleChip}>
+              <Text style={styles.roleChipText}>{profile.work_type}</Text>
+            </View>
           ) : null}
           {intent?.task_description ? (
             <>
@@ -193,11 +195,18 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.52)',
     marginLeft: spacing[1],
   },
-  profession: {
-    fontSize: 10.5,
-    fontWeight: '500',
-    color: 'rgba(255,255,255,0.65)',
+  roleChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: borderRadius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     marginBottom: spacing[2],
+  },
+  roleChipText: {
+    fontSize: 10.5,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.85)',
   },
   divider: {
     height: 1,
