@@ -319,6 +319,7 @@ export default function EditProfileScreen({ navigation }: Props) {
                 '',
               );
             } else {
+              // TODO: Android lacks Alert.prompt — custom role text input deferred to post-MVP
               setForm((prev) => ({ ...prev, work_type: 'Other' }));
             }
           } else {

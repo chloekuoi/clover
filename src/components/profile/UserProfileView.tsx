@@ -161,7 +161,7 @@ export default function UserProfileView({
     ...(profile.work_type ? [{ key: 'work_type', iconType: 'work' as const, label: profile.work_type }] : []),
     ...(profile.neighborhood ? [{ key: 'neighborhood', iconType: 'location' as const, label: profile.neighborhood }] : []),
     ...(profile.city ? [{ key: 'city', iconType: 'city' as const, label: profile.city }] : []),
-    ...(profile.desired_roles && profile.desired_roles !== 'Open to anyone'
+    ...(profile.desired_roles && !profile.desired_roles.split(', ').includes('Open to anyone')
       ? [{ key: 'desired_roles', iconType: 'people' as const, label: `Looking for: ${profile.desired_roles}` }]
       : []),
   ];
@@ -192,6 +192,13 @@ export default function UserProfileView({
       </React.Fragment>
     ));
   }, []);
+
+  const PILL_ICONS: Record<'work' | 'location' | 'city' | 'people', React.ReactElement> = {
+    work: <BriefcaseIcon />,
+    location: <PinIcon />,
+    city: <BuildingIcon />,
+    people: <PeopleIcon />,
+  };
 
   // Show intent card on others' profiles only
   const showIntentCard = !isOwnProfile && todayIntent !== null;
@@ -228,7 +235,7 @@ export default function UserProfileView({
           >
             {pills.map((pill) => (
               <View key={pill.key} style={styles.pill}>
-                {pill.iconType === 'work' ? <BriefcaseIcon /> : pill.iconType === 'location' ? <PinIcon /> : pill.iconType === 'city' ? <BuildingIcon /> : <PeopleIcon />}
+                {PILL_ICONS[pill.iconType]}
                 <Text style={styles.pillText}>{pill.label}</Text>
               </View>
             ))}

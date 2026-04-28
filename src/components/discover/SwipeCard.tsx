@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   roleChipText: {
-    fontSize: 10.5,
+    fontSize: 11,
     fontWeight: '600',
     color: 'rgba(255,255,255,0.85)',
   },
