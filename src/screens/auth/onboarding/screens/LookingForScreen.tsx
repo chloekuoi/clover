@@ -30,9 +30,15 @@ export function LookingForScreen({ state, setState, onNext, onBack, currentStep,
   const toggle = (option: string) => {
     setState(s => {
       const current = s.desiredRoles as string[];
-      const next = current.includes(option)
-        ? current.filter(r => r !== option)
-        : [...current, option];
+      if (option === 'Open to anyone') {
+        // Selecting "Open to anyone" clears all specific picks (and deselects if already selected)
+        return { ...s, desiredRoles: current.includes(option) ? [] : ['Open to anyone'] };
+      }
+      // Selecting a specific role automatically removes "Open to anyone"
+      const withoutOpen = current.filter(r => r !== 'Open to anyone');
+      const next = withoutOpen.includes(option)
+        ? withoutOpen.filter(r => r !== option)
+        : [...withoutOpen, option];
       return { ...s, desiredRoles: next };
     });
   };

@@ -33,6 +33,8 @@ const WORK_OPTIONS = [
 export function AboutScreen({ state, setState, onNext, onBack, currentStep, totalSteps }: ScreenProps) {
   const selectedTypes = state.workType as string[];
 
+  const [otherText, setOtherText] = useState('');
+
   const toggleWorkType = (option: string) => {
     setState(s => {
       const current = s.workType as string[];
@@ -42,8 +44,6 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
       return { ...s, workType: next };
     });
   };
-
-  const [otherText, setOtherText] = useState('');
 
   const handleNext = () => {
     if (selectedTypes.includes('Other') && otherText.trim()) {
