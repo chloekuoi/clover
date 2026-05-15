@@ -18,14 +18,6 @@ const AVAILABLE_WIDTH = WINDOW_WIDTH - 2 * t.screenPaddingH;
 const SLOT_GAP = 6;
 const SLOT_SIZE = (AVAILABLE_WIDTH - 2 * SLOT_GAP) / 3;
 
-const SLOT_DATA: { prompt: string; subtitle?: string }[] = [
-  { prompt: "Hi, I'm a real person 👋", subtitle: 'Not a stock photo, promise' },
-  { prompt: 'Proof I touch grass sometimes', subtitle: 'Hobbies, activities, general humanness' },
-  { prompt: 'What my camera roll actually looks like', subtitle: 'Candid is an understatement' },
-  { prompt: 'Currently building something...', subtitle: 'Still figuring it out, send help' },
-  { prompt: 'Add photo 5' },
-];
-
 export function PhotoScreen({ state, setState, onNext, onBack, currentStep, totalSteps }: ScreenProps) {
   const handlePickPhoto = async (position: number) => {
     const { uri, error } = await pickImage();
@@ -39,7 +31,6 @@ export function PhotoScreen({ state, setState, onNext, onBack, currentStep, tota
 
   const renderSlot = (position: number) => {
     const uri = state.photoUris[position];
-    const { prompt, subtitle } = SLOT_DATA[position] ?? { prompt: `Add photo ${position + 1}` };
     const isPrimary = position === 0;
 
     return (
@@ -54,10 +45,7 @@ export function PhotoScreen({ state, setState, onNext, onBack, currentStep, tota
         ) : (
           <View style={styles.slotContent}>
             <Text style={styles.slotPlus}>+</Text>
-            <Text style={styles.slotPrompt} numberOfLines={2}>{prompt}</Text>
-            {subtitle ? (
-              <Text style={styles.slotSubtitle} numberOfLines={2}>{subtitle}</Text>
-            ) : null}
+            {isPrimary ? <Text style={styles.slotLabel}>primary photo</Text> : null}
           </View>
         )}
       </TouchableOpacity>
@@ -148,24 +136,16 @@ const styles = StyleSheet.create({
   },
   slotPlus: {
     fontFamily: t.fontSans.light,
-    fontSize: 16,
+    fontSize: 22,
     color: t.placeholder,
-    marginBottom: 2,
+    marginBottom: 4,
   },
-  slotPrompt: {
+  slotLabel: {
     fontFamily: t.fontSerif.light,
-    fontSize: 9,
+    fontSize: 11,
     color: t.muted,
     textAlign: 'center',
-    lineHeight: 13,
-  },
-  slotSubtitle: {
-    fontFamily: t.fontSerif.lightItalic,
-    fontSize: 7.5,
-    color: t.placeholder,
-    textAlign: 'center',
-    lineHeight: 11,
-    marginTop: 2,
+    lineHeight: 15,
   },
   slotSpacer: {
     width: SLOT_SIZE,
