@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingTop: 12,
+    paddingTop: 22,
   },
   track: {
     flex: 1,
