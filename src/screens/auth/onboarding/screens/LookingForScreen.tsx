@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
     minHeight: 40,
   },
   question: {
-    fontSize: 22,
-    lineHeight: 30,
+    fontSize: 24,
+    lineHeight: 32,
     marginBottom: 20,
   },
   divider: {
