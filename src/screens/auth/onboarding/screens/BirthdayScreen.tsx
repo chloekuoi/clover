@@ -88,7 +88,7 @@ export function BirthdayScreen({ state, setState, onNext, onBack, currentStep, t
     <Pressable style={styles.screen} onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.screen}
+        style={styles.kav}
       >
         <Text style={styles.wordmark}>cowork</Text>
         <View style={styles.spacer} />
@@ -180,7 +180,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     flexShrink: 0,
   },
-  spacer: { flex: 1 },
+  kav: { flex: 1 },
+  spacer: { flex: 1, maxHeight: 200 },
   question: {
     fontSize: 24,
     lineHeight: 32,

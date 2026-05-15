@@ -88,17 +88,17 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     flexShrink: 0,
   },
-  spacer: { flex: 1 },
+  spacer: { flex: 1, maxHeight: 200 },
   question: {
     fontSize: 24,
     lineHeight: 32,
     marginBottom: 14,
   },
   body: {
-    fontFamily: t.fontSans.light,
-    fontSize: 13,
-    color: t.muted,
-    lineHeight: 20,
+    fontFamily: t.fontSerif.lightItalic,
+    fontSize: 17,
+    color: t.textSec,
+    lineHeight: 26,
     marginBottom: 28,
   },
   spinner: {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontFamily: t.fontSans.regular,
-    fontSize: 14,
+    fontSize: 15,
     color: t.accent,
     letterSpacing: 0.3,
   },

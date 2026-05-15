@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
+    maxHeight: 200,
   },
   question: {
     fontSize: 24,

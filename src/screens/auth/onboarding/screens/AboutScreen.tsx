@@ -60,7 +60,7 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
     <Pressable style={styles.screen} onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.screen}
+        style={styles.kav}
       >
         <Text style={styles.wordmark}>cowork</Text>
 
@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 8,
   },
+  kav: { flex: 1 },
   spacer: {
     flex: 1,
     minHeight: 40,
