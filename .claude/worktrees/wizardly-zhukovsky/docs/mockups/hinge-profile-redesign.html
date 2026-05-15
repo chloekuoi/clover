@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoWork Connect — Profile Redesign Mockup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      background: #F0F0F5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 48px;
+      padding: 40px 32px;
+      min-height: 100vh;
+    }
+
+    /* ── Phone Shell ─────────────────────────── */
+    .phone {
+      width: 375px;
+      background: #fff;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* status bar */
+    .status-bar {
+      background: #F9F9F9;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #111;
+    }
+    .status-right { display: flex; gap: 6px; align-items: center; }
+
+    /* header bar */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #E8E8EC;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+    .header-spacer { width: 44px; }
+    .header-title { font-size: 17px; font-weight: 600; color: #111; }
+    .header-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      color: #3D7A5A;
+    }
+
+    /* scrollable content */
+    .scroll {
+      height: 680px;
+      overflow-y: auto;
+      background: #F0F0F5;
+      scrollbar-width: none;
+    }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* ── Content blocks ─────────────────────── */
+    .section-gap { height: 10px; background: #F0F0F5; }
+
+    /* photo card */
+    .photo-card {
+      background: #D4DDD8;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-card.primary { aspect-ratio: 1 / 1.1; }
+    .photo-card.secondary { aspect-ratio: 16 / 9; }
+    .photo-label {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      color: rgba(255,255,255,0.92);
+      font-size: 13px;
+      font-weight: 500;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.45);
+    }
+    .photo-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 72px;
+      color: rgba(255,255,255,0.5);
+      background: linear-gradient(145deg, #B8C9BF 0%, #91A899 100%);
+    }
+    .photo-placeholder.accent {
+      background: linear-gradient(145deg, #C8D9CE 0%, #A1B5A8 100%);
+    }
+
+    /* bio card */
+    .bio-card {
+      background: #fff;
+      padding: 20px 18px 18px;
+    }
+    .name-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .name { font-size: 26px; font-weight: 700; color: #111; letter-spacing: -0.3px; }
+    .age  { font-size: 22px; font-weight: 400; color: #555; }
+
+    /* attribute pills */
+    .pills-row {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 14px;
+      /* pull to edge so scroll feels native */
+      margin-left: -18px;
+      margin-right: -18px;
+      padding-left: 18px;
+      padding-right: 18px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .pills-row::-webkit-scrollbar { display: none; }
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #EAF2EE;
+      color: #2C6044;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+    .pill-icon { font-size: 14px; }
+
+    /* field rows */
+    .fields-area {
+      background: #fff;
+    }
+    .field-row {
+      padding: 13px 18px;
+      border-bottom: 1px solid #F0F0F5;
+    }
+    .field-row:last-child { border-bottom: none; }
+    .field-label { font-size: 12px; font-weight: 600; color: #9B9B9B; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+    .field-value { font-size: 15px; color: #111; font-weight: 400; line-height: 1.4; }
+
+    .group-sep { height: 1px; background: #E8E8EC; margin: 0 18px; }
+
+    /* intent card */
+    .intent-card {
+      background: #fff;
+      margin: 0;
+    }
+    .intent-active {
+      background: #EAF2EE;
+      border: 1.5px solid #C4DDD0;
+      margin: 0 14px;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+    .intent-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .intent-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #3D7A5A;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .intent-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #3D7A5A;
+    }
+    .intent-task { font-size: 17px; font-weight: 600; color: #111; margin-bottom: 10px; }
+    .intent-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: #555;
+    }
+    .intent-meta span { display: flex; align-items: center; gap: 4px; }
+
+    .intent-empty {
+      margin: 0 14px;
+      border-radius: 14px;
+      border: 1.5px dashed #D0D0D8;
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .intent-empty-text { font-size: 14px; color: #9B9B9B; margin-bottom: 10px; }
+    .intent-cta {
+      background: #3D7A5A;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .intent-outer { padding: 14px 0; background: #fff; }
+
+    /* signout */
+    .signout {
+      text-align: center;
+      padding: 24px 0 32px;
+      font-size: 14px;
+      color: #9B9B9B;
+      cursor: pointer;
+      background: #F0F0F5;
+    }
+
+    /* tab bar */
+    .tab-bar {
+      background: #fff;
+      border-top: 1px solid #E8E8EC;
+      height: 82px;
+      display: flex;
+      align-items: flex-start;
+      padding-top: 10px;
+    }
+    .tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      color: #9B9B9B;
+    }
+    .tab.active { color: #3D7A5A; }
+    .tab-icon { font-size: 22px; }
+
+    /* ── Labels ─────────────────────────────── */
+    .screen-label {
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* ── Modal overlay (for second phone) ─────── */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 10;
+      border-radius: 44px;
+    }
+    .modal-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #F0F0F5;
+      border-radius: 24px 24px 0 0;
+      height: calc(100% - 60px);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-handle-row {
+      background: #F0F0F5;
+      padding: 10px 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: #C8C8D0;
+      border-radius: 2px;
+    }
+    .modal-scroll {
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .modal-scroll::-webkit-scrollbar { display: none; }
+
+    /* action buttons */
+    .action-bar {
+      background: #fff;
+      border-top: 1px solid #E8E8EC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 14px 24px 24px;
+      flex-shrink: 0;
+    }
+    .btn-pass {
+      flex: 1;
+      background: #fff;
+      border: 2px solid #E8E8EC;
+      color: #555;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 14px 0;
+      border-radius: 14px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .btn-like {
+      flex: 1;
+      background: #3D7A5A;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 14px 0;
+      border-radius: 14px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    /* ── Button option variants ──────────────── */
+    .btn-options-wrap {
+      margin-top: 28px;
+      width: 375px;
+    }
+    .btn-options-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9B9B9B;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .btn-option-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .btn-option-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9B9B9B;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: 48px;
+      flex-shrink: 0;
+    }
+    .btn-pair { display: flex; gap: 10px; flex: 1; }
+    .btn-neg {
+      flex: 1;
+      text-align: center;
+      padding: 11px 0;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-pos {
+      flex: 1;
+      text-align: center;
+      padding: 11px 0;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    /* Style variants */
+    .style-a .btn-neg { background: #fff; border: 2px solid #E8E8EC; color: #888; }
+    .style-a .btn-pos { background: #3D7A5A; color: #fff; }
+
+    .style-b .btn-neg { background: #FFF0F0; border: 2px solid #F5C2C2; color: #C0392B; }
+    .style-b .btn-pos { background: #EAF2EE; border: 2px solid #C4DDD0; color: #2C6044; }
+
+    .style-c .btn-neg { background: #fff; border: 2px solid #E8E8EC; color: #555; font-size: 22px; padding: 8px 0; }
+    .style-c .btn-pos { background: #3D7A5A; color: #fff; font-size: 22px; padding: 8px 0; }
+
+    .style-d .btn-neg { background: #F5F5F8; color: #555; }
+    .style-d .btn-pos { background: #111; color: #fff; }
+
+    .recommended-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #3D7A5A;
+      background: #EAF2EE;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* discover card behind modal */
+    .discover-bg {
+      height: 100%;
+      background: #D4DDD8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 30px;
+      gap: 12px;
+    }
+    .discover-card-stub {
+      width: 320px;
+      height: 480px;
+      background: linear-gradient(180deg, #B8C9BF 0%, #8EA898 100%);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+    }
+    .discover-name { color: #fff; font-size: 24px; font-weight: 700; text-shadow: 0 1px 6px rgba(0,0,0,0.35); }
+    .discover-sub  { color: rgba(255,255,255,0.85); font-size: 14px; margin-top: 4px; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SCREEN 1: Own Profile Tab                  -->
+  <!-- ══════════════════════════════════════════ -->
+  <div>
+    <p class="screen-label">📱 Profile Tab (own)</p>
+    <div class="phone">
+
+      <!-- Status bar -->
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right">
+          <span>●●●</span><span>WiFi</span><span>🔋</span>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="header-spacer"></div>
+        <span class="header-title">Profile</span>
+        <div class="header-icon">✏️</div>
+      </div>
+
+      <!-- Scroll area -->
+      <div class="scroll">
+
+        <!-- 1. Main profile photo -->
+        <div class="photo-card primary">
+          <div class="photo-placeholder">🧑‍💻</div>
+        </div>
+
+        <div class="section-gap"></div>
+
+        <!-- 2. Bio card — name + pills + field rows -->
+        <div class="bio-card fields-area">
+          <div class="name-row">
+            <span class="name">Alex</span>
+            <span class="age">28</span>
+          </div>
+
+          <!-- Attribute pills -->
+          <div class="pills-row">
+            <div class="pill"><span class="pill-icon">💼</span> Freelancer</div>
+            <div class="pill"><span class="pill-icon">📍</span> Mission District</div>
+            <div class="pill"><span class="pill-icon">🏙️</span> San Francisco</div>
+          </div>
+
+          <div class="group-sep"></div>
+
+          <div class="field-row">
+            <div class="field-label">Tagline</div>
+            <div class="field-value">Building tools that get out of the way</div>
+          </div>
+          <div class="field-row">
+            <div class="field-label">Currently Working On</div>
+            <div class="field-value">Launching a new iOS app for freelancers</div>
+          </div>
+
+          <div class="group-sep"></div>
+
+          <div class="field-row">
+            <div class="field-label">Work</div>
+            <div class="field-value">Product Designer @ Freelance</div>
+          </div>
+          <div class="field-row">
+            <div class="field-label">School</div>
+            <div class="field-value">Carnegie Mellon, HCI</div>
+          </div>
+        </div>
+
+        <div class="section-gap"></div>
+
+        <!-- 3. Today's Intent card (active) -->
+        <div class="intent-outer">
+          <div class="intent-active">
+            <div class="intent-header">
+              <span class="intent-label">TODAY'S FOCUS</span>
+              <div class="intent-dot"></div>
+            </div>
+            <div class="intent-task">Deep work on app wireframes</div>
+            <div class="intent-meta">
+              <span>🎧 Deep focus</span>
+              <span>☕️ Cafe</span>
+              <span>🕙 10am – 2pm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap"></div>
+
+        <!-- 4. Remaining photos -->
+        <div class="photo-card secondary">
+          <div class="photo-placeholder accent">🖥️</div>
+          <div class="photo-label">Where I do my best thinking</div>
+        </div>
+
+        <div class="section-gap"></div>
+
+        <div class="photo-card secondary">
+          <div class="photo-placeholder" style="background: linear-gradient(145deg, #C5CED8 0%, #9AAAB8 100%);">🌆</div>
+          <div class="photo-label">My city, my vibe</div>
+        </div>
+
+        <!-- Sign out -->
+        <div class="signout">Sign out</div>
+
+      </div><!-- /scroll -->
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab"><span class="tab-icon">🔍</span>Discover</div>
+        <div class="tab"><span class="tab-icon">💬</span>Matches</div>
+        <div class="tab"><span class="tab-icon">👥</span>Friends</div>
+        <div class="tab active"><span class="tab-icon">👤</span>Profile</div>
+      </div>
+
+    </div><!-- /phone -->
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SCREEN 2: Other User Profile (from Discover) -->
+  <!-- ══════════════════════════════════════════ -->
+  <div style="display:flex; flex-direction:column; align-items:center;">
+    <p class="screen-label">📱 Discover — expanded profile</p>
+    <div class="phone">
+
+      <!-- Status bar -->
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right">
+          <span>●●●</span><span>WiFi</span><span>🔋</span>
+        </div>
+      </div>
+
+      <!-- Discover screen behind modal -->
+      <div style="height: 630px; position: relative;">
+
+        <!-- Background discover card -->
+        <div class="discover-bg">
+          <div class="discover-card-stub">
+            <div class="discover-name">Jordan, 31</div>
+            <div class="discover-sub">🎧 Deep focus · ☕️ Cafe · 0.4 mi</div>
+          </div>
+        </div>
+
+        <!-- Dim overlay -->
+        <div class="modal-overlay"></div>
+
+        <!-- Modal sheet -->
+        <div class="modal-sheet">
+          <div class="modal-handle-row">
+            <div class="modal-handle"></div>
+          </div>
+
+          <div class="modal-scroll">
+
+            <!-- 1. Main profile photo -->
+            <div class="photo-card primary" style="border-radius: 0;">
+              <div class="photo-placeholder" style="background: linear-gradient(145deg, #C5CED8 0%, #9AAAB8 100%);">👩‍💻</div>
+            </div>
+
+            <div class="section-gap"></div>
+
+            <!-- 2. Bio card -->
+            <div class="bio-card fields-area">
+              <div class="name-row">
+                <span class="name">Jordan</span>
+                <span class="age">31</span>
+              </div>
+
+              <div class="pills-row">
+                <div class="pill"><span class="pill-icon">💻</span> Remote worker</div>
+                <div class="pill"><span class="pill-icon">📍</span> Hayes Valley</div>
+                <div class="pill"><span class="pill-icon">🏙️</span> San Francisco</div>
+              </div>
+
+              <div class="group-sep"></div>
+
+              <div class="field-row">
+                <div class="field-label">Tagline</div>
+                <div class="field-value">Turning caffeine into clean code ☕</div>
+              </div>
+              <div class="field-row">
+                <div class="field-label">Currently Working On</div>
+                <div class="field-value">Backend refactor for a SaaS startup</div>
+              </div>
+
+              <div class="group-sep"></div>
+
+              <div class="field-row">
+                <div class="field-label">Work</div>
+                <div class="field-value">Senior Engineer @ Stripe</div>
+              </div>
+            </div>
+
+            <div class="section-gap"></div>
+
+            <!-- 3. Today's Intent card -->
+            <div class="intent-outer">
+              <div class="intent-active">
+                <div class="intent-header">
+                  <span class="intent-label">TODAY'S FOCUS</span>
+                  <div class="intent-dot"></div>
+                </div>
+                <div class="intent-task">Refactor auth service — no interruptions</div>
+                <div class="intent-meta">
+                  <span>🎧 Deep focus</span>
+                  <span>☕️ Cafe</span>
+                  <span>🕙 9am – 1pm</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-gap"></div>
+
+            <!-- 4. Remaining photo -->
+            <div class="photo-card secondary" style="border-radius: 0;">
+              <div class="photo-placeholder accent">🌉</div>
+              <div class="photo-label">Where I work best</div>
+            </div>
+
+            <div style="height: 16px; background: #F0F0F5;"></div>
+
+          </div><!-- /modal-scroll -->
+
+          <!-- Skip / Connect sticky action bar -->
+          <div class="action-bar">
+            <div class="btn-pass" style="background:#FFF0F0; border:2px solid #F5C2C2; color:#C0392B;">Skip</div>
+            <div class="btn-like" style="background:#EAF2EE; border:2px solid #C4DDD0; color:#2C6044;">Connect</div>
+          </div>
+
+        </div><!-- /modal-sheet -->
+      </div><!-- /relative container -->
+
+      <!-- Tab bar (dimmed under modal) -->
+      <div class="tab-bar" style="opacity: 0.4;">
+        <div class="tab"><span class="tab-icon">🔍</span>Discover</div>
+        <div class="tab"><span class="tab-icon">💬</span>Matches</div>
+        <div class="tab"><span class="tab-icon">👥</span>Friends</div>
+        <div class="tab"><span class="tab-icon">👤</span>Profile</div>
+      </div>
+
+    </div><!-- /phone -->
+
+    <!-- ── Button style options ─────────────── -->
+    <div class="btn-options-wrap">
+      <div class="btn-options-label">Action button options</div>
+
+      <!-- Option A -->
+      <div class="btn-option-row style-a">
+        <div class="btn-option-tag">A</div>
+        <div class="btn-pair">
+          <div class="btn-neg">👎 Pass</div>
+          <div class="btn-pos">👍 Like</div>
+        </div>
+      </div>
+
+      <!-- Option B — colour-coded, no emoji -->
+      <div class="btn-option-row style-b">
+        <div class="btn-option-tag">B <span class="recommended-badge">★ rec</span></div>
+        <div class="btn-pair">
+          <div class="btn-neg">Skip</div>
+          <div class="btn-pos">Connect</div>
+        </div>
+      </div>
+
+      <!-- Option C — icon only -->
+      <div class="btn-option-row style-c">
+        <div class="btn-option-tag">C</div>
+        <div class="btn-pair">
+          <div class="btn-neg">✕</div>
+          <div class="btn-pos">♥</div>
+        </div>
+      </div>
+
+      <!-- Option D — minimal, no border -->
+      <div class="btn-option-row style-d">
+        <div class="btn-option-tag">D</div>
+        <div class="btn-pair">
+          <div class="btn-neg">Not now</div>
+          <div class="btn-pos">I'm in!</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /column wrapper -->
+
+</body>
+</html>

@@ -45,3 +45,4 @@ yarn-error.*
 
 # superpowers brainstorm sessions
 .superpowers/
+Archive/client_secret_*.json

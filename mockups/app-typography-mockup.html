@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App-wide Typography — Editorial Style</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 48px 32px 80px;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .screen-label {
+    font-size: 10px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: #888;
+  }
+
+  /* Phone */
+  .phone {
+    width: 270px;
+    background: #F5F4F1;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+    position: relative;
+  }
+  .notch {
+    width: 100px;
+    height: 24px;
+    background: #111;
+    border-radius: 0 0 16px 16px;
+    margin: 0 auto;
+  }
+
+  /* ── Shared atoms ── */
+  .bg-card   { background: #fff; }
+  .bg-page   { background: #F5F4F1; }
+  .divider   { height: 1px; background: #EEEDEA; }
+  .green-dot { width: 8px; height: 8px; background: #3F5443; border-radius: 50%; flex-shrink: 0; }
+
+  .serif-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    color: #1A1A1A;
+  }
+  .serif-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    color: #1A1A1A;
+  }
+  .sans-muted {
+    font-family: 'Inter', sans-serif;
+    color: #9B9B9B;
+    font-weight: 400;
+  }
+  .sans-body {
+    font-family: 'Inter', sans-serif;
+    color: #1A1A1A;
+    font-weight: 400;
+  }
+  .sans-medium {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #1A1A1A;
+  }
+
+  /* ════════════════════════
+     PROFILE SCREEN
+  ════════════════════════ */
+  .profile-photo {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    background: linear-gradient(160deg, #c9b9a8, #8b7b6a);
+  }
+  .profile-photo-placeholder {
+    width: 100%;
+    height: 210px;
+    background: linear-gradient(160deg, #d4c5b0 0%, #b8a898 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+  }
+  .profile-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 10px;
+    background: #F5F4F1;
+  }
+  .profile-nav-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    color: #1A1A1A;
+    letter-spacing: 0.2px;
+  }
+  .nav-icon-btn {
+    width: 32px; height: 32px;
+    background: #3F5443;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #fff;
+  }
+  .profile-info { padding: 14px 18px 0; }
+  .profile-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 300;
+    color: #1A1A1A;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .profile-age {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: #9B9B9B;
+  }
+  .profile-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .profile-tag {
+    background: #EEEDEA;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    color: #6B6B6B;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .focus-card {
+    margin: 14px 18px 0;
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .focus-card-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #9B9B9B;
+    margin-bottom: 4px;
+  }
+  .focus-card-body {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #9B9B9B;
+    margin-bottom: 10px;
+  }
+  .focus-btn {
+    background: #3F5443;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    display: inline-block;
+  }
+  .profile-section { padding: 14px 18px 0; }
+  .profile-section-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: #1A1A1A;
+    margin-bottom: 3px;
+  }
+  .profile-section-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #6B6B6B;
+    padding-bottom: 12px;
+  }
+
+  /* ════════════════════════
+     CHATS SCREEN
+  ════════════════════════ */
+  .chats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px 10px;
+  }
+  .chats-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: #1A1A1A;
+    letter-spacing: -0.3px;
+  }
+  .add-btn {
+    width: 32px; height: 32px;
+    background: #3F5443;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff; font-weight: 300;
+    line-height: 1;
+  }
+  .chat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+  }
+  .chat-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #c9b9a8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .chat-avatar-group {
+    background: #3F5443;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chat-dots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    padding: 4px;
+  }
+  .chat-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.8); border-radius: 50%; }
+  .chat-content { flex: 1; min-width: 0; }
+  .chat-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A1A;
+  }
+  .chat-preview {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #9B9B9B;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chat-time {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: #9B9B9B;
+    flex-shrink: 0;
+  }
+
+  /* ════════════════════════
+     FRIENDS SCREEN
+  ════════════════════════ */
+  .friends-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px 12px;
+  }
+  .friends-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: #1A1A1A;
+    letter-spacing: -0.3px;
+  }
+  .section-block { margin: 0 14px 10px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #EEEDEA;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+  }
+  .section-header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #1A1A1A;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-arrow {
+    font-size: 10px;
+    color: #9B9B9B;
+  }
+  .friend-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .friend-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #c9b9a8;
+  }
+  .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .friend-info { flex: 1; }
+  .friend-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1A1A1A;
+  }
+  .friend-availability {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: #9B9B9B;
+    margin-top: 1px;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    background: #F5F4F1;
+    border-top: 1px solid #EEEDEA;
+    padding: 10px 0 16px;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .tab-icon { font-size: 18px; }
+  .tab-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 400;
+    color: #9B9B9B;
+  }
+  .tab-label-active {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    color: #3F5443;
+  }
+  .tab-icon-active { color: #3F5443; }
+</style>
+</head>
+<body>
+
+<!-- ══ PROFILE ══ -->
+<div class="col">
+  <div class="screen-label">Profile</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="profile-nav">
+      <div style="width:32px"></div>
+      <div class="profile-nav-title">profile</div>
+      <div class="nav-icon-btn">✦</div>
+    </div>
+    <div class="profile-photo-placeholder">🧑‍💻</div>
+    <div class="profile-info">
+      <div class="profile-name">
+        Chloe Guo <span class="profile-age">28</span>
+      </div>
+      <div class="profile-tags">
+        <div class="profile-tag">💼 Founder</div>
+        <div class="profile-tag">📍 Yorkville</div>
+        <div class="profile-tag">🏙 Toronto</div>
+      </div>
+    </div>
+    <div class="focus-card">
+      <div class="focus-card-label">Today's focus</div>
+      <div class="focus-card-body">Share what you're working on today</div>
+      <div class="focus-btn">Set Today's Focus</div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-label">Tagline</div>
+      <div class="profile-section-value">Hello</div>
+      <div class="divider"></div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-label">Currently working on</div>
+      <div class="profile-section-value">CoFlow</div>
+      <div class="divider"></div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item"><div class="tab-icon">✦</div><div class="tab-label">Discover</div></div>
+      <div class="tab-item"><div class="tab-icon">🤍</div><div class="tab-label">Friends</div></div>
+      <div class="tab-item"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></div>
+      <div class="tab-item"><div class="tab-icon tab-icon-active">●</div><div class="tab-label-active">Profile</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHATS ══ -->
+<div class="col">
+  <div class="screen-label">Chats</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="chats-header">
+      <div class="chats-title">Chats</div>
+      <div class="add-btn">+</div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="chat-item">
+      <div class="chat-avatar" style="background:#b8c9b0">🌿</div>
+      <div class="chat-content">
+        <div class="chat-name">Vera</div>
+        <div class="chat-preview">Let's do 10 dean?</div>
+      </div>
+      <div class="chat-time">4d ago</div>
+    </div>
+    <div class="divider" style="margin: 0 18px"></div>
+
+    <div class="chat-item">
+      <div class="chat-avatar chat-avatar-group">
+        <div class="chat-dots">
+          <div class="chat-dot"></div><div class="chat-dot"></div>
+          <div class="chat-dot"></div><div class="chat-dot"></div>
+        </div>
+      </div>
+      <div class="chat-content">
+        <div class="chat-name">Friday lock-in</div>
+        <div class="chat-preview">Chloe Guo: How's 2pm?</div>
+      </div>
+      <div class="chat-time">4d ago</div>
+    </div>
+    <div class="divider" style="margin: 0 18px"></div>
+
+    <div class="chat-item">
+      <div class="chat-avatar" style="background:#c4a882">☕</div>
+      <div class="chat-content">
+        <div class="chat-name">Chlo chlo</div>
+        <div class="chat-preview">ss</div>
+      </div>
+      <div class="chat-time">7d ago</div>
+    </div>
+    <div class="divider" style="margin: 0 18px"></div>
+
+    <div class="chat-item">
+      <div class="chat-avatar" style="background:#a89080">🎬</div>
+      <div class="chat-content">
+        <div class="chat-name">Timothée C.</div>
+        <div class="chat-preview">heelo</div>
+      </div>
+      <div class="chat-time">36d ago</div>
+    </div>
+    <div class="divider" style="margin: 0 18px"></div>
+
+    <div style="height: 80px"></div>
+
+    <div class="tab-bar">
+      <div class="tab-item"><div class="tab-icon">✦</div><div class="tab-label">Discover</div></div>
+      <div class="tab-item"><div class="tab-icon">🤍</div><div class="tab-label">Friends</div></div>
+      <div class="tab-item"><div class="tab-icon tab-icon-active">●</div><div class="tab-label-active">Chat</div></div>
+      <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FRIENDS ══ -->
+<div class="col">
+  <div class="screen-label">Friends</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="friends-header">
+      <div class="friends-title">Friends</div>
+      <div class="add-btn">+</div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-header-title">
+          <span class="section-arrow">▶</span> Pending Requests
+          <span style="font-family:'Inter',sans-serif; font-size:12px; color:#9B9B9B; font-weight:400">(0)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Today -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-header-title">
+          <span class="section-arrow">▼</span> Available Today
+          <span style="font-family:'Inter',sans-serif; font-size:12px; color:#3F5443; font-weight:500">(2)</span>
+        </div>
+      </div>
+      <div class="friend-card">
+        <div class="friend-avatar" style="background:#c4a882; display:flex; align-items:center; justify-content:center; font-size:18px">☕</div>
+        <div class="friend-info">
+          <div class="friend-name">Chlo chlo</div>
+          <div class="friend-availability">10:00–17:00 · Anywhere</div>
+        </div>
+        <div class="green-dot"></div>
+      </div>
+      <div class="friend-card">
+        <div class="friend-avatar" style="background:#a89080; display:flex; align-items:center; justify-content:center; font-size:18px">🎬</div>
+        <div class="friend-info">
+          <div class="friend-name">Timothée C.</div>
+          <div class="friend-availability">11:30–14:30 · Anywhere</div>
+        </div>
+        <div class="green-dot"></div>
+      </div>
+    </div>
+
+    <!-- Not Available -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-header-title">
+          <span class="section-arrow">▼</span> Not Available
+          <span style="font-family:'Inter',sans-serif; font-size:12px; color:#9B9B9B; font-weight:400">(1)</span>
+        </div>
+      </div>
+      <div class="friend-card">
+        <div class="friend-avatar" style="background:#b8c9b0; display:flex; align-items:center; justify-content:center; font-size:18px">🌿</div>
+        <div class="friend-info">
+          <div class="friend-name">Vera</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 20px"></div>
+    <div class="tab-bar">
+      <div class="tab-item"><div class="tab-icon">✦</div><div class="tab-label">Discover</div></div>
+      <div class="tab-item"><div class="tab-icon tab-icon-active">●</div><div class="tab-label-active">Friends</div></div>
+      <div class="tab-item"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></div>
+      <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

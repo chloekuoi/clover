@@ -17,7 +17,15 @@
       "Bash(git -C /Users/chloe/Documents/Claude/cowork-connect add src/components/session/SessionRequestCard.tsx src/screens/matches/ChatScreen.tsx)",
       "Bash(git -C:*)",
       "mcp__Claude_Preview__preview_start",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(npm test -- --testPathPattern=\"GroupSessionRSVPCard\" --watchAll=false)",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/jest/package.json''\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/jest-expo/package.json''\\).version\\)\")",
+      "Bash(git stash)",
+      "Bash(npm test -- --testPathPattern=\"src/components/session/__tests__/GroupSessionRSVPCard\" --watchAll=false --rootDir /Users/chloe/Documents/Claude/Clover)",
+      "Bash(git stash pop)",
+      "Bash(grep -r \"work_type\\\\|currently_working_on\\\\|school\" /Users/chloe/Documents/Claude/Clover/supabase/*.sql)",
+      "Bash(npm test *)"
     ]
   }
 }
