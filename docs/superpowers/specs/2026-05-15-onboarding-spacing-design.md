@@ -72,6 +72,7 @@ All other theme tokens unchanged (`screenPaddingTop: 20`, `screenPaddingH: 28`).
 |---|---|---|
 | `question.marginBottom` | `24` | `10` |
 | `dateRow.marginBottom` | `16` | `8` |
+| `error.marginBottom` | `12` | `12` (unchanged — error text is conditional and infrequent; changing it would not affect the default layout) |
 | `bottomSpacer` | `height: 32` | **removed** |
 
 #### NotificationsScreen
@@ -80,6 +81,7 @@ All other theme tokens unchanged (`screenPaddingTop: 20`, `screenPaddingH: 28`).
 | `question.marginBottom` | `14` | `10` |
 | `body.marginBottom` | `28` | `20` |
 | `cta.marginBottom` | `12` | `8` |
+| `skip.marginBottom` | `8` | **removed** (0) |
 | `bottomSpacer` | `height: 32` | **removed** |
 
 #### ContactSyncScreen
@@ -88,10 +90,15 @@ All other theme tokens unchanged (`screenPaddingTop: 20`, `screenPaddingH: 28`).
 | `question.marginBottom` | `14` | `10` |
 | `body.marginBottom` | `28` | `20` |
 | `cta.marginBottom` | `12` | `8` |
+| `skip.marginBottom` | `8` | **removed** (0) |
+| `spinner.marginBottom` | `24` | `8` (matches `cta.marginBottom` — spinner replaces cta, so the gap should be consistent) |
 | `bottomSpacer` | `height: 32` | **removed** |
 
-#### SuccessScreen
-No `bottomSpacer` or ProgressBar — no changes needed beyond confirming `spacer: { flex: 1 }` is clean.
+---
+
+### SuccessScreen (no changes)
+
+`SuccessScreen` has no ProgressBar and no `bottomSpacer`. No changes needed. `spacer: { flex: 1 }` is correct as-is. `question.marginBottom: 24` is intentionally left at `24` — without a ProgressBar below, the looser spacing is appropriate and there is no nav cluster to connect to. `SuccessScreen.tsx` is not in the Files to Modify table.
 
 ### ProgressBar component
 No changes — `paddingTop: 12` stays as-is. It now provides the sole visual gap between content and the nav row.
@@ -103,6 +110,7 @@ These use a `ScrollView` that fills space between the wordmark and ProgressBar. 
 |---|---|---|---|
 | LookingForScreen | `question.marginBottom` | `20` | `14` |
 | AboutScreen | `sectionHeading.marginBottom` | `14` | `10` |
+| AboutScreen | `fieldLabel.marginBottom` | `12` | `12` (unchanged — already tight enough) |
 | AboutScreen | `input.marginBottom` (bottom pad) | `4` | `4` (unchanged) |
 
 ---
