@@ -183,8 +183,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   kav: { flex: 1 },
-  spacer: { flex: 1, maxHeight: 200 },
-  bottomSpacer: { flex: 1 },
+  spacer: { flex: 1 },
+  bottomSpacer: { height: 32 },
   question: {
     fontSize: 24,
     lineHeight: 32,

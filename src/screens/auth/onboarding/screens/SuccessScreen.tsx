@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     flexShrink: 0,
   },
-  spacer: { flex: 1, maxHeight: 200 },
+  spacer: { flex: 1 },
   saving: {
     fontFamily: t.fontSerif.lightItalic,
     fontSize: 14,

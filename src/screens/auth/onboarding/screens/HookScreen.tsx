@@ -79,11 +79,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     flexShrink: 0,
   },
-  spacer: {
-    flex: 1,
-    maxHeight: 200,
-  },
-  bottomSpacer: { flex: 1 },
+  spacer: { flex: 1 },
+  bottomSpacer: { height: 32 },
   question: {
     fontSize: 24,
     lineHeight: 32,
