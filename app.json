@@ -17,7 +17,8 @@
       "bundleIdentifier": "com.chloeguo.clover",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "cowork uses your location to find co-workers nearby."
       }
     },
     "android": {
@@ -31,7 +32,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "cowork uses your location to find co-workers nearby."
+        }
+      ]
     ],
     "extra": {
       "eas": {
