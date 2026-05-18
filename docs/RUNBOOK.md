@@ -2063,3 +2063,119 @@ Before testing Phase 7, run the new migration in Supabase SQL Editor:
 | `create_group_chat` RPC not found | Verify `008_group_chats.sql` was executed in Supabase SQL Editor |
 | Avatar in `GroupMessageBubble` not showing photo | Check `sender_id` is joined to `profiles.photo_url` when fetching messages; initials fallback should always render |
 | Modal won't swipe-to-dismiss | Verify `onRequestClose={onDismiss}` is set on `<Modal>` and `presentationStyle="pageSheet"` is present |
+
+---
+
+# Phase 9 — Apple Sign-In + Delete Account: Verification Flows
+
+## Prerequisites
+
+**Before testing Apple Sign-In flows:**
+1. Enable Apple provider in Supabase Dashboard → Authentication → Providers → Apple
+2. Configure Services ID, Team ID, Key ID, and private key
+3. Register the Supabase callback URL in Apple Developer Console
+4. Use an iOS device or Simulator with an Apple ID configured
+
+**Before testing Delete Account:**
+- Run `supabase/012_delete_account.sql` in Supabase SQL Editor
+
+---
+
+## Flow 53 — Delete Account (happy path)
+
+**Setup:** User A has profile, photos, work intent, a match, messages, session participation, and a friendship.
+
+**Steps:**
+1. Sign in as User A
+2. Profile tab → tap gear icon (top-left) → Settings
+3. Tap "Delete Account"
+4. First Alert: tap "Delete Account"
+5. Second Alert: tap "Confirm Delete"
+6. Expect: `ActivityIndicator` overlay appears → app returns to Welcome screen
+
+**Verify in Supabase SQL Editor:**
+```sql
+-- Replace 'USER_A_UUID' with actual UUID
+SELECT count(*) FROM profiles WHERE id = 'USER_A_UUID';          -- 0
+SELECT count(*) FROM profile_photos WHERE user_id = 'USER_A_UUID'; -- 0
+SELECT count(*) FROM work_intents WHERE user_id = 'USER_A_UUID';    -- 0
+SELECT count(*) FROM matches WHERE user1_id = 'USER_A_UUID' OR user2_id = 'USER_A_UUID'; -- 0
+SELECT count(*) FROM messages WHERE sender_id = 'USER_A_UUID';      -- 0
+SELECT count(*) FROM friendships WHERE requester_id = 'USER_A_UUID' OR addressee_id = 'USER_A_UUID'; -- 0
+SELECT count(*) FROM auth.users WHERE id = 'USER_A_UUID';           -- 0
+```
+
+**Pass condition:** All queries return 0; app is on Welcome screen.
+
+---
+
+## Flow 54 — Delete Account (cancel at second alert)
+
+**Steps:**
+1. Profile tab → gear → Settings → "Delete Account"
+2. First Alert: tap "Delete Account"
+3. Second Alert: tap "Cancel"
+4. Expect: remain on SettingsScreen; no loading overlay; account intact
+
+**Pass condition:** User can navigate back to Profile; profile data still visible.
+
+---
+
+## Flow 55 — Apple Sign-In (new user)
+
+**Prerequisites:** Apple provider enabled in Supabase; iOS device/Simulator with Apple ID.
+
+**Steps:**
+1. Open app (signed out)
+2. Tap "Sign In" → LoginScreen
+3. Tap "Sign in with Apple" → authenticate with Apple ID
+4. Expect: CinematicOnboardingFlow opens (new user has no profile)
+5. Complete onboarding → MainTabs
+
+**Verify in Supabase:**
+```sql
+SELECT id, email, raw_app_meta_data->>'provider' as provider
+FROM auth.users
+ORDER BY created_at DESC LIMIT 1;
+-- provider should be 'apple'
+```
+
+**Pass condition:** Onboarding shows; MainTabs after completion; auth.users has `provider = 'apple'`.
+
+---
+
+## Flow 56 — Apple Sign-In (returning user)
+
+**Prerequisites:** User already completed onboarding (`onboarding_complete = true`); signed out.
+
+**Steps:**
+1. LoginScreen → "Sign in with Apple" → authenticate with same Apple ID as Flow 55
+2. Expect: routes directly to MainTabs (Onboarding skipped)
+
+**Pass condition:** MainTabs appears without Onboarding.
+
+---
+
+## Flow 57 — Apple Sign-Up button on Signup screen
+
+**Steps:**
+1. Open app → tap "Get Started" (or "Create account") → SignupScreen
+2. Expect: "Sign up with Apple" button visible below the "or" divider (iOS only)
+3. Tap → authenticate → same outcome as Flow 55 or 56
+
+**Pass condition:** Button visible on iOS; not visible on Android; tapping authenticates via Apple.
+
+---
+
+## Phase 9 Common Failures
+
+| Issue | Solution |
+|-------|----------|
+| Apple button not appearing | Check `Platform.OS === 'ios'` guard; verify `expo-apple-authentication` in plugins (app.json); rebuild dev client |
+| `ERR_REQUEST_NOT_HANDLED` | Apple provider not enabled in Supabase Dashboard |
+| `ERR_REQUEST_CANCELED` | User tapped Cancel — expected behavior, no error shown |
+| Apple Sign-In routes to Onboarding for returning user | Check `profile.onboarding_complete` is true in DB; RootNavigator reads this via AuthContext |
+| Delete account shows error | Check `012_delete_account.sql` was applied; check user is authenticated; check RLS on tables |
+| App stays on loading overlay after delete | `supabase.auth.signOut()` may have failed; check `deleteAccount` in AuthContext calls signOut after RPC success |
+| Gear icon missing on ProfileScreen | Check ProfileStack includes `Settings` route; check GearIcon import in ProfileScreen |
+| Settings screen back button not working | Verify `navigation.goBack()` is used (not `navigate`); screen must be pushed onto ProfileStack |

@@ -2278,3 +2278,76 @@ The frontend is allowed to rely on the following guarantees from the data layer:
 | `renameGroup` RLS | Confirm UPDATE policy on `group_chats` allows any member (not just `created_by`) |
 | Group session `completed` trigger | For MVP, manually set via RPC call from client — no auto-trigger |
 | `work_intents` RLS for public SELECT | Confirmed public READ in Phase 2 — no change needed |
+
+---
+
+## Phase 9 — Apple Sign-In + Delete Account
+
+### RPC: `delete_account`
+
+**File:** `supabase/012_delete_account.sql`  
+**Security:** `SECURITY DEFINER`, `SET search_path = public, auth`  
+**Caller:** `authenticated` role only (`anon` revoked)  
+**Parameters:** None — uses `auth.uid()` internally  
+**Returns:** `void`
+
+**Behavior:** Cascade-deletes all data belonging to the calling user, then removes their `auth.users` row. Fully transactional and idempotent.
+
+**Deletion order (FK-safe):**
+
+| Step | Table | Condition |
+|------|-------|-----------|
+| 1 | `group_session_rsvps` | via `group_members` chain |
+| 2 | `group_messages` | `sender_id = auth.uid()` |
+| 3 | `group_chats` | `created_by = auth.uid()` (cascades members + messages) |
+| 4 | `group_members` | `user_id = auth.uid()` |
+| 5 | `profile_photos` | `user_id = auth.uid()` |
+| 6 | `work_intents` | `user_id = auth.uid()` |
+| 7 | `swipes` | `swiper_id = auth.uid()` OR `swiped_id = auth.uid()` |
+| 8 | `messages` | `sender_id = auth.uid()` |
+| 9 | `session_participants` | `user_id = auth.uid()` |
+| 10 | `sessions` | `initiated_by = auth.uid()` AND no remaining participants |
+| 11 | `matches` | `user1_id = auth.uid()` OR `user2_id = auth.uid()` |
+| 12 | `friendships` | `requester_id = auth.uid()` OR `addressee_id = auth.uid()` |
+| 13 | `storage.objects` | `bucket_id = 'avatars'` AND `name LIKE uid || '/%'` |
+| 14 | `profiles` | `id = auth.uid()` |
+| 15 | `auth.users` | `id = auth.uid()` |
+
+**Client call:**
+```typescript
+const { error } = await supabase.rpc('delete_account');
+if (!error) {
+  await supabase.auth.signOut(); // clear stale AsyncStorage session
+}
+```
+
+**After success:** `onAuthStateChange` fires with null session → RootNavigator renders AuthStack automatically.
+
+### AuthContext Methods (Phase 9)
+
+| Method | Signature | Notes |
+|--------|-----------|-------|
+| `signInWithApple` | `() => Promise<{ error: AuthError \| null }>` | iOS only; ERR_REQUEST_CANCELED → error: null; routing via onAuthStateChange |
+| `deleteAccount` | `() => Promise<{ error: PostgrestError \| null }>` | Calls delete_account RPC then signOut on success |
+
+### Package: `expo-apple-authentication`
+
+**Version:** `~8.0.8` (Expo SDK 54 compatible)
+
+**Required `app.json` config:**
+```json
+{
+  "ios": { "usesAppleSignIn": true },
+  "plugins": ["expo-apple-authentication"]
+}
+```
+
+**Apple HIG requirement:** Must use `AppleAuthenticationButton` component — custom TouchableOpacity buttons violate App Store guidelines.
+
+| Prop | Value |
+|------|-------|
+| `buttonType` | `SIGN_IN` (LoginScreen) or `SIGN_UP` (SignupScreen) |
+| `buttonStyle` | `BLACK` |
+| `cornerRadius` | `9999` (pill shape) |
+
+**Pre-requisite (manual):** Enable Apple provider in Supabase Dashboard → Authentication → Providers → Apple.
