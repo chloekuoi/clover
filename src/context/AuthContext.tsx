@@ -121,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!error) {
       await supabase.auth.signOut();
     }
-    return { error: error as PostgrestError | null };
+    return { error };
   };
 
   return (
