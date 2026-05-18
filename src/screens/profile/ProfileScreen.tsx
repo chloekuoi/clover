@@ -4,14 +4,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Polygon, Line } from 'react-native-svg';
+import Svg, { Polygon, Line, Path } from 'react-native-svg';
 import { colors, theme, spacing, borderRadius } from '../../constants';
 import { useAuth } from '../../context/AuthContext';
 import { getFullProfile } from '../../services/profileService';
@@ -36,10 +35,21 @@ function NibIcon() {
   );
 }
 
+function GearIcon() {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 24 24">
+      <Path
+        d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.02 7.02 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.48.48 0 0 0 .12.61l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+        fill={theme.textMuted}
+      />
+    </Svg>
+  );
+}
+
 export default function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
   const insets = useSafeAreaInsets();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile } = useAuth();
   const [profileData, setProfileData] = useState<Profile | null>(profile);
   const [photos, setPhotos] = useState<ProfilePhoto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,13 +82,6 @@ export default function ProfileScreen() {
     }, [loadProfile])
   );
 
-  const handleSignOut = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: signOut },
-    ]);
-  };
-
   const isProfileEmpty =
     photos.length === 0 &&
     !profileData?.name &&
@@ -105,7 +108,14 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       {/* ── Header ── */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
-        <View style={styles.headerSpacer} />
+        <TouchableOpacity
+          style={styles.headerAction}
+          onPress={() => navigation.navigate('Settings')}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          activeOpacity={0.7}
+        >
+          <GearIcon />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity
           style={styles.headerAction}
@@ -147,13 +157,6 @@ export default function ProfileScreen() {
           </View>
         ) : null}
 
-        <TouchableOpacity
-          style={styles.signOutLink}
-          onPress={handleSignOut}
-          hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}
-        >
-          <Text style={styles.signOutLinkText}>Sign out</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -184,9 +187,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderDefault,
-  },
-  headerSpacer: {
-    minWidth: 44,
   },
   headerTitle: {
     fontSize: 17,
@@ -248,15 +248,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.textInverse,
-  },
-  signOutLink: {
-    alignSelf: 'center',
-    marginTop: spacing[8],
-    marginBottom: spacing[6],
-  },
-  signOutLinkText: {
-    fontSize: 14,
-    color: theme.textMuted,
-    fontWeight: '400',
   },
 });
