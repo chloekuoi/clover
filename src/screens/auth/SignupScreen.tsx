@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { theme, spacing, borderRadius, touchTarget } from '../../constants';
 import { AuthStackParamList } from '../../navigation/AuthStack';
 import { useAuth } from '../../context/AuthContext';
@@ -20,7 +21,7 @@ type Props = {
 };
 
 export default function SignupScreen({ navigation }: Props) {
-  const { signUp } = useAuth();
+  const { signUp, signInWithApple } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -56,6 +57,15 @@ export default function SignupScreen({ navigation }: Props) {
       );
     }
     // If no confirmation needed, AuthContext will handle navigation via session listener
+  };
+
+  const handleAppleSignIn = async () => {
+    setLoading(true);
+    const { error } = await signInWithApple();
+    setLoading(false);
+    if (error) {
+      Alert.alert('Apple Sign-In failed', error.message);
+    }
   };
 
   return (
@@ -111,6 +121,25 @@ export default function SignupScreen({ navigation }: Props) {
             )}
           </TouchableOpacity>
         </View>
+
+        {Platform.OS === 'ios' && (
+          <>
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+            <View pointerEvents={loading ? 'none' : 'auto'} style={loading ? styles.appleButtonDisabled : undefined}>
+              <AppleAuthentication.AppleAuthenticationButton
+                buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+                buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                cornerRadius={9999}
+                style={styles.appleButton}
+                onPress={handleAppleSignIn}
+              />
+            </View>
+          </>
+        )}
 
         <TouchableOpacity
           style={styles.linkButton}
@@ -189,5 +218,28 @@ const styles = StyleSheet.create({
   linkBold: {
     color: theme.accent,
     fontWeight: '600',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing[6],
+    marginBottom: spacing[4],
+    gap: spacing[3],
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E2DDD6',
+  },
+  dividerText: {
+    fontSize: 13,
+    color: theme.textMuted,
+  },
+  appleButton: {
+    height: 52,
+    width: '100%',
+  },
+  appleButtonDisabled: {
+    opacity: 0.6,
   },
 });
