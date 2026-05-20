@@ -3,148 +3,303 @@ import {
   View,
   Text,
   StyleSheet,
-  Modal,
   ScrollView,
+  Image,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, theme, spacing } from '../../constants';
-import { DiscoveryCard } from '../../types';
-import UserProfileView from '../profile/UserProfileView';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DiscoveryCard, ProfilePhoto } from '../../types';
+import {
+  CLOVER_BG,
+  CLOVER_FOREST,
+  CLOVER_LAVENDER,
+  CLOVER_VIOLET,
+  FONT_CORMORANT_LIGHT,
+  FONT_DM_SANS_LIGHT,
+  FONT_DM_SANS_MEDIUM,
+} from '../../constants/clover';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const PHOTO_SIZE = SCREEN_WIDTH; // full-width squares
 
-interface UserProfileModalProps {
-  visible: boolean;
-  card: DiscoveryCard | null;
-  onDismiss: () => void;
-  onSkip: () => void;
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function formatTime(timeStr: string): string {
+  // "HH:MM:SS" → "H:MM"
+  const [h, m] = timeStr.split(':');
+  const hour = parseInt(h, 10);
+  return `${hour}:${m}`;
+}
+
+function formatDistance(km: number): string {
+  if (km < 1) return '< 1 km away';
+  return `${Math.round(km)} km away`;
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function PhotoBlock({ photo }: { photo: ProfilePhoto }) {
+  return (
+    <Image
+      source={{ uri: photo.photo_url }}
+      style={styles.photo}
+      resizeMode="cover"
+    />
+  );
+}
+
+function CardBlock({ label, answer }: { label: string; answer: string }) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.cardLabel}>{label}</Text>
+      <Text style={styles.cardAnswer}>{answer}</Text>
+    </View>
+  );
+}
+
+function InfoRow({ emoji, text }: { emoji: string; text: string }) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoEmoji}>{emoji}</Text>
+      <Text style={styles.infoText}>{text}</Text>
+    </View>
+  );
+}
+
+// ── Main component ─────────────────────────────────────────────────────────────
+
+interface DiscoverProfileViewProps {
+  card: DiscoveryCard;
+  onPass: () => void;
   onConnect: () => void;
 }
 
-export default function UserProfileModal({
-  visible,
-  card,
-  onDismiss,
-  onSkip,
-  onConnect,
-}: UserProfileModalProps) {
-  if (!card) return null;
+export default function DiscoverProfileView({ card, onPass, onConnect }: DiscoverProfileViewProps) {
+  const insets = useSafeAreaInsets();
+  const { profile, intent, distance, photos } = card;
+
+  const photo1 = photos[0];
+  const photo2 = photos[1];
+  const photo3 = photos[2];
+  const photo4 = photos[3];
+  const photo5 = photos[4];
+
+  const aboutText = profile.tagline || profile.bio;
+  const hasCwo = !!profile.currently_working_on;
+
+  let availableText: string | null = null;
+  if (intent?.available_from && intent?.available_until) {
+    availableText = `${formatTime(intent.available_from)} – ${formatTime(intent.available_until)}`;
+  }
+
+  const distanceLabel = distance > 0 ? formatDistance(distance) : null;
+  const nameDistance = [profile.name, distanceLabel].filter(Boolean).join(' · ');
+
+  const hasPersonalInfo =
+    !!profile.city ||
+    !!profile.neighborhood ||
+    !!profile.work_type ||
+    !!availableText ||
+    !!profile.school;
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={onDismiss}
-    >
-      <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: 100 + Math.max(insets.bottom, 16) },
+        ]}
+      >
         {/* Drag handle */}
         <View style={styles.handleRow}>
           <View style={styles.handle} />
         </View>
 
-        {/* Scrollable profile */}
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-        >
-          <UserProfileView
-            profile={card.profile}
-            todayIntent={card.intent}
-            isOwnProfile={false}
-          />
-        </ScrollView>
+        {/* Name · distance */}
+        <Text style={styles.nameHeader}>{nameDistance}</Text>
 
-        {/* Sticky Skip / Connect bar */}
-        <View style={styles.actionBar}>
-          <TouchableOpacity
-            style={[styles.btn, styles.btnSkip]}
-            onPress={onSkip}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.btnSkipText}>✕</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.btn, styles.btnConnect]}
-            onPress={onConnect}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.btnConnectText}>✓</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    </Modal>
+        {/* Photo 1 */}
+        {photo1 ? <PhotoBlock photo={photo1} /> : null}
+
+        {/* About card */}
+        {aboutText ? <CardBlock label="About" answer={aboutText} /> : null}
+
+        {/* Photo 2 */}
+        {photo2 ? <PhotoBlock photo={photo2} /> : null}
+
+        {/* Personal info section */}
+        {hasPersonalInfo ? (
+          <View style={styles.infoSection}>
+            {profile.city ? <InfoRow emoji="🏙️" text={profile.city} /> : null}
+            {profile.neighborhood ? <InfoRow emoji="📍" text={profile.neighborhood} /> : null}
+            {profile.work_type ? <InfoRow emoji="💼" text={profile.work_type} /> : null}
+            {availableText ? <InfoRow emoji="🕐" text={availableText} /> : null}
+            {profile.school ? <InfoRow emoji="🎓" text={profile.school} /> : null}
+          </View>
+        ) : null}
+
+        {/* Currently working on card */}
+        {hasCwo ? (
+          <CardBlock label="Currently building" answer={profile.currently_working_on!} />
+        ) : null}
+
+        {/* Photos 3, 4, 5 */}
+        {photo3 ? <PhotoBlock photo={photo3} /> : null}
+        {photo4 ? <PhotoBlock photo={photo4} /> : null}
+        {photo5 ? <PhotoBlock photo={photo5} /> : null}
+      </ScrollView>
+
+      {/* Floating Pass / Connect bar */}
+      <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+        <TouchableOpacity
+          style={[styles.actionBtn, styles.passBtn]}
+          onPress={onPass}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.passBtnText}>Pass</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionBtn, styles.connectBtn]}
+          onPress={onConnect}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.connectBtnText}>Connect</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: '#f2f0f8',
   },
+  scrollContent: {
+    // paddingBottom set dynamically for floating bar
+  },
+
+  // Drag handle
   handleRow: {
     alignItems: 'center',
-    paddingTop: spacing[2],
-    paddingBottom: spacing[1],
+    paddingTop: 10,
+    paddingBottom: 8,
   },
   handle: {
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.borderDefault,
+    backgroundColor: 'rgba(124,92,191,0.25)',
   },
-  scroll: {
+
+  // Name header
+  nameHeader: {
+    fontFamily: FONT_CORMORANT_LIGHT,
+    fontSize: 22,
+    color: CLOVER_FOREST,
+    textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    letterSpacing: 0.3,
+  },
+
+  // Square photos
+  photo: {
+    width: PHOTO_SIZE,
+    height: PHOTO_SIZE,
+  },
+
+  // White prompt cards (about, cwo)
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 13,
+    marginHorizontal: 12,
+    marginVertical: 10,
+    padding: 18,
+  },
+  cardLabel: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 12,
+    color: 'rgba(30,61,40,0.45)',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  cardAnswer: {
+    fontFamily: FONT_CORMORANT_LIGHT,
+    fontSize: 22,
+    color: CLOVER_FOREST,
+    lineHeight: 28,
+  },
+
+  // Personal info section
+  infoSection: {
+    backgroundColor: '#ffffff',
+    borderRadius: 13,
+    marginHorizontal: 12,
+    marginVertical: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    gap: 10,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  infoEmoji: {
+    fontSize: 16,
+    width: 24,
+    textAlign: 'center',
+  },
+  infoText: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 14,
+    color: CLOVER_FOREST,
     flex: 1,
   },
-  content: {
-    paddingBottom: 100,
-  },
-  // Action bar — floats over content
+
+  // Floating action bar
   actionBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing[8],
-    paddingTop: spacing[3],
-    paddingBottom: spacing[6],
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    backgroundColor: 'rgba(242,240,248,0.92)',
+    borderTopWidth: 1,
+    borderTopColor: CLOVER_LAVENDER,
   },
-  btn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  actionBtn: {
+    flex: 1,
+    height: 52,
+    borderRadius: 9999,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
   },
-  btnSkip: {
-    backgroundColor: theme.surface,
+  passBtn: {
+    backgroundColor: '#ffffff',
     borderWidth: 1.5,
-    borderColor: 'rgba(184,92,77,0.4)',
+    borderColor: CLOVER_LAVENDER,
   },
-  btnSkipText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: colors.accentDanger,
+  passBtnText: {
+    fontFamily: FONT_DM_SANS_MEDIUM,
+    fontSize: 15,
+    color: CLOVER_VIOLET,
+    letterSpacing: 0.3,
   },
-  btnConnect: {
-    backgroundColor: colors.accentSuccess,
-    shadowColor: colors.accentSuccess,
-    shadowOpacity: 0.42,
-    shadowRadius: 12,
-    elevation: 4,
+  connectBtn: {
+    backgroundColor: CLOVER_FOREST,
   },
-  btnConnectText: {
-    fontSize: 19,
-    fontWeight: '700',
-    color: theme.surface,
+  connectBtnText: {
+    fontFamily: FONT_DM_SANS_MEDIUM,
+    fontSize: 15,
+    color: CLOVER_BG,
+    letterSpacing: 0.3,
   },
 });
