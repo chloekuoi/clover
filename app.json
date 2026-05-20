@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "cowork-connect",
+    "name": "clover",
     "slug": "cowork-connect",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,17 +10,22 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ede8ff"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.cowork-connect",
-      "usesAppleSignIn": true
+      "bundleIdentifier": "com.chloeguo.clover",
+      "buildNumber": "1",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "cowork uses your location to find co-workers nearby."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ede8ff"
       },
       "edgeToEdgeEnabled": true
     },
@@ -29,7 +34,18 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
-      "expo-apple-authentication"
-    ]
+      "expo-apple-authentication",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "cowork uses your location to find co-workers nearby."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d5366a10-1846-4ee3-a7ac-2e5148494c52"
+      }
+    }
   }
 }

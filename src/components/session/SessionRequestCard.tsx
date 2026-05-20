@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { borderRadius, colors, spacing, theme, touchTarget, shadows } from '../../constants';
+import { getSessionScheduledDate, isSessionVisible } from '../../services/sessionVisibility';
 import { SessionRecord } from '../../types';
 import SessionReceiptCard from './SessionReceiptCard';
+import { CLOVER_FOREST } from '../../constants/clover';
+import CloverMark from '../common/CloverMark';
 
 type SessionRequestCardProps = {
   session: SessionRecord;
@@ -59,7 +62,7 @@ export default function SessionRequestCard({
   const otherUserLocked = isInitiator
     ? !!session.locked_by_invitee_at
     : !!session.locked_by_initiator_at;
-  const scheduledLabel = formatDateLabel(session.scheduled_date || session.session_date);
+  const scheduledLabel = formatDateLabel(getSessionScheduledDate(session));
   const bothLocked = currentUserLocked && otherUserLocked;
 
   const statusDotPulse = useRef(new Animated.Value(0)).current;
@@ -141,12 +144,38 @@ export default function SessionRequestCard({
 
   const [showProposeInput, setShowProposeInput] = useState(false);
   const [proposeText, setProposeText] = useState('');
+
+  const spinAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (session.status !== 'pending') {
+      spinAnim.stopAnimation();
+      spinAnim.setValue(0); // reset so next pending cycle starts from 0deg
+      return;
+    }
+    const loop = Animated.loop(
+      Animated.timing(spinAnim, {
+        toValue: 1,
+        duration: 8000,
+        easing: Easing.linear,
+        useNativeDriver: false, // required: react-native-svg views are not native-driver compatible
+      })
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [session.status, spinAnim]);
+
+  const spinRotation = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
   // IMPORTANT: All hooks (useRef/useEffect/useMemo) must appear ABOVE this line.
   // Do not add hooks below — early returns follow and would violate Rules of Hooks.
   // Capture status before TypeScript narrows it via early returns below.
   const statusForDisplay = session.status as SessionRecord['status'];
 
-  if (session.status === 'cancelled') {
+  if (!isSessionVisible(session)) {
     return null;
   }
 
@@ -166,7 +195,9 @@ export default function SessionRequestCard({
     return (
       <View style={styles.pendingRowCard}>
         <View style={styles.pendingIconBox}>
-          <Text style={styles.pendingIcon}>☕️</Text>
+          <Animated.View style={{ transform: [{ rotate: spinRotation }] }}>
+            <CloverMark size={26} color={CLOVER_FOREST} bg={colors.statusPendingBg} />
+          </Animated.View>
         </View>
         <View style={styles.pendingContent}>
           <View style={styles.pendingTitleRow}>
@@ -198,7 +229,9 @@ export default function SessionRequestCard({
         {/* ── TOP ROW ── */}
         <View style={styles.pendingRowInner}>
           <View style={styles.pendingIconBox}>
-            <Text style={styles.pendingIcon}>☕️</Text>
+            <Animated.View style={{ transform: [{ rotate: spinRotation }] }}>
+              <CloverMark size={26} color={CLOVER_FOREST} bg={colors.statusPendingBg} />
+            </Animated.View>
           </View>
           <View style={styles.pendingContent}>
             <View style={styles.pendingTitleRow}>
@@ -310,10 +343,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-  },
-  pendingIcon: {
-    fontSize: 22,
-    color: colors.statusPendingText,
   },
   pendingContent: {
     flex: 1,

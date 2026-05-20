@@ -22,11 +22,13 @@ import { deletePhoto, getPhotos, pickImage, setPrimaryPhoto, uploadPhoto } from 
 import { getFullProfile, updateProfile } from '../../services/profileService';
 
 const WORK_TYPES = [
-  'Remote Employee',
-  'Freelancer',
-  'Founder',
-  'Student',
-  'Digital Nomad',
+  'Solo founder',
+  'Technical / Engineer',
+  'Designer',
+  'Marketer / Growth',
+  'Product',
+  'Operator',
+  'Investor',
   'Other',
 ];
 
@@ -303,7 +305,27 @@ export default function EditProfileScreen({ navigation }: Props) {
     Alert.alert('Work type', 'Select your work type', [
       ...WORK_TYPES.map((type) => ({
         text: type,
-        onPress: () => setForm((prev) => ({ ...prev, work_type: type })),
+        onPress: () => {
+          if (type === 'Other') {
+            if (Platform.OS === 'ios') {
+              Alert.prompt(
+                'Your role',
+                'Enter your role',
+                (text) => {
+                  const trimmed = text?.trim();
+                  setForm((prev) => ({ ...prev, work_type: trimmed || 'Other' }));
+                },
+                'plain-text',
+                '',
+              );
+            } else {
+              // TODO: Android lacks Alert.prompt — custom role text input deferred to post-MVP
+              setForm((prev) => ({ ...prev, work_type: 'Other' }));
+            }
+          } else {
+            setForm((prev) => ({ ...prev, work_type: type }));
+          }
+        },
       })),
       { text: 'Cancel', style: 'cancel' as const },
     ]);

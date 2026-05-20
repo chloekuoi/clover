@@ -42,3 +42,7 @@ yarn-error.*
 
 # worktrees
 .worktrees/
+
+# superpowers brainstorm sessions
+.superpowers/
+Archive/client_secret_*.json

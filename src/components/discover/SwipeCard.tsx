@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
+import { BlurView } from 'expo-blur';
 import { theme, spacing, borderRadius, colors } from '../../constants';
+import { CLOVER_BG, CLOVER_FOREST } from '../../constants/clover';
 import { DiscoveryCard } from '../../types';
 import { formatDistance } from '../../hooks/useLocation';
 import Animated, {
@@ -13,7 +15,7 @@ import Animated, {
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export const CARD_WIDTH = SCREEN_WIDTH - spacing[8];
-export const CARD_HEIGHT = CARD_WIDTH * 1.35;
+export const CARD_HEIGHT = CARD_WIDTH * 1.52;
 
 type SwipeCardProps = {
   card: DiscoveryCard;
@@ -95,24 +97,29 @@ export default function SwipeCard({ card, translateX, isTopCard = false }: Swipe
         </View>
       )}
 
-      {/* Dark overlay at bottom */}
-      <View style={styles.gradientOverlay} />
-
-      {/* Info overlay */}
-      <View style={styles.infoOverlay}>
-        <Text style={styles.distance}>📍 {formatDistance(distance)}</Text>
-        <View style={styles.nameRow}>
-          <Text style={styles.name}>{profile.name || 'Anonymous'}</Text>
-          {age ? <Text style={styles.age}>{age}</Text> : null}
+      {/* Glass overlay */}
+      <BlurView intensity={55} tint="dark" style={styles.glassOverlay}>
+        <View style={styles.glassInner}>
+          <Text style={styles.distance}>📍 {formatDistance(distance)}</Text>
+          <View style={styles.nameRow}>
+            <Text style={styles.name}>{profile.name || 'Anonymous'}</Text>
+            {age ? <Text style={styles.age}>{age}</Text> : null}
+          </View>
+          {profile.work_type ? (
+            <View style={styles.roleChip}>
+              <Text style={styles.roleChipText}>{profile.work_type}</Text>
+            </View>
+          ) : null}
+          {intent?.task_description ? (
+            <>
+              <View style={styles.divider} />
+              <Text style={styles.intent} numberOfLines={2}>
+                {intent.task_description}
+              </Text>
+            </>
+          ) : null}
         </View>
-        {profile.work_type ? (
-          <Text style={styles.profession}>{profile.work_type}</Text>
-        ) : null}
-        <View style={styles.divider} />
-        <Text style={styles.intent} numberOfLines={2}>
-          {intent.task_description}
-        </Text>
-      </View>
+      </BlurView>
     </View>
   );
 }
@@ -121,7 +128,7 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    borderRadius: borderRadius.lg,
+    borderRadius: 22,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -142,29 +149,27 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#8fa893',
+    backgroundColor: CLOVER_BG,
     alignItems: 'center',
     justifyContent: 'center',
   },
   placeholderInitial: {
     fontSize: CARD_WIDTH * 0.22,
     fontWeight: '700',
-    color: 'rgba(255,255,255,0.25)',
+    color: CLOVER_FOREST,
   },
-  gradientOverlay: {
+  glassOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 140,
-    backgroundColor: 'rgba(20,32,22,0.78)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.18)',
+    overflow: 'hidden',
   },
-  infoOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+  glassInner: {
     padding: spacing[4],
+    backgroundColor: 'rgba(255,255,255,0.06)',
   },
   distance: {
     fontSize: 10,
@@ -190,11 +195,18 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.52)',
     marginLeft: spacing[1],
   },
-  profession: {
-    fontSize: 10.5,
-    fontWeight: '500',
-    color: 'rgba(255,255,255,0.65)',
+  roleChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: borderRadius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     marginBottom: spacing[2],
+  },
+  roleChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.85)',
   },
   divider: {
     height: 1,

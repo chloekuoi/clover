@@ -7,6 +7,7 @@ export type Profile = {
   username: string;
   photo_url: string | null;
   work_type: string | null;
+  desired_roles: string | null;
   interests: string[] | null;
   bio: string | null;
   phone_number: string | null;
@@ -70,7 +71,7 @@ export type Swipe = {
 
 export type DiscoveryCard = {
   profile: Profile;
-  intent: WorkIntent;
+  intent: WorkIntent | null;
   distance: number; // in kilometers
 };
 
@@ -141,6 +142,9 @@ export type GroupMessage = {
   sender_photo_url: string | null;
 };
 
+// Group chat UI only renders active proposed sessions whose scheduled date has
+// not passed yet. Legacy completed rows may still exist in storage and should
+// be treated as hidden/inactive in the timeline.
 export type GroupSessionStatus = 'proposed' | 'completed' | 'cancelled';
 
 export type GroupSession = {
@@ -176,6 +180,9 @@ export type GroupTimelineItem =
   | { type: 'message'; message: GroupMessage }
   | { type: 'session'; session: GroupSession };
 
+// DM session cards are only shown in chat while the session is still current:
+// pending/active and on or before the scheduled local date. Declined,
+// completed, cancelled, and past-date sessions are hidden from the timeline.
 // Sessions types
 export type SessionStatus = 'pending' | 'active' | 'declined' | 'completed' | 'cancelled';
 

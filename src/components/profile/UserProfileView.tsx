@@ -8,11 +8,52 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, theme, spacing, borderRadius } from '../../constants';
+import Svg, { Path, Rect, Circle } from 'react-native-svg';
 import { Profile, ProfilePhoto, WorkIntent, WorkStyle, LocationType } from '../../types';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const INTENT_CARD_BORDER = '#D4E4D8';
+
+const PILL_ICON_COLOR = '#6B6B6B';
+const PILL_ICON_SIZE = 13;
+
+function BriefcaseIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Rect x={2} y={7} width={20} height={14} rx={2} />
+      <Path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+    </Svg>
+  );
+}
+
+function PinIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 21C12 21 5 13.5 5 8.5a7 7 0 1 1 14 0c0 5-7 12.5-7 12.5z" />
+      <Circle cx={12} cy={8.5} r={2.5} fill={PILL_ICON_COLOR} stroke="none" />
+    </Svg>
+  );
+}
+
+function BuildingIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M3 21h18M6 21V6l6-3 6 3v15M9 10h1m4 0h1M9 14h1m4 0h1M9 18h1m4 0h1" />
+    </Svg>
+  );
+}
+
+function PeopleIcon() {
+  return (
+    <Svg width={PILL_ICON_SIZE} height={PILL_ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke={PILL_ICON_COLOR} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <Circle cx={9} cy={7} r={4} />
+      <Path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <Path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </Svg>
+  );
+}
 
 const WORK_STYLE_EMOJI: Record<WorkStyle, string> = {
   'Deep focus': '🎧',
@@ -116,10 +157,13 @@ export default function UserProfileView({
   }, [profile.birthday]);
 
   // Only show pills that have values
-  const pills: { key: string; icon: string; label: string }[] = [
-    ...(profile.work_type ? [{ key: 'work_type', icon: '💼', label: profile.work_type }] : []),
-    ...(profile.neighborhood ? [{ key: 'neighborhood', icon: '📍', label: profile.neighborhood }] : []),
-    ...(profile.city ? [{ key: 'city', icon: '🏙️', label: profile.city }] : []),
+  const pills: { key: string; iconType: 'work' | 'location' | 'city' | 'people'; label: string }[] = [
+    ...(profile.work_type ? [{ key: 'work_type', iconType: 'work' as const, label: profile.work_type }] : []),
+    ...(profile.neighborhood ? [{ key: 'neighborhood', iconType: 'location' as const, label: profile.neighborhood }] : []),
+    ...(profile.city ? [{ key: 'city', iconType: 'city' as const, label: profile.city }] : []),
+    ...(profile.desired_roles && !profile.desired_roles.split(', ').includes('Open to anyone')
+      ? [{ key: 'desired_roles', iconType: 'people' as const, label: `Looking for: ${profile.desired_roles}` }]
+      : []),
   ];
 
   // Field groups — empty values are hidden
@@ -149,8 +193,15 @@ export default function UserProfileView({
     ));
   }, []);
 
-  // Show intent card: always if active; only for own profile if empty
-  const showIntentCard = todayIntent !== null || isOwnProfile;
+  const PILL_ICONS: Record<'work' | 'location' | 'city' | 'people', React.ReactElement> = {
+    work: <BriefcaseIcon />,
+    location: <PinIcon />,
+    city: <BuildingIcon />,
+    people: <PeopleIcon />,
+  };
+
+  // Show intent card on others' profiles only
+  const showIntentCard = !isOwnProfile && todayIntent !== null;
 
   return (
     <>
@@ -184,7 +235,7 @@ export default function UserProfileView({
           >
             {pills.map((pill) => (
               <View key={pill.key} style={styles.pill}>
-                <Text style={styles.pillIcon}>{pill.icon}</Text>
+                {PILL_ICONS[pill.iconType]}
                 <Text style={styles.pillText}>{pill.label}</Text>
               </View>
             ))}
@@ -271,7 +322,7 @@ const styles = StyleSheet.create({
   // Photos
   primaryPhotoBlock: {
     gap: spacing[3],
-    paddingTop: spacing[4],
+    paddingTop: spacing[2],
   },
   secondaryPhotoBlock: {
     gap: spacing[3],
@@ -313,15 +364,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   nameText: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 32,
+    fontWeight: '300',
     color: theme.text,
     letterSpacing: -0.3,
   },
   ageText: {
-    fontSize: 22,
-    fontWeight: '400',
-    color: theme.textSecondary,
+    fontFamily: 'Inter-Light',
+    fontSize: 18,
+    fontWeight: '300',
+    color: theme.textMuted,
   },
   // Pills
   pillsRow: {
@@ -342,9 +395,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: borderRadius.full,
   },
-  pillIcon: {
-    fontSize: 14,
-  },
   pillText: {
     fontSize: 13,
     fontWeight: '600',
@@ -361,9 +411,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   fieldLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: theme.text,
+    fontFamily: 'Inter-Regular',
+    fontSize: 11,
+    fontWeight: '400',
+    color: theme.textMuted,
+    letterSpacing: 0.5,
     marginBottom: 2,
   },
   fieldValue: {

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IntentScreen Typography Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 48px 32px 64px;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 280px;
+  }
+
+  .badge {
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .badge-a { background: #3F5443; color: #fff; }
+  .badge-b { background: #5B4A7A; color: #fff; }
+  .badge-c { background: #7A4A2E; color: #fff; }
+
+  .option-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #eee;
+    text-align: center;
+  }
+  .option-desc {
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 220px;
+  }
+
+  /* Phone shell */
+  .phone {
+    width: 280px;
+    background: #F5F4F1;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .notch {
+    width: 100px;
+    height: 24px;
+    background: #111;
+    border-radius: 0 0 16px 16px;
+    margin: 0 auto;
+  }
+  .screen { padding: 18px 20px 28px; }
+
+  /* Shared elements */
+  .subtitle-base {
+    margin-bottom: 6px;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .star { color: #C97B4B; }
+
+  .input-box {
+    background: #fff;
+    border: 1px solid #E4E3E0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #9B9B9B;
+    min-height: 50px;
+    margin-bottom: 14px;
+  }
+  .options-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .divider { height: 1px; background: #EEEDEA; margin: 10px 0; }
+  .chip-row { display: flex; gap: 5px; margin-top: 6px; }
+  .chip {
+    flex: 1;
+    padding: 7px 3px;
+    border-radius: 9px;
+    border: 1px solid #E4E3E0;
+    text-align: center;
+    font-size: 10.5px;
+    font-family: 'Inter', sans-serif;
+    color: #6B6B6B;
+    font-weight: 500;
+  }
+  .chip-selected { background: #3F5443; border-color: #3F5443; color: #fff; }
+
+  .time-row { display: flex; gap: 10px; margin-top: 6px; align-items: flex-end; }
+  .time-col { flex: 1; }
+  .time-lbl { font-size: 11px; color: #9B9B9B; margin-bottom: 4px; font-family: 'Inter', sans-serif; }
+  .time-box {
+    background: #fff;
+    border: 1px solid #E4E3E0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #1A1A1A;
+    font-family: 'Inter', sans-serif;
+  }
+  .dur-badge {
+    background: #EDF3EF;
+    border-radius: 20px;
+    padding: 3px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #3F5443;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  .btn {
+    background: #3F5443;
+    color: #fff;
+    border-radius: 12px;
+    padding: 13px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  /* ─── OPTION A: Editorial ─── */
+  /* Cormorant for title + section labels. Inter for chips/inputs/button */
+  .a-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: #9B9B9B;
+    letter-spacing: 0.5px;
+  }
+  .a-star { font-size: 19px; animation: spin 2.4s linear infinite; }
+  .a-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 300;
+    color: #1A1A1A;
+    line-height: 1.2;
+  }
+  .a-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: #1A1A1A;
+    letter-spacing: 0.2px;
+  }
+  .a-input {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+  }
+  .a-section { margin-bottom: 12px; }
+
+  /* ─── OPTION B: Refined Sans ─── */
+  /* Pure Inter, but lighter weights + tracking = luxury feel */
+  .b-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: #9B9B9B;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .b-star { font-size: 19px; animation: spin 2.4s linear infinite; }
+  .b-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 300;
+    color: #1A1A1A;
+    line-height: 1.2;
+  }
+  .b-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #9B9B9B;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .b-input {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+  }
+  .b-section { margin-bottom: 12px; }
+
+  /* ─── OPTION C: Duo-tone ─── */
+  /* Cormorant for title + italic sub-labels. Clean Inter for functional */
+  .c-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 300;
+    font-style: italic;
+    color: #9B9B9B;
+    letter-spacing: 0.2px;
+  }
+  .c-star { font-size: 19px; animation: spin 2.4s linear infinite; }
+  .c-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 300;
+    color: #1A1A1A;
+    line-height: 1.2;
+  }
+  .c-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6B6B6B;
+    letter-spacing: 0.3px;
+  }
+  .c-label-italic {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 400;
+    font-style: italic;
+    color: #3F5443;
+    letter-spacing: 0.2px;
+  }
+  .c-input {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+  }
+  .c-section { margin-bottom: 12px; }
+
+  @keyframes spin {
+    from { display: inline-block; transform: rotate(0deg); }
+    to   { display: inline-block; transform: rotate(360deg); }
+  }
+  .spin-wrap {
+    display: inline-block;
+    animation: spin 2.4s linear infinite;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ OPTION A ══ -->
+<div class="col">
+  <div class="badge badge-a">Option A</div>
+  <div class="option-name">Editorial</div>
+  <div class="option-desc">Cormorant for the title <em>and</em> section labels. Inter handles only functional UI — chips, inputs, button.</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="subtitle-base a-subtitle">Set availability to connect</div>
+      <div class="title-row" style="margin-top:6px">
+        <span class="star spin-wrap" style="font-size:18px">✦</span>
+        <span class="a-title">what are we cooking today?</span>
+      </div>
+      <div class="a-section">
+        <div class="input-box a-input">e.g., Writing a blog post, Coding my app</div>
+      </div>
+      <div class="options-card">
+        <div class="a-label">Work vibe</div>
+        <div class="chip-row">
+          <div class="chip">🎧 Deep focus</div>
+          <div class="chip">💬 Chat mode</div>
+          <div class="chip chip-selected">✌️ Flexible</div>
+        </div>
+        <div class="divider"></div>
+        <div class="a-label">Where</div>
+        <div class="chip-row">
+          <div class="chip">☕️ Cafe</div>
+          <div class="chip">📚 Library</div>
+          <div class="chip chip-selected">📍 Anywhere</div>
+        </div>
+      </div>
+      <div class="a-section">
+        <div class="a-label">Available</div>
+        <div class="time-row">
+          <div class="time-col">
+            <div class="time-lbl">Start</div>
+            <div class="time-box">9:00 AM</div>
+          </div>
+          <div class="time-col">
+            <div class="time-lbl">End</div>
+            <div class="time-box">5:00 PM</div>
+          </div>
+          <div class="dur-badge">8 hr</div>
+        </div>
+      </div>
+      <div class="btn">Find Co-Workers</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ OPTION B ══ -->
+<div class="col">
+  <div class="badge badge-b">Option B</div>
+  <div class="option-name">Quiet Luxury</div>
+  <div class="option-desc">Subtitle becomes small-caps Inter. Section labels go uppercase + tracked — no weight, all spacing. Minimal, restrained.</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="subtitle-base b-subtitle">Set availability to connect</div>
+      <div class="title-row" style="margin-top:8px">
+        <span class="star spin-wrap" style="font-size:18px">✦</span>
+        <span class="b-title">what are we cooking today?</span>
+      </div>
+      <div class="b-section">
+        <div class="input-box b-input">e.g., Writing a blog post, Coding my app</div>
+      </div>
+      <div class="options-card">
+        <div class="b-label">Work vibe</div>
+        <div class="chip-row">
+          <div class="chip">🎧 Deep focus</div>
+          <div class="chip">💬 Chat mode</div>
+          <div class="chip chip-selected">✌️ Flexible</div>
+        </div>
+        <div class="divider"></div>
+        <div class="b-label">Where</div>
+        <div class="chip-row">
+          <div class="chip">☕️ Cafe</div>
+          <div class="chip">📚 Library</div>
+          <div class="chip chip-selected">📍 Anywhere</div>
+        </div>
+      </div>
+      <div class="b-section">
+        <div class="b-label">Available</div>
+        <div class="time-row">
+          <div class="time-col">
+            <div class="time-lbl">Start</div>
+            <div class="time-box">9:00 AM</div>
+          </div>
+          <div class="time-col">
+            <div class="time-lbl">End</div>
+            <div class="time-box">5:00 PM</div>
+          </div>
+          <div class="dur-badge">8 hr</div>
+        </div>
+      </div>
+      <div class="btn">Find Co-Workers</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ OPTION C ══ -->
+<div class="col">
+  <div class="badge badge-c">Option C</div>
+  <div class="option-name">Duo-tone</div>
+  <div class="option-desc">Subtitle in Cormorant italic. Section labels stay small Inter. Two voices — serif for soul, sans for structure.</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="subtitle-base c-subtitle">Set availability to connect</div>
+      <div class="title-row" style="margin-top:6px">
+        <span class="star spin-wrap" style="font-size:18px">✦</span>
+        <span class="c-title">what are we cooking today?</span>
+      </div>
+      <div class="c-section">
+        <div class="input-box c-input">e.g., Writing a blog post, Coding my app</div>
+      </div>
+      <div class="options-card">
+        <div class="c-label">Work vibe</div>
+        <div class="chip-row">
+          <div class="chip">🎧 Deep focus</div>
+          <div class="chip">💬 Chat mode</div>
+          <div class="chip chip-selected">✌️ Flexible</div>
+        </div>
+        <div class="divider"></div>
+        <div class="c-label">Where</div>
+        <div class="chip-row">
+          <div class="chip">☕️ Cafe</div>
+          <div class="chip">📚 Library</div>
+          <div class="chip chip-selected">📍 Anywhere</div>
+        </div>
+      </div>
+      <div class="c-section">
+        <div class="c-label">Available</div>
+        <div class="time-row">
+          <div class="time-col">
+            <div class="time-lbl">Start</div>
+            <div class="time-box">9:00 AM</div>
+          </div>
+          <div class="time-col">
+            <div class="time-lbl">End</div>
+            <div class="time-box">5:00 PM</div>
+          </div>
+          <div class="dur-badge">8 hr</div>
+        </div>
+      </div>
+      <div class="btn">Find Co-Workers</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

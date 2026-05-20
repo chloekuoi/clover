@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option D — Quiet Luxury</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 32px 80px;
+    font-family: 'Inter', sans-serif;
+    gap: 48px;
+  }
+
+  h2 {
+    color: #eee;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .subtitle-text {
+    color: #666;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-top: 6px;
+  }
+
+  /* rule */
+  .rule { display: flex; align-items: center; gap: 16px; width: 100%; max-width: 900px; }
+  .rule-line { flex: 1; height: 1px; background: #2a2a2a; }
+  .rule-text { color: #444; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; }
+
+  .screens-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* labels */
+  .col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .badge {
+    font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase;
+    font-weight: 500; padding: 4px 12px; border-radius: 20px;
+  }
+  .badge-a { background: #3F5443; color: #fff; }
+  .badge-d { background: #7A5C3A; color: #fff; }
+  .screen-name { font-size: 11px; color: #555; letter-spacing: 0.5px; }
+
+  /* Phone */
+  .phone {
+    width: 240px;
+    background: #F5F4F1;
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .notch {
+    width: 90px; height: 22px;
+    background: #111;
+    border-radius: 0 0 14px 14px;
+    margin: 0 auto;
+  }
+
+  /* shared */
+  .divider { height: 1px; background: #EEEDEA; }
+  .green-dot { width: 7px; height: 7px; background: #3F5443; border-radius: 50%; flex-shrink: 0; }
+  .chip-row { display: flex; gap: 5px; margin-top: 5px; }
+  .chip {
+    flex: 1; padding: 6px 3px; border-radius: 8px;
+    border: 1px solid #E4E3E0; text-align: center;
+    font-size: 10px; font-family: 'Inter', sans-serif;
+    color: #6B6B6B; font-weight: 500;
+  }
+  .chip-sel { background: #3F5443; border-color: #3F5443; color: #fff; }
+
+  /* ── DISCOVER ── */
+  .d-screen { padding: 16px 18px 24px; }
+  .d-sub-a { font-family: 'Inter', sans-serif; font-size: 11px; color: #9B9B9B; margin-bottom: 4px; }
+  .d-sub-d { font-family: 'Inter', sans-serif; font-size: 11px; color: #9B9B9B; margin-bottom: 4px; letter-spacing: 0.3px; }
+  .d-title-row { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; }
+  .star-spin { display: inline-block; color: #C97B4B; font-size: 16px;
+    animation: spin 2.4s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .d-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: #1A1A1A; line-height: 1.2; flex: 1; }
+  .d-input { background: #fff; border: 1px solid #E4E3E0; border-radius: 10px; padding: 10px 12px;
+    font-size: 12px; color: #9B9B9B; font-family: 'Inter', sans-serif; margin-bottom: 12px; min-height: 44px; }
+  .d-card { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+
+  /* label A = Cormorant */
+  .lbl-a { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400; color: #1A1A1A; margin-bottom: 4px; }
+  /* label D = Inter Light */
+  .lbl-d { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 400; color: #9B9B9B; letter-spacing: 0.6px; margin-bottom: 4px; }
+
+  .d-time-row { display: flex; gap: 8px; margin-top: 5px; align-items: flex-end; }
+  .d-time-col { flex: 1; }
+  .d-time-sub { font-size: 10px; color: #9B9B9B; font-family: 'Inter', sans-serif; margin-bottom: 3px; }
+  .d-time-box { background: #fff; border: 1px solid #E4E3E0; border-radius: 8px; padding: 8px 10px;
+    font-size: 12px; color: #1A1A1A; font-family: 'Inter', sans-serif; }
+  .dur { background: #EDF3EF; border-radius: 20px; padding: 2px 7px;
+    font-size: 9px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+    color: #3F5443; font-family: 'Inter', sans-serif; white-space: nowrap; }
+  .btn { background: #3F5443; color: #fff; border-radius: 10px; padding: 12px;
+    text-align: center; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; margin-top: 6px; }
+
+  /* ── PROFILE ── */
+  .p-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 8px; }
+  .p-nav-icon { width: 28px; height: 28px; background: #3F5443; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; }
+  .p-photo { width: 100%; height: 160px; background: linear-gradient(160deg, #d4c5b0, #b8a898);
+    display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .p-info { padding: 12px 16px 0; }
+  .p-name-a { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: #1A1A1A; }
+  .p-name-d { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: #1A1A1A; }
+  .p-age { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; color: #9B9B9B; }
+  .p-tags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+  .p-tag { background: #EEEDEA; border-radius: 20px; padding: 3px 8px;
+    font-size: 10px; font-family: 'Inter', sans-serif; color: #6B6B6B; }
+  .focus-card { margin: 10px 16px 0; background: #fff; border-radius: 12px; padding: 12px 14px; }
+  .focus-lbl { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 600;
+    letter-spacing: 1.2px; text-transform: uppercase; color: #9B9B9B; margin-bottom: 3px; }
+  .focus-body { font-size: 11px; color: #9B9B9B; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
+  .focus-btn { background: #3F5443; border-radius: 8px; padding: 7px 12px;
+    font-size: 11px; font-weight: 600; color: #fff; font-family: 'Inter', sans-serif; display: inline-block; }
+  .p-sec { padding: 10px 16px 0; }
+
+  /* profile section label A = Cormorant */
+  .p-sec-lbl-a { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; color: #1A1A1A; margin-bottom: 2px; }
+  /* profile section label D = Inter light */
+  .p-sec-lbl-d { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 400; color: #9B9B9B; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+  .p-sec-val { font-size: 12px; color: #6B6B6B; font-family: 'Inter', sans-serif; padding-bottom: 10px; }
+
+  /* ── FRIENDS ── */
+  .f-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 10px; }
+  .f-title-a { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: #1A1A1A; }
+  .f-title-d { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: #1A1A1A; }
+  .add-btn { width: 28px; height: 28px; background: #3F5443; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; font-weight: 300; line-height: 1; }
+  .f-section { margin: 0 12px 8px; }
+  .f-sec-hdr { display: flex; align-items: center; justify-content: space-between;
+    background: #EEEDEA; border-radius: 10px; padding: 8px 12px; margin-bottom: 5px; }
+
+  /* section header A = Cormorant */
+  .f-sec-title-a { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 400; color: #1A1A1A;
+    display: flex; align-items: center; gap: 5px; }
+  /* section header D = Inter light */
+  .f-sec-title-d { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 400; color: #6B6B6B;
+    display: flex; align-items: center; gap: 5px; letter-spacing: 0.3px; }
+
+  .f-count-green { font-family: 'Inter', sans-serif; font-size: 10px; color: #3F5443; font-weight: 500; }
+  .f-count-muted { font-family: 'Inter', sans-serif; font-size: 10px; color: #9B9B9B; font-weight: 400; }
+  .f-arrow { font-size: 9px; color: #9B9B9B; }
+  .friend-card { background: #fff; border-radius: 10px; padding: 9px 12px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .f-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .f-info { flex: 1; }
+  .f-name { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; color: #1A1A1A; }
+  .f-avail { font-family: 'Inter', sans-serif; font-size: 10px; color: #9B9B9B; margin-top: 1px; }
+
+  /* tab bar */
+  .tab-bar { display: flex; background: #F5F4F1; border-top: 1px solid #EEEDEA; padding: 8px 0 14px; margin-top: 8px; }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .tab-lbl { font-family: 'Inter', sans-serif; font-size: 8px; color: #9B9B9B; }
+  .tab-lbl-on { font-family: 'Inter', sans-serif; font-size: 8px; color: #3F5443; font-weight: 500; }
+  .tab-ico { font-size: 14px; }
+  .tab-ico-on { font-size: 14px; color: #3F5443; }
+
+  /* annotation callouts */
+  .annotations {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .ann {
+    font-size: 10px;
+    color: #666;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    padding: 6px 10px;
+    border-left: 2px solid;
+    border-radius: 0 4px 4px 0;
+  }
+  .ann-a { border-color: #3F5443; background: rgba(63,84,67,0.06); }
+  .ann-d { border-color: #7A5C3A; background: rgba(122,92,58,0.06); }
+  .ann strong { display: block; margin-bottom: 1px; color: #999; }
+</style>
+</head>
+<body>
+
+<div>
+  <h2>Option A vs Option D</h2>
+  <p class="subtitle-text">Option A uses Cormorant Garamond for both screen titles <em>and</em> section labels. Option D uses Cormorant only where it can breathe — large display text. Section labels stay Inter Light, stripped of weight.</p>
+</div>
+
+<!-- ══════ DISCOVER ROW ══════ -->
+<div class="rule"><div class="rule-line"></div><div class="rule-text">Discover screen</div><div class="rule-line"></div></div>
+<div class="screens-row">
+
+  <!-- A: Discover -->
+  <div class="col">
+    <div class="badge badge-a">Option A — current</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="d-screen">
+        <div class="d-sub-a">Set availability to connect</div>
+        <div class="d-title-row">
+          <span class="star-spin">✦</span>
+          <span class="d-title">what are we cooking today?</span>
+        </div>
+        <div class="d-input">e.g., Writing a blog post, Coding my app</div>
+        <div class="d-card">
+          <div class="lbl-a">Work vibe</div>
+          <div class="chip-row">
+            <div class="chip">🎧 Deep focus</div>
+            <div class="chip">💬 Chat mode</div>
+            <div class="chip chip-sel">✌️ Flexible</div>
+          </div>
+          <div class="divider" style="margin:10px 0"></div>
+          <div class="lbl-a">Where</div>
+          <div class="chip-row">
+            <div class="chip">☕️ Cafe</div>
+            <div class="chip">📚 Library</div>
+            <div class="chip chip-sel">📍 Anywhere</div>
+          </div>
+        </div>
+        <div>
+          <div class="lbl-a">Available</div>
+          <div class="d-time-row">
+            <div class="d-time-col"><div class="d-time-sub">Start</div><div class="d-time-box">9:00 AM</div></div>
+            <div class="d-time-col"><div class="d-time-sub">End</div><div class="d-time-box">5:00 PM</div></div>
+            <div class="dur">8 hr</div>
+          </div>
+        </div>
+        <div class="btn" style="margin-top:12px">Find Co-Workers</div>
+      </div>
+    </div>
+    <div class="annotations">
+      <div class="ann ann-a"><strong>Work vibe / Where / Available</strong>Cormorant 16px — elegant but slightly thin at this size, can feel decorative rather than structural</div>
+    </div>
+  </div>
+
+  <!-- D: Discover -->
+  <div class="col">
+    <div class="badge badge-d">Option D — recommended</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="d-screen">
+        <div class="d-sub-d">Set availability to connect</div>
+        <div class="d-title-row">
+          <span class="star-spin">✦</span>
+          <span class="d-title">what are we cooking today?</span>
+        </div>
+        <div class="d-input">e.g., Writing a blog post, Coding my app</div>
+        <div class="d-card">
+          <div class="lbl-d">Work vibe</div>
+          <div class="chip-row">
+            <div class="chip">🎧 Deep focus</div>
+            <div class="chip">💬 Chat mode</div>
+            <div class="chip chip-sel">✌️ Flexible</div>
+          </div>
+          <div class="divider" style="margin:10px 0"></div>
+          <div class="lbl-d">Where</div>
+          <div class="chip-row">
+            <div class="chip">☕️ Cafe</div>
+            <div class="chip">📚 Library</div>
+            <div class="chip chip-sel">📍 Anywhere</div>
+          </div>
+        </div>
+        <div>
+          <div class="lbl-d">Available</div>
+          <div class="d-time-row">
+            <div class="d-time-col"><div class="d-time-sub">Start</div><div class="d-time-box">9:00 AM</div></div>
+            <div class="d-time-col"><div class="d-time-sub">End</div><div class="d-time-box">5:00 PM</div></div>
+            <div class="dur">8 hr</div>
+          </div>
+        </div>
+        <div class="btn" style="margin-top:12px">Find Co-Workers</div>
+      </div>
+    </div>
+    <div class="annotations">
+      <div class="ann ann-d"><strong>Work vibe / Where / Available</strong>Inter Regular 11px, tracked — recedes into the background, lets the title and content breathe. Quietly luxe.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PROFILE ROW ══════ -->
+<div class="rule"><div class="rule-line"></div><div class="rule-text">Profile screen</div><div class="rule-line"></div></div>
+<div class="screens-row">
+
+  <!-- A: Profile -->
+  <div class="col">
+    <div class="badge badge-a">Option A</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="p-nav"><div style="width:28px"></div><span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#1A1A1A">profile</span><div class="p-nav-icon">✦</div></div>
+      <div class="p-photo">🧑‍💻</div>
+      <div class="p-info">
+        <div style="display:flex;align-items:baseline;gap:6px"><div class="p-name-a">Chloe Guo</div><span class="p-age">28</span></div>
+        <div class="p-tags"><div class="p-tag">💼 Founder</div><div class="p-tag">📍 Yorkville</div><div class="p-tag">🏙 Toronto</div></div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-lbl">Today's focus</div>
+        <div class="focus-body">Share what you're working on today</div>
+        <div class="focus-btn">Set Today's Focus</div>
+      </div>
+      <div class="p-sec">
+        <div class="p-sec-lbl-a">Tagline</div>
+        <div class="p-sec-val">Hello</div>
+        <div class="divider"></div>
+      </div>
+      <div class="p-sec">
+        <div class="p-sec-lbl-a">Currently working on</div>
+        <div class="p-sec-val">CoFlow</div>
+      </div>
+      <div class="tab-bar" style="margin-top:10px">
+        <div class="tab"><div class="tab-ico">✦</div><div class="tab-lbl">Discover</div></div>
+        <div class="tab"><div class="tab-ico">🤍</div><div class="tab-lbl">Friends</div></div>
+        <div class="tab"><div class="tab-ico">💬</div><div class="tab-lbl">Chat</div></div>
+        <div class="tab"><div class="tab-ico-on">●</div><div class="tab-lbl-on">Profile</div></div>
+      </div>
+    </div>
+    <div class="annotations">
+      <div class="ann ann-a"><strong>Tagline / Currently working on</strong>Cormorant 15px — competes with the content below it</div>
+    </div>
+  </div>
+
+  <!-- D: Profile -->
+  <div class="col">
+    <div class="badge badge-d">Option D</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="p-nav"><div style="width:28px"></div><span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#1A1A1A">profile</span><div class="p-nav-icon">✦</div></div>
+      <div class="p-photo">🧑‍💻</div>
+      <div class="p-info">
+        <div style="display:flex;align-items:baseline;gap:6px"><div class="p-name-d">Chloe Guo</div><span class="p-age">28</span></div>
+        <div class="p-tags"><div class="p-tag">💼 Founder</div><div class="p-tag">📍 Yorkville</div><div class="p-tag">🏙 Toronto</div></div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-lbl">Today's focus</div>
+        <div class="focus-body">Share what you're working on today</div>
+        <div class="focus-btn">Set Today's Focus</div>
+      </div>
+      <div class="p-sec">
+        <div class="p-sec-lbl-d">Tagline</div>
+        <div class="p-sec-val">Hello</div>
+        <div class="divider"></div>
+      </div>
+      <div class="p-sec">
+        <div class="p-sec-lbl-d">Currently working on</div>
+        <div class="p-sec-val">CoFlow</div>
+      </div>
+      <div class="tab-bar" style="margin-top:10px">
+        <div class="tab"><div class="tab-ico">✦</div><div class="tab-lbl">Discover</div></div>
+        <div class="tab"><div class="tab-ico">🤍</div><div class="tab-lbl">Friends</div></div>
+        <div class="tab"><div class="tab-ico">💬</div><div class="tab-lbl">Chat</div></div>
+        <div class="tab"><div class="tab-ico-on">●</div><div class="tab-lbl-on">Profile</div></div>
+      </div>
+    </div>
+    <div class="annotations">
+      <div class="ann ann-d"><strong>Tagline / Currently working on</strong>Inter Regular 10px tracked — acts as a quiet field label, content "Hello" / "CoFlow" stands out more</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ FRIENDS ROW ══════ -->
+<div class="rule"><div class="rule-line"></div><div class="rule-text">Friends screen</div><div class="rule-line"></div></div>
+<div class="screens-row">
+
+  <!-- A: Friends -->
+  <div class="col">
+    <div class="badge badge-a">Option A</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="f-header"><div class="f-title-a">Friends</div><div class="add-btn">+</div></div>
+      <div class="f-section">
+        <div class="f-sec-hdr">
+          <div class="f-sec-title-a"><span class="f-arrow">▶</span> Pending Requests <span class="f-count-muted">(0)</span></div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-sec-hdr">
+          <div class="f-sec-title-a"><span class="f-arrow">▼</span> Available Today <span class="f-count-green">(2)</span></div>
+        </div>
+        <div class="friend-card">
+          <div class="f-avatar" style="background:#c4a882">☕</div>
+          <div class="f-info"><div class="f-name">Chlo chlo</div><div class="f-avail">10:00–17:00 · Anywhere</div></div>
+          <div class="green-dot"></div>
+        </div>
+        <div class="friend-card">
+          <div class="f-avatar" style="background:#a89080">🎬</div>
+          <div class="f-info"><div class="f-name">Timothée C.</div><div class="f-avail">11:30–14:30 · Anywhere</div></div>
+          <div class="green-dot"></div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-sec-hdr">
+          <div class="f-sec-title-a"><span class="f-arrow">▼</span> Not Available <span class="f-count-muted">(1)</span></div>
+        </div>
+        <div class="friend-card">
+          <div class="f-avatar" style="background:#b8c9b0">🌿</div>
+          <div class="f-info"><div class="f-name">Vera</div></div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-ico">✦</div><div class="tab-lbl">Discover</div></div>
+        <div class="tab"><div class="tab-ico-on">●</div><div class="tab-lbl-on">Friends</div></div>
+        <div class="tab"><div class="tab-ico">💬</div><div class="tab-lbl">Chat</div></div>
+        <div class="tab"><div class="tab-ico">👤</div><div class="tab-lbl">Profile</div></div>
+      </div>
+    </div>
+    <div class="annotations">
+      <div class="ann ann-a"><strong>Pending Requests / Available Today / Not Available</strong>Cormorant 14px — warm but at this size serif can feel inconsistent with the Inter friend cards below</div>
+    </div>
+  </div>
+
+  <!-- D: Friends -->
+  <div class="col">
+    <div class="badge badge-d">Option D</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="f-header"><div class="f-title-d">Friends</div><div class="add-btn">+</div></div>
+      <div class="f-section">
+        <div class="f-sec-hdr">
+          <div class="f-sec-title-d"><span class="f-arrow">▶</span> Pending Requests <span class="f-count-muted">(0)</span></div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-sec-hdr">
+          <div class="f-sec-title-d"><span class="f-arrow">▼</span> Available Today <span class="f-count-green">(2)</span></div>
+        </div>
+        <div class="friend-card">
+          <div class="f-avatar" style="background:#c4a882">☕</div>
+          <div class="f-info"><div class="f-name">Chlo chlo</div><div class="f-avail">10:00–17:00 · Anywhere</div></div>
+          <div class="green-dot"></div>
+        </div>
+        <div class="friend-card">
+          <div class="f-avatar" style="background:#a89080">🎬</div>
+          <div class="f-info"><div class="f-name">Timothée C.</div><div class="f-avail">11:30–14:30 · Anywhere</div></div>
+          <div class="green-dot"></div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-sec-hdr">
+          <div class="f-sec-title-d"><span class="f-arrow">▼</span> Not Available <span class="f-count-muted">(1)</span></div>
+        </div>
+        <div class="friend-card">
+          <div class="f-avatar" style="background:#b8c9b0">🌿</div>
+          <div class="f-info"><div class="f-name">Vera</div></div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-ico">✦</div><div class="tab-lbl">Discover</div></div>
+        <div class="tab"><div class="tab-ico-on">●</div><div class="tab-lbl-on">Friends</div></div>
+        <div class="tab"><div class="tab-ico">💬</div><div class="tab-lbl">Chat</div></div>
+        <div class="tab"><div class="tab-ico">👤</div><div class="tab-lbl">Profile</div></div>
+      </div>
+    </div>
+    <div class="annotations">
+      <div class="ann ann-d"><strong>Pending Requests / Available Today / Not Available</strong>Inter Regular 11px tracked — blends with the card UI naturally, no serif/sans collision</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

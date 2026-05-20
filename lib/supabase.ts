@@ -1,3 +1,4 @@
+import 'react-native-url-polyfill/auto'
 import { createClient } from '@supabase/supabase-js'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -12,3 +13,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
 })
+
+fetch('https://fyjnqnzrtfuuwrkfksof.supabase.co/rest/v1/', {
+  headers: {
+    apikey: supabaseAnonKey,
+  },
+})
+  .then((res) => console.log('Supabase reachability:', res.status))
+  .catch((err) => console.log('Supabase reachability failed:', err))

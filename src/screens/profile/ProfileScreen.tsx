@@ -12,6 +12,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Polygon, Line, Path } from 'react-native-svg';
 import { colors, theme, spacing, borderRadius } from '../../constants';
+import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { getFullProfile } from '../../services/profileService';
 import { getTodayIntent } from '../../services/discoveryService';
@@ -19,18 +20,13 @@ import { Profile, ProfilePhoto, WorkIntent } from '../../types';
 import { ProfileStackParamList } from '../../navigation/ProfileStack';
 import UserProfileView from '../../components/profile/UserProfileView';
 
-function NibIcon() {
+function PencilIcon() {
   return (
-    <Svg width={20} height={20} viewBox="0 0 20 20">
-      <Polygon
-        points="10,4 14,10 10,16 6,10"
-        fill="none"
-        stroke="#FFFFFF"
-        strokeWidth={1.6}
-        strokeLinejoin="round"
+    <Svg width={11} height={11} viewBox="0 0 24 24">
+      <Path
+        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+        fill={CLOVER_BG}
       />
-      <Line x1="10" y1="4" x2="10" y2="16" stroke="#FFFFFF" strokeWidth={1.2} />
-      <Line x1="6.2" y1="10" x2="13.8" y2="10" stroke="#FFFFFF" strokeWidth={1.2} />
     </Svg>
   );
 }
@@ -123,8 +119,9 @@ export default function ProfileScreen() {
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           activeOpacity={0.85}
         >
-          <View style={styles.headerActionButton}>
-            <NibIcon />
+          <View style={styles.editPill}>
+            <PencilIcon />
+            <Text style={styles.editPillText}> Edit</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -183,14 +180,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing[4],
+    paddingBottom: spacing[2],
     minHeight: 56,
     backgroundColor: theme.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderDefault,
   },
   headerTitle: {
-    fontSize: 17,
-    fontWeight: '600',
+    fontFamily: 'CormorantGaramond-Light',
+    fontSize: 32,
+    fontWeight: '300',
     color: theme.text,
   },
   headerAction: {
@@ -199,13 +198,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 44,
   },
-  headerActionButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: theme.primary,
+  editPill: {
+    backgroundColor: CLOVER_FOREST,
+    borderRadius: 100,
+    paddingHorizontal: spacing[3],
+    paddingVertical: 6,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  editPillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: CLOVER_BG,
   },
   scroll: {
     flex: 1,

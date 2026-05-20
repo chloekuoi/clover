@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,16 +9,43 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  StatusBar,
+  Animated,
+  Easing,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { theme, spacing, borderRadius, touchTarget } from '../../constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthStackParamList } from '../../navigation/AuthStack';
 import { useAuth } from '../../context/AuthContext';
+import CloverMark from '../../components/common/CloverMark';
+import {
+  CLOVER_BG,
+  CLOVER_FOREST,
+  FONT_CORMORANT_LIGHT,
+  FONT_CORMORANT_LIGHT_ITALIC,
+  FONT_DM_SANS_LIGHT,
+  FONT_DM_SANS_MEDIUM,
+} from '../../constants/clover';
 
 type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Signup'>;
 };
+
+function SpinningMiniClover() {
+  const spin = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(spin, { toValue: 1, duration: 8000, easing: Easing.linear, useNativeDriver: true })
+    ).start();
+  }, [spin]);
+  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  return (
+    <Animated.View style={{ transform: [{ rotate }] }}>
+      <CloverMark size={20} color={CLOVER_FOREST} bg={CLOVER_BG} />
+    </Animated.View>
+  );
+}
 
 export default function SignupScreen({ navigation }: Props) {
   const { signUp, signInWithApple } = useAuth();
@@ -26,27 +53,24 @@ export default function SignupScreen({ navigation }: Props) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const handleSignup = async () => {
     if (!email.trim() || !password || !confirmPassword) {
       Alert.alert('Missing fields', 'Please fill in all fields.');
       return;
     }
-
     if (password !== confirmPassword) {
       Alert.alert('Password mismatch', 'Passwords do not match.');
       return;
     }
-
     if (password.length < 6) {
       Alert.alert('Weak password', 'Password must be at least 6 characters.');
       return;
     }
-
     setLoading(true);
     const { error, needsConfirmation } = await signUp(email.trim(), password);
     setLoading(false);
-
     if (error) {
       Alert.alert('Signup failed', error.message);
     } else if (needsConfirmation) {
@@ -56,7 +80,6 @@ export default function SignupScreen({ navigation }: Props) {
         [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
       );
     }
-    // If no confirmation needed, AuthContext will handle navigation via session listener
   };
 
   const handleAppleSignIn = async () => {
@@ -73,82 +96,111 @@ export default function SignupScreen({ navigation }: Props) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <StatusBar barStyle="dark-content" />
+
+      {/* Ghost clover — bottom-right corner decoration */}
+      <View style={styles.ghostCorner} pointerEvents="none">
+        <CloverMark size={260} color={CLOVER_FOREST} bg={CLOVER_BG} />
+      </View>
+
+      {/* Back button */}
+      <View style={[styles.backRow, { paddingTop: insets.top + 16 }]}>
+        <TouchableOpacity
+          onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Welcome')}
+          style={styles.backBtn}
+          activeOpacity={0.6}
+        >
+          <Text style={styles.backChevron}>‹</Text>
+          <Text style={styles.backLabel}>Back</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Mini logo lockup */}
+      <View style={styles.miniLockup}>
+        <SpinningMiniClover />
+        <Text style={styles.miniWordmark}>clover</Text>
+      </View>
+
+      {/* Main content */}
       <View style={styles.content}>
-        <Text style={styles.title}>Create account</Text>
-        <Text style={styles.subtitle}>Join the co-working community</Text>
+        <Text style={styles.heading}>{'Create\naccount'}</Text>
+        <Text style={styles.subheading}>Join the co-working community</Text>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={theme.textMuted}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoComplete="email"
-          />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="rgba(12,31,14,0.28)"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          autoComplete="email"
+        />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={theme.textMuted}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="new-password"
-          />
+        <View style={styles.inputGap} />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm password"
-            placeholderTextColor={theme.textMuted}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-            autoComplete="new-password"
-          />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="rgba(12,31,14,0.28)"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoComplete="new-password"
+        />
 
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSignup}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color={theme.surface} />
-            ) : (
-              <Text style={styles.buttonText}>Create Account</Text>
-            )}
-          </TouchableOpacity>
+        <View style={styles.inputGap} />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm password"
+          placeholderTextColor="rgba(12,31,14,0.28)"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+          autoComplete="new-password"
+        />
+
+        <TouchableOpacity
+          style={[styles.primaryButton, loading && styles.buttonDisabled]}
+          onPress={handleSignup}
+          disabled={loading}
+          activeOpacity={0.85}
+        >
+          {loading ? (
+            <ActivityIndicator color={CLOVER_BG} />
+          ) : (
+            <Text style={styles.primaryButtonText}>Create Account</Text>
+          )}
+        </TouchableOpacity>
+
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerLabel}>or</Text>
+          <View style={styles.dividerLine} />
         </View>
 
         {Platform.OS === 'ios' && (
-          <>
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or</Text>
-              <View style={styles.dividerLine} />
-            </View>
-            <View pointerEvents={loading ? 'none' : 'auto'} style={loading ? styles.appleButtonDisabled : undefined}>
-              <AppleAuthentication.AppleAuthenticationButton
-                buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
-                buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                cornerRadius={9999}
-                style={styles.appleButton}
-                onPress={handleAppleSignIn}
-              />
-            </View>
-          </>
+          <View pointerEvents={loading ? 'none' : 'auto'} style={loading ? styles.appleButtonDisabled : undefined}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+              cornerRadius={9999}
+              style={styles.appleButton}
+              onPress={handleAppleSignIn}
+            />
+          </View>
         )}
 
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.linkText}>
-            Already have an account? <Text style={styles.linkBold}>Sign in</Text>
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.signInRow}>
+          <Text style={styles.signInPrompt}>Already have an account?</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Login')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.signInLink}>Sign in</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -157,89 +209,169 @@ export default function SignupScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: CLOVER_BG,
   },
+
+  ghostCorner: {
+    position: 'absolute',
+    bottom: -72,
+    right: -72,
+    opacity: 0.05,
+  },
+
+  backRow: {
+    paddingHorizontal: 22,
+  },
+
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+  },
+
+  backChevron: {
+    fontSize: 20,
+    color: CLOVER_FOREST,
+    opacity: 0.40,
+    lineHeight: 20,
+  },
+
+  backLabel: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 13,
+    color: CLOVER_FOREST,
+    opacity: 0.45,
+  },
+
+  miniLockup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 26,
+    paddingTop: 18,
+  },
+
+  miniWordmark: {
+    fontFamily: FONT_CORMORANT_LIGHT,
+    fontSize: 20,
+    letterSpacing: 20 * 0.06,
+    color: CLOVER_FOREST,
+    opacity: 0.65,
+  },
+
   content: {
     flex: 1,
-    padding: spacing[6],
-    justifyContent: 'center',
+    paddingHorizontal: 26,
+    paddingTop: 24,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: theme.text,
-    marginBottom: spacing[1],
+
+  heading: {
+    fontFamily: FONT_CORMORANT_LIGHT,
+    fontSize: 36,
+    lineHeight: 36 * 1.08,
+    color: CLOVER_FOREST,
   },
-  subtitle: {
-    fontSize: 16,
-    color: theme.textSecondary,
-    marginBottom: spacing[8],
+
+  subheading: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 13,
+    color: 'rgba(12,31,14,0.38)',
+    marginBottom: 28,
+    marginTop: 4,
   },
-  form: {
-    gap: spacing[4],
-  },
+
   input: {
-    backgroundColor: theme.surface,
-    borderWidth: 1,
-    borderColor: '#E2DDD6',
-    borderRadius: borderRadius.md,
-    padding: spacing[4],
-    fontSize: 16,
-    color: theme.text,
-    minHeight: touchTarget.min,
+    height: 52,
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(12,31,14,0.08)',
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 13,
+    color: CLOVER_FOREST,
+    shadowColor: CLOVER_FOREST,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
   },
-  button: {
-    backgroundColor: theme.primary,
-    paddingVertical: spacing[4],
-    borderRadius: borderRadius.md,
+
+  inputGap: {
+    height: 10,
+  },
+
+  primaryButton: {
+    height: 58,
+    borderRadius: 9999,
+    backgroundColor: CLOVER_FOREST,
     alignItems: 'center',
-    marginTop: spacing[2],
-    minHeight: touchTarget.min,
     justifyContent: 'center',
+    marginTop: 20,
+    shadowColor: CLOVER_FOREST,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.30,
+    shadowRadius: 24,
+    elevation: 8,
   },
+
   buttonDisabled: {
-    opacity: 0.7,
+    opacity: 0.6,
   },
-  buttonText: {
-    color: theme.surface,
-    fontSize: 18,
-    fontWeight: '600',
+
+  primaryButtonText: {
+    fontFamily: FONT_DM_SANS_MEDIUM,
+    fontSize: 15,
+    letterSpacing: 15 * 0.05,
+    color: CLOVER_BG,
   },
-  linkButton: {
-    marginTop: spacing[6],
-    alignItems: 'center',
-    minHeight: touchTarget.min,
-    justifyContent: 'center',
-  },
-  linkText: {
-    fontSize: 16,
-    color: theme.textSecondary,
-  },
-  linkBold: {
-    color: theme.accent,
-    fontWeight: '600',
-  },
+
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing[6],
-    marginBottom: spacing[4],
-    gap: spacing[3],
+    marginTop: 18,
+    gap: 10,
   },
+
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E2DDD6',
+    backgroundColor: 'rgba(12,31,14,0.09)',
   },
-  dividerText: {
-    fontSize: 13,
-    color: theme.textMuted,
+
+  dividerLabel: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 11,
+    letterSpacing: 11 * 0.06,
+    color: 'rgba(12,31,14,0.28)',
   },
+
   appleButton: {
     height: 52,
     width: '100%',
   },
+
   appleButtonDisabled: {
     opacity: 0.6,
+  },
+
+  signInRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 6,
+    marginTop: 14,
+  },
+
+  signInPrompt: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 12,
+    color: 'rgba(12,31,14,0.35)',
+  },
+
+  signInLink: {
+    fontFamily: FONT_CORMORANT_LIGHT_ITALIC,
+    fontSize: 15,
+    color: CLOVER_FOREST,
+    opacity: 0.65,
   },
 });

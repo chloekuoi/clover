@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile — 3 Design Options</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+    gap: 60px;
+  }
+
+  .page-title {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+  .page-subtitle {
+    color: #888;
+    font-size: 15px;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* ── Phone frame ── */
+  .phone-row {
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .option-label {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .option-sublabel {
+    color: #666;
+    font-size: 13px;
+    text-align: center;
+    max-width: 280px;
+    line-height: 1.5;
+  }
+
+  .phone {
+    width: 320px;
+    background: #000;
+    border-radius: 44px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 1px #333,
+      0 30px 80px rgba(0,0,0,0.6);
+    position: relative;
+  }
+
+  .phone-screen {
+    background: #F7F5F2;
+    border-radius: 36px;
+    overflow: hidden;
+    height: 660px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* notch */
+  .phone-screen::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 28px;
+    background: #000;
+    border-radius: 0 0 18px 18px;
+    z-index: 10;
+  }
+
+  /* ── Shared header ── */
+  .screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 44px 20px 12px;
+    background: #F7F5F2;
+    flex-shrink: 0;
+  }
+  .header-btn {
+    font-size: 15px;
+    font-weight: 500;
+    color: #756C62;
+    cursor: pointer;
+  }
+  .header-btn.save {
+    font-weight: 700;
+    color: #A8B5A2;
+    font-size: 16px;
+  }
+  .header-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #2D3A2D;
+    letter-spacing: -0.3px;
+  }
+
+  /* ── Scrollable body ── */
+  .screen-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    scrollbar-width: none;
+  }
+  .screen-body::-webkit-scrollbar { display: none; }
+
+  /* ══════════════════════════════════════════
+     OPTION 1 — Hinge Card Stack
+  ══════════════════════════════════════════ */
+
+  .o1-photo-stack {
+    padding: 8px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .o1-photo-card {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    background: #EEEDEA;
+    border: 2px dashed #D4D0CB;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .o1-photo-card.primary { height: 220px; }
+  .o1-photo-card.secondary { height: 140px; }
+
+  .o1-photo-card.filled {
+    border: none;
+    background: #D4DCD1;
+  }
+
+  .o1-plus {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #A8B5A2;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 22px;
+    font-weight: 300;
+  }
+
+  .o1-prompt {
+    font-size: 13px;
+    color: #968D82;
+    text-align: center;
+    padding: 0 24px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .o1-edit-badge {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .o1-photo-label {
+    position: absolute;
+    bottom: 10px; left: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: rgba(0,0,0,0.3);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* filled photo simulation */
+  .o1-filled-face {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #C5CFC2 0%, #8FA589 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+  }
+  .o1-filled-work {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #D4C9BE 0%, #A8956E 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+  }
+
+  /* Zine-style section dividers */
+  .o1-section {
+    padding: 20px 16px 0;
+  }
+  .o1-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #968D82;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .o1-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E2DDD6;
+  }
+
+  .o1-field {
+    padding: 0 0 14px;
+    border-bottom: 1px solid #E8E4DF;
+    margin-bottom: 2px;
+  }
+  .o1-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #968D82;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+  .o1-field-value {
+    font-size: 16px;
+    color: #B5ADA3;
+    font-style: italic;
+  }
+  .o1-field-value.filled {
+    color: #2D3A2D;
+    font-style: normal;
+  }
+
+  /* ══════════════════════════════════════════
+     OPTION 2 — Instagram Grid Remix
+  ══════════════════════════════════════════ */
+
+  .o2-grid-section {
+    padding: 12px 16px 0;
+  }
+
+  .o2-grid-hint {
+    font-size: 12px;
+    color: #968D82;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .o2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 8px;
+  }
+
+  .o2-primary {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 0.75;
+    background: #D4DCD1;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .o2-primary-inner {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #C5CFC2 0%, #8FA589 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px;
+  }
+
+  .o2-secondary {
+    border-radius: 12px;
+    background: #EEEDEA;
+    border: 2px dashed #D4D0CB;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    position: relative;
+    aspect-ratio: 1;
+  }
+  .o2-secondary.filled {
+    background: #D4C9BE;
+    border: none;
+    overflow: hidden;
+  }
+
+  .o2-plus-sm {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #C8CFC5;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 16px;
+  }
+
+  .o2-prompt-sm {
+    font-size: 10px;
+    color: #968D82;
+    text-align: center;
+    padding: 0 6px;
+    line-height: 1.3;
+    font-weight: 500;
+  }
+
+  .o2-filled-thumb {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .o2-filled-thumb.t1 { background: linear-gradient(135deg, #C8C0B8 0%, #9A8E82 100%); }
+  .o2-filled-thumb.t2 { background: linear-gradient(135deg, #B8C4B5 0%, #7A9076 100%); }
+
+  .o2-drag-handle {
+    position: absolute;
+    top: 6px; right: 6px;
+    font-size: 12px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 6px;
+    padding: 2px 4px;
+    cursor: grab;
+  }
+
+  .o2-primary-badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: #A8B5A2;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  .o2-edit-overlay {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+
+  /* Pill card sections */
+  .o2-card-section {
+    margin: 16px 16px 0;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .o2-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #968D82;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 16px 8px;
+    border-bottom: 1px solid #F0EDE9;
+  }
+  .o2-input-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #F0EDE9;
+    gap: 10px;
+  }
+  .o2-input-row:last-child { border-bottom: none; }
+  .o2-input-icon { font-size: 16px; }
+  .o2-input-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2D3A2D;
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .o2-input-val {
+    font-size: 14px;
+    color: #B5ADA3;
+    flex: 1;
+  }
+  .o2-input-val.filled { color: #2D3A2D; }
+  .o2-chevron { color: #D4D0CB; font-size: 14px; }
+
+  /* ══════════════════════════════════════════
+     OPTION 3 — Swipeable Photo Carousel ⭐
+  ══════════════════════════════════════════ */
+
+  .o3-carousel-section {
+    padding: 8px 16px 0;
+    position: relative;
+  }
+
+  .o3-carousel-card {
+    border-radius: 24px;
+    overflow: hidden;
+    height: 300px;
+    background: #EEEDEA;
+    border: 2.5px dashed #D4D0CB;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .o3-carousel-card.filled {
+    border: none;
+    background: linear-gradient(160deg, #C5CFC2 0%, #8FA589 100%);
+  }
+
+  .o3-big-plus {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: #A8B5A2;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 28px;
+    font-weight: 300;
+  }
+
+  .o3-carousel-prompt {
+    font-size: 15px;
+    font-weight: 600;
+    color: #968D82;
+    text-align: center;
+    padding: 0 32px;
+    line-height: 1.4;
+  }
+
+  .o3-carousel-prompt-sub {
+    font-size: 12px;
+    color: #B5ADA3;
+    text-align: center;
+    padding: 0 32px;
+  }
+
+  /* dots */
+  .o3-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 0 4px;
+  }
+  .o3-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #D4D0CB;
+  }
+  .o3-dot.active {
+    width: 18px;
+    border-radius: 3px;
+    background: #A8B5A2;
+  }
+
+  /* swipe hint */
+  .o3-swipe-hint {
+    text-align: center;
+    font-size: 11px;
+    color: #B5ADA3;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Thumbnail strip */
+  .o3-strip {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px 0;
+    align-items: center;
+  }
+  .o3-thumb {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: #EEEDEA;
+    border: 2px dashed #D4D0CB;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .o3-thumb.filled-t {
+    border: none;
+    overflow: hidden;
+  }
+  .o3-thumb.filled-t.ft0 { background: linear-gradient(135deg, #C5CFC2, #8FA589); }
+  .o3-thumb.filled-t.ft1 { background: linear-gradient(135deg, #C8C0B8, #9A8E82); }
+  .o3-thumb.active-t {
+    outline: 2.5px solid #A8B5A2;
+    outline-offset: 2px;
+  }
+  .o3-thumb-add {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: #F0EDE9;
+    display: flex; align-items: center; justify-content: center;
+    color: #B5ADA3;
+    font-size: 20px;
+    flex-shrink: 0;
+    border: 2px dashed #D4D0CB;
+  }
+  .o3-strip-hint {
+    font-size: 10px;
+    color: #B5ADA3;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  /* Menu button on filled card */
+  .o3-menu-btn {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(255,255,255,0.88);
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 13px;
+    color: #2D3A2D;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .o3-photo-face {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+  }
+
+  /* Notion-style fields */
+  .o3-fields {
+    padding: 16px 16px 0;
+  }
+
+  .o3-field-block {
+    padding: 10px 0;
+    border-bottom: 1px solid #EEEDEA;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: text;
+  }
+  .o3-field-block:last-child { border-bottom: none; }
+
+  .o3-field-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .o3-field-emoji { font-size: 14px; }
+  .o3-field-key {
+    font-size: 11px;
+    font-weight: 700;
+    color: #B5ADA3;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .o3-field-val {
+    font-size: 16px;
+    color: #B5ADA3;
+    padding-left: 22px;
+    font-style: italic;
+    line-height: 1.4;
+  }
+  .o3-field-val.filled {
+    color: #2D3A2D;
+    font-style: normal;
+  }
+  .o3-field-val.active-field {
+    color: #2D3A2D;
+    font-style: normal;
+    border-bottom: 2px solid #A8B5A2;
+    padding-bottom: 2px;
+  }
+
+  /* ── Tab bar (shared) ── */
+  .tab-bar {
+    display: flex;
+    background: white;
+    border-top: 1px solid #E8E4DF;
+    padding: 8px 0 16px;
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+  }
+  .tab-icon {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+  }
+  .tab-icon.active {
+    background: #A8B5A2;
+  }
+  .tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #B5ADA3;
+  }
+  .tab-label.active { color: #5C6B57; font-weight: 700; }
+
+  /* ── Legend ── */
+  .rec-badge {
+    background: #A8B5A2;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="page-title">Edit Profile — 3 Design Directions</div>
+  <div class="page-subtitle">CoWork Connect · Gen Z redesign concepts</div>
+</div>
+
+<div class="phone-row">
+
+  <!-- ══ OPTION 1 ══ -->
+  <div class="phone-wrap">
+    <div class="option-label">Option 1 — Hinge Card Stack</div>
+    <div class="option-sublabel">Full-width photo cards stacked vertically. Zine editorial feel. Each photo gets its own moment.</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="screen-header">
+          <span class="header-btn">Cancel</span>
+          <span class="header-title">Edit Profile</span>
+          <span class="header-btn save">Save</span>
+        </div>
+        <div class="screen-body">
+          <!-- Photo stack -->
+          <div class="o1-photo-stack">
+            <!-- Filled primary -->
+            <div class="o1-photo-card primary filled">
+              <div class="o1-filled-face">🧑‍💻</div>
+              <div class="o1-photo-label">Primary</div>
+              <div class="o1-edit-badge">✏️</div>
+            </div>
+            <!-- Filled secondary -->
+            <div class="o1-photo-card secondary filled">
+              <div class="o1-filled-work">☕</div>
+              <div class="o1-edit-badge">✏️</div>
+            </div>
+            <!-- Empty secondary -->
+            <div class="o1-photo-card secondary">
+              <div class="o1-plus">+</div>
+              <div class="o1-prompt">Your workspace or<br>favourite spot</div>
+            </div>
+            <!-- Empty small -->
+            <div class="o1-photo-card secondary">
+              <div class="o1-plus">+</div>
+              <div class="o1-prompt">A photo that shows<br>your vibe</div>
+            </div>
+          </div>
+
+          <!-- Fields -->
+          <div class="o1-section">
+            <div class="o1-section-label">✍️ About you</div>
+            <div class="o1-field">
+              <div class="o1-field-label">Username</div>
+              <div class="o1-field-value filled">matchinguser3</div>
+            </div>
+            <div class="o1-field">
+              <div class="o1-field-label">Name</div>
+              <div class="o1-field-value filled">Matchinguser3</div>
+            </div>
+            <div class="o1-field">
+              <div class="o1-field-label">Tagline</div>
+              <div class="o1-field-value">One-line intro...</div>
+            </div>
+          </div>
+
+          <div class="o1-section">
+            <div class="o1-section-label">💼 Work & school</div>
+            <div class="o1-field">
+              <div class="o1-field-label">Work</div>
+              <div class="o1-field-value">Where you work...</div>
+            </div>
+            <div class="o1-field">
+              <div class="o1-field-label">School</div>
+              <div class="o1-field-value">Where you studied...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon">🔍</div><div class="tab-label">Discover</div></div>
+          <div class="tab"><div class="tab-icon">👥</div><div class="tab-label">Friends</div></div>
+          <div class="tab"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></div>
+          <div class="tab"><div class="tab-icon active">👤</div><div class="tab-label active">Profile</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPTION 2 ══ -->
+  <div class="phone-wrap">
+    <div class="option-label">Option 2 — Instagram Grid Remix</div>
+    <div class="option-sublabel">Familiar mosaic grid. Large primary + 2×2 secondary. Drag-to-reorder. Most recognisable to Gen Z.</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="screen-header">
+          <span class="header-btn">Cancel</span>
+          <span class="header-title">Edit Profile</span>
+          <span class="header-btn save">Save</span>
+        </div>
+        <div class="screen-body">
+
+          <div class="o2-grid-section">
+            <div class="o2-grid-hint">Tap to add · Hold to reorder</div>
+            <div class="o2-grid">
+              <!-- Primary (spans 2 rows) -->
+              <div class="o2-primary">
+                <div class="o2-primary-inner">🧑‍💻</div>
+                <div class="o2-primary-badge">Primary</div>
+                <div class="o2-edit-overlay">✏️</div>
+              </div>
+              <!-- Secondary 1 filled -->
+              <div class="o2-secondary filled">
+                <div class="o2-filled-thumb t1">☕</div>
+                <div class="o2-drag-handle">⠿</div>
+              </div>
+              <!-- Secondary 2 filled -->
+              <div class="o2-secondary filled">
+                <div class="o2-filled-thumb t2">🌿</div>
+                <div class="o2-drag-handle">⠿</div>
+              </div>
+            </div>
+            <!-- Bottom row: 2 empty slots -->
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <div class="o2-secondary" style="flex:1; aspect-ratio:1;">
+                <div class="o2-plus-sm">+</div>
+                <div class="o2-prompt-sm">Casual everyday</div>
+              </div>
+              <div class="o2-secondary" style="flex:1; aspect-ratio:1;">
+                <div class="o2-plus-sm">+</div>
+                <div class="o2-prompt-sm">Your vibe</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card sections -->
+          <div class="o2-card-section">
+            <div class="o2-card-title">About you</div>
+            <div class="o2-input-row">
+              <span class="o2-input-icon">@</span>
+              <span class="o2-input-label">Username</span>
+              <span class="o2-input-val filled">matchinguser3</span>
+              <span class="o2-chevron">›</span>
+            </div>
+            <div class="o2-input-row">
+              <span class="o2-input-icon">👋</span>
+              <span class="o2-input-label">Name</span>
+              <span class="o2-input-val filled">Matchinguser3</span>
+              <span class="o2-chevron">›</span>
+            </div>
+            <div class="o2-input-row">
+              <span class="o2-input-icon">✨</span>
+              <span class="o2-input-label">Tagline</span>
+              <span class="o2-input-val">One-line intro</span>
+              <span class="o2-chevron">›</span>
+            </div>
+          </div>
+
+          <div class="o2-card-section">
+            <div class="o2-card-title">Work &amp; school</div>
+            <div class="o2-input-row">
+              <span class="o2-input-icon">💼</span>
+              <span class="o2-input-label">Work</span>
+              <span class="o2-input-val">Where you work</span>
+              <span class="o2-chevron">›</span>
+            </div>
+            <div class="o2-input-row">
+              <span class="o2-input-icon">🎓</span>
+              <span class="o2-input-label">School</span>
+              <span class="o2-input-val">Where you studied</span>
+              <span class="o2-chevron">›</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon">🔍</div><div class="tab-label">Discover</div></div>
+          <div class="tab"><div class="tab-icon">👥</div><div class="tab-label">Friends</div></div>
+          <div class="tab"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></div>
+          <div class="tab"><div class="tab-icon active">👤</div><div class="tab-label active">Profile</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPTION 3 ══ -->
+  <div class="phone-wrap">
+    <div class="option-label">Option 3 — Swipeable Carousel ⭐ <span class="rec-badge">Recommended</span></div>
+    <div class="option-sublabel">One photo at a time, full-width. Thumbnail strip for overview + reorder. Notion-style tap-to-edit fields below.</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="screen-header">
+          <span class="header-btn">Cancel</span>
+          <span class="header-title">Edit Profile</span>
+          <span class="header-btn save">Save</span>
+        </div>
+        <div class="screen-body">
+
+          <!-- Carousel -->
+          <div class="o3-carousel-section">
+            <div class="o3-carousel-card filled">
+              <div class="o3-photo-face">🧑‍💻</div>
+              <div class="o3-menu-btn">⋯ Edit</div>
+            </div>
+          </div>
+
+          <!-- Dots -->
+          <div class="o3-dots">
+            <div class="o3-dot active"></div>
+            <div class="o3-dot"></div>
+            <div class="o3-dot"></div>
+            <div class="o3-dot"></div>
+            <div class="o3-dot"></div>
+          </div>
+          <div class="o3-swipe-hint">Swipe to navigate photos</div>
+
+          <!-- Thumbnail strip -->
+          <div class="o3-strip">
+            <div class="o3-thumb filled-t ft0 active-t">🧑‍💻</div>
+            <div class="o3-thumb filled-t ft1">☕</div>
+            <div class="o3-thumb">+</div>
+            <div class="o3-thumb">+</div>
+            <div class="o3-thumb">+</div>
+            <div class="o3-strip-hint">Hold to reorder ⠿</div>
+          </div>
+
+          <!-- Notion fields -->
+          <div class="o3-fields">
+            <div class="o3-field-block">
+              <div class="o3-field-meta">
+                <span class="o3-field-emoji">@</span>
+                <span class="o3-field-key">Username</span>
+              </div>
+              <div class="o3-field-val filled">matchinguser3</div>
+            </div>
+            <div class="o3-field-block">
+              <div class="o3-field-meta">
+                <span class="o3-field-emoji">👋</span>
+                <span class="o3-field-key">Name</span>
+              </div>
+              <div class="o3-field-val filled">Matchinguser3</div>
+            </div>
+            <div class="o3-field-block">
+              <div class="o3-field-meta">
+                <span class="o3-field-emoji">✨</span>
+                <span class="o3-field-key">Tagline</span>
+              </div>
+              <div class="o3-field-val active-field">building things that matter</div>
+            </div>
+            <div class="o3-field-block">
+              <div class="o3-field-meta">
+                <span class="o3-field-emoji">🛠</span>
+                <span class="o3-field-key">Currently working on</span>
+              </div>
+              <div class="o3-field-val">What are you building?</div>
+            </div>
+            <div class="o3-field-block">
+              <div class="o3-field-meta">
+                <span class="o3-field-emoji">💼</span>
+                <span class="o3-field-key">Work</span>
+              </div>
+              <div class="o3-field-val">Where you work...</div>
+            </div>
+            <div class="o3-field-block">
+              <div class="o3-field-meta">
+                <span class="o3-field-emoji">🎓</span>
+                <span class="o3-field-key">School</span>
+              </div>
+              <div class="o3-field-val">Where you studied...</div>
+            </div>
+          </div>
+
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon">🔍</div><div class="tab-label">Discover</div></div>
+          <div class="tab"><div class="tab-icon">👥</div><div class="tab-label">Friends</div></div>
+          <div class="tab"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></div>
+          <div class="tab"><div class="tab-icon active">👤</div><div class="tab-label active">Profile</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

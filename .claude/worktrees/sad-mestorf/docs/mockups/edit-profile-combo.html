@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile — Hinge Settings Style</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #141414;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 80px;
+    gap: 32px;
+  }
+
+  .page-title {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+  .page-subtitle {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 6px;
+  }
+
+  /* ── Two phones side by side ── */
+  .phones-row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .phone-label {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .phone-sublabel {
+    color: #555;
+    font-size: 12px;
+    text-align: center;
+    max-width: 300px;
+  }
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 320px;
+    background: #000;
+    border-radius: 44px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 1px #2a2a2a,
+      0 0 0 2px #111,
+      0 32px 80px rgba(0,0,0,0.7);
+  }
+
+  .phone-screen {
+    background: #F2F0EC;
+    border-radius: 34px;
+    overflow: hidden;
+    height: 680px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Dynamic island */
+  .phone-screen::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 30px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 20;
+  }
+
+  /* ── Header ── */
+  .screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 52px 20px 14px;
+    background: #F2F0EC;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .hdr-cancel {
+    font-size: 15px;
+    font-weight: 500;
+    color: #756C62;
+  }
+  .hdr-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2D3A2D;
+    letter-spacing: -0.3px;
+  }
+  .hdr-save {
+    font-size: 16px;
+    font-weight: 700;
+    color: #A8B5A2;
+  }
+
+  /* ── Scrollable body ── */
+  .screen-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px 0;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .screen-body::-webkit-scrollbar { display: none; }
+
+  /* ══════════════════════════════
+     PHOTO STACK (unchanged)
+  ══════════════════════════════ */
+
+  .photo-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .photo-card {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .photo-card.primary { height: 260px; }
+  .photo-card.secondary { height: 160px; }
+
+  .photo-card.empty {
+    background: #ECEAE6;
+    border: 2px dashed #C8C4BE;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .card-prompt {
+    font-size: 15px;
+    font-weight: 700;
+    color: #6B6560;
+    text-align: center;
+    padding: 0 28px;
+    line-height: 1.4;
+    letter-spacing: -0.2px;
+  }
+
+  .card-prompt-sub {
+    font-size: 12px;
+    color: #A8A09A;
+    text-align: center;
+    padding: 0 32px;
+    line-height: 1.4;
+  }
+
+  .add-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #C8CFC5;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 20px;
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  .photo-card.filled { background: #2D3A2D; }
+
+  .photo-fill {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+  }
+
+  .photo-fill::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .fill-face { background: linear-gradient(145deg, #B8C4B4 0%, #6E8569 50%, #4A6347 100%); }
+  .fill-coffee { background: linear-gradient(145deg, #C4B8A8 0%, #8C7860 50%, #5C4E3A 100%); }
+  .fill-desk { background: linear-gradient(145deg, #B0BCC8 0%, #6C7E8C 50%, #3A4E5C 100%); }
+
+  .fill-emoji { font-size: 72px; position: relative; z-index: 1; }
+  .fill-emoji.sm { font-size: 48px; }
+
+  .primary-pill {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(8px);
+    color: #5C6B57;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    z-index: 2;
+  }
+
+  .edit-badge {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2D3A2D;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ══════════════════════════════
+     HINGE-STYLE FIELD ROWS
+  ══════════════════════════════ */
+
+  /* White area that bleeds to screen edges */
+  .fields-area {
+    background: #FFFFFF;
+    margin: 0 -14px;
+    padding: 12px 0 24px;
+  }
+
+  /* Group break between sections — subtle gap instead of section label */
+  .row-sep.group {
+    height: 8px;
+    background: #F5F3F0;
+    margin: 0;
+  }
+
+  /* Edge-to-edge row */
+  .field-row {
+    display: flex;
+    align-items: center;
+    padding: 11px 16px;
+    min-height: 50px;
+  }
+
+  /* Stacked label + value */
+  .row-main { flex: 1; }
+
+  .row-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2D3A2D;
+    margin-bottom: 2px;
+    letter-spacing: -0.2px;
+  }
+
+  .row-value {
+    font-size: 14px;
+    color: #B5ADA3;  /* placeholder = muted */
+    line-height: 1.3;
+  }
+  .row-value.filled {
+    color: #756C62;  /* filled = readable warm gray */
+  }
+
+  /* Chevron (navigation) */
+  .row-chevron {
+    color: #C8C4BE;
+    font-size: 16px;
+    margin-left: 8px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  /* Dropdown indicator (▾) */
+  .row-chevron.down {
+    font-size: 14px;
+    color: #C0BAB4;
+  }
+
+  /* Hairline separator — inset from edges like Hinge */
+  .row-sep {
+    height: 1px;
+    background: #F0EDE8;
+    margin: 0 16px;
+  }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    display: flex;
+    background: #FFFFFF;
+    border-top: 1px solid #E8E4DF;
+    padding: 8px 0 18px;
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .tab-icon {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    border-radius: 8px;
+  }
+  .tab-icon.active { background: #A8B5A2; }
+  .tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #B5ADA3;
+    letter-spacing: 0.1px;
+  }
+  .tab-label.active {
+    color: #5C6B57;
+    font-weight: 700;
+  }
+
+  /* ── Annotations ── */
+  .annotation-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 720px;
+  }
+  .annotation {
+    background: #1E1E1E;
+    border: 1px solid #2E2E2E;
+    border-radius: 12px;
+    padding: 14px 18px;
+    max-width: 220px;
+  }
+  .ann-title {
+    color: #A8B5A2;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+  .ann-body {
+    color: #888;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="page-title">Edit Profile — Hinge Settings Style</div>
+  <div class="page-subtitle">Photo stack unchanged · Flat rows · Stacked label/value · No emojis · Inline section headers</div>
+</div>
+
+<div class="phones-row">
+
+  <!-- ══ PHONE 1: Empty / new user state ══ -->
+  <div class="phone-wrap">
+    <div class="phone-label">Empty state</div>
+    <div class="phone-sublabel">New user — prompts on photos, placeholders on rows</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="screen-header">
+          <span class="hdr-cancel">Cancel</span>
+          <span class="hdr-title">Edit Profile</span>
+          <span class="hdr-save">Save</span>
+        </div>
+        <div class="screen-body">
+
+          <!-- Photo stack: all empty, unchanged -->
+          <div class="photo-stack">
+            <div class="photo-card primary empty">
+              <div class="card-prompt">Hi, I'm a real person 👋</div>
+              <div class="card-prompt-sub">Not a stock photo, promise</div>
+              <div class="add-btn">+</div>
+            </div>
+            <div class="photo-card secondary empty">
+              <div class="card-prompt">Proof I touch grass sometimes</div>
+              <div class="card-prompt-sub">Hobbies, activities, general humanness</div>
+              <div class="add-btn">+</div>
+            </div>
+          </div>
+
+          <!-- Hinge-style flat field rows -->
+          <div class="fields-area">
+
+            <!-- About you -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Name</div>
+                <div class="row-value">Your name</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Username</div>
+                <div class="row-value">@handle</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Tagline</div>
+                <div class="row-value">One-line intro</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Currently working on</div>
+                <div class="row-value">What are you building?</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+
+            <!-- group break -->
+            <div class="row-sep group"></div>
+
+            <!-- Work & School -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Work</div>
+                <div class="row-value">Company</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">School</div>
+                <div class="row-value">School</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+
+            <!-- group break -->
+            <div class="row-sep group"></div>
+
+            <!-- Location -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Neighbourhood</div>
+                <div class="row-value">Your area</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">City</div>
+                <div class="row-value">Your city</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Birthday</div>
+                <div class="row-value">Select birthday</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+
+            <!-- group break -->
+            <div class="row-sep group"></div>
+
+            <!-- Work type -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Work type</div>
+                <div class="row-value">Select type</div>
+              </div>
+              <span class="row-chevron down">▾</span>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon">🔍</div><div class="tab-label">Discover</div></div>
+          <div class="tab"><div class="tab-icon">👥</div><div class="tab-label">Friends</div></div>
+          <div class="tab"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></div>
+          <div class="tab"><div class="tab-icon active">👤</div><div class="tab-label active">Profile</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PHONE 2: Filled / returning user state ══ -->
+  <div class="phone-wrap">
+    <div class="phone-label">Filled state</div>
+    <div class="phone-sublabel">Returning user — editorial photos, scannable text rows</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="screen-header">
+          <span class="hdr-cancel">Cancel</span>
+          <span class="hdr-title">Edit Profile</span>
+          <span class="hdr-save">Save</span>
+        </div>
+        <div class="screen-body">
+
+          <!-- Photo stack: filled + peek, unchanged -->
+          <div class="photo-stack">
+            <div class="photo-card primary filled">
+              <div class="photo-fill fill-face">
+                <span class="fill-emoji">🧑‍💻</span>
+              </div>
+              <div class="primary-pill">Primary ✓</div>
+              <div class="edit-badge">✏️ Edit</div>
+            </div>
+            <div class="photo-card secondary filled">
+              <div class="photo-fill fill-coffee">
+                <span class="fill-emoji sm">☕</span>
+              </div>
+              <div class="edit-badge">✏️ Edit</div>
+            </div>
+            <div class="photo-card secondary filled">
+              <div class="photo-fill fill-desk">
+                <span class="fill-emoji sm">💻</span>
+              </div>
+              <div class="edit-badge">✏️ Edit</div>
+            </div>
+            <div class="photo-card secondary empty">
+              <div class="card-prompt">What my camera roll actually looks like</div>
+              <div class="card-prompt-sub">Candid is an understatement</div>
+              <div class="add-btn">+</div>
+            </div>
+            <div class="photo-card secondary empty">
+              <div class="card-prompt">Currently building something...</div>
+              <div class="card-prompt-sub">Still figuring it out, send help</div>
+              <div class="add-btn">+</div>
+            </div>
+          </div>
+
+          <!-- Hinge-style flat field rows: filled -->
+          <div class="fields-area">
+
+            <!-- About you -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Name</div>
+                <div class="row-value filled">Alex Chen</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Username</div>
+                <div class="row-value filled">@alexchen</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Tagline</div>
+                <div class="row-value filled">building things that matter</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Currently working on</div>
+                <div class="row-value filled">A new social app</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+
+            <!-- group break -->
+            <div class="row-sep group"></div>
+
+            <!-- Work & School -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Work</div>
+                <div class="row-value filled">Freelance / Startup</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">School</div>
+                <div class="row-value">School</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+
+            <!-- group break -->
+            <div class="row-sep group"></div>
+
+            <!-- Location -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Neighbourhood</div>
+                <div class="row-value filled">East Village</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">City</div>
+                <div class="row-value filled">New York</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+            <div class="row-sep"></div>
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Birthday</div>
+                <div class="row-value filled">Jan 15, 1999</div>
+              </div>
+              <span class="row-chevron">›</span>
+            </div>
+
+            <!-- group break -->
+            <div class="row-sep group"></div>
+
+            <!-- Work type -->
+            <div class="field-row">
+              <div class="row-main">
+                <div class="row-label">Work type</div>
+                <div class="row-value filled">Freelancer</div>
+              </div>
+              <span class="row-chevron down">▾</span>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon">🔍</div><div class="tab-label">Discover</div></div>
+          <div class="tab"><div class="tab-icon">👥</div><div class="tab-label">Friends</div></div>
+          <div class="tab"><div class="tab-icon">💬</div><div class="tab-label">Chat</div></div>
+          <div class="tab"><div class="tab-icon active">👤</div><div class="tab-label active">Profile</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Annotations ── -->
+<div class="annotation-row">
+  <div class="annotation">
+    <div class="ann-title">Photo stack</div>
+    <div class="ann-body">Unchanged from combo design. Full-width cards — primary 260px, secondary 160px. Filled cards: gradient overlay + edit badge. Empty: bold prompt text + plus button.</div>
+  </div>
+  <div class="annotation">
+    <div class="ann-title">Flat rows</div>
+    <div class="ann-body">Edge-to-edge white area bleeds to screen edges. Bold label top line, gray value below. No emojis. Hairline separators inset 16px (Hinge style). No card containers.</div>
+  </div>
+  <div class="annotation">
+    <div class="ann-title">Group breaks</div>
+    <div class="ann-body">No section labels. Logical groups (About / Work &amp; School / Location / Work type) separated by an 8px warm-gray band (#F5F3F0). Clean and label-free.</div>
+  </div>
+  <div class="annotation">
+    <div class="ann-title">Work type</div>
+    <div class="ann-body">Single row with ▾ chevron to signal dropdown/picker. Same stacked label+value pattern as all other rows. Taps open native action sheet. No pill grid.</div>
+  </div>
+</div>
+
+</body>
+</html>
