@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase';
-import { WorkIntent, DiscoveryCard, WorkStyle, LocationType, Profile } from '../types';
+import { WorkIntent, DiscoveryCard, WorkStyle, LocationType, Profile, ProfilePhoto } from '../types';
 import { calculateDistance } from '../hooks/useLocation';
 import { formatLocalDate } from './localDate';
 
@@ -71,19 +71,21 @@ export async function fetchDiscoveryCards(
   longitude: number,
   maxDistanceKm: number = 50
 ): Promise<DiscoveryCard[]> {
-  // Fetch all profiles and today's intents in parallel
+  // Fetch all profiles, intents, swipes, matches, and photos in parallel
   const [
     { data: profiles, error: profileError },
     { data: intents },
     { data: swipes },
     { data: activeMatchesAsUser1 },
     { data: activeMatchesAsUser2 },
+    { data: allPhotos },
   ] = await Promise.all([
     supabase.from('profiles').select('*').neq('id', userId),
     supabase.from('work_intents').select('*').eq('intent_date', getTodayDate()).neq('user_id', userId),
     supabase.from('swipes').select('swiped_id').eq('swiper_id', userId).eq('swipe_date', getTodayDate()),
     supabase.from('matches').select('user2_id').eq('user1_id', userId).eq('status', 'active'),
     supabase.from('matches').select('user1_id').eq('user2_id', userId).eq('status', 'active'),
+    supabase.from('profile_photos').select('*').neq('user_id', userId).order('position'),
   ]);
 
   if (profileError || !profiles) {
@@ -104,6 +106,15 @@ export async function fetchDiscoveryCards(
     intentMap.set(intent.user_id, intent as WorkIntent);
   }
 
+  // Build photo map keyed by user_id (ordered by position)
+  const photoMap = new Map<string, ProfilePhoto[]>();
+  for (const photo of allPhotos || []) {
+    const p = photo as ProfilePhoto;
+    const existing = photoMap.get(p.user_id) ?? [];
+    existing.push(p);
+    photoMap.set(p.user_id, existing);
+  }
+
   const cards: DiscoveryCard[] = [];
 
   for (const profile of profiles) {
@@ -119,7 +130,7 @@ export async function fetchDiscoveryCards(
       if (distance > maxDistanceKm) continue;
     }
 
-    cards.push({ profile, intent, distance });
+    cards.push({ profile, intent, distance, photos: photoMap.get(profile.id) ?? [] });
   }
 
   // Sort: users with a located intent first (by distance), then the rest

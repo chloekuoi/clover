@@ -73,6 +73,7 @@ export type DiscoveryCard = {
   profile: Profile;
   intent: WorkIntent | null;
   distance: number; // in kilometers
+  photos: ProfilePhoto[];
 };
 
 // Matches & messaging types
