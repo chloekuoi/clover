@@ -21,7 +21,12 @@ import {
 } from '../../constants/clover';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const PHOTO_SIZE = SCREEN_WIDTH; // full-width squares
+
+// Cards and photos share the same horizontal margin — unified floating system
+const FEED_MARGIN_H = 16;
+const PHOTO_SIZE = SCREEN_WIDTH - FEED_MARGIN_H * 2; // square, consistent with card width
+const FEED_RADIUS = 14;
+const FEED_GAP = 12; // vertical gap between every feed item
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -41,11 +46,13 @@ function formatDistance(km: number): string {
 
 function PhotoBlock({ photo }: { photo: ProfilePhoto }) {
   return (
-    <Image
-      source={{ uri: photo.photo_url }}
-      style={styles.photo}
-      resizeMode="cover"
-    />
+    <View style={styles.photoWrapper}>
+      <Image
+        source={{ uri: photo.photo_url }}
+        style={styles.photo}
+        resizeMode="cover"
+      />
+    </View>
   );
 }
 
@@ -109,7 +116,7 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: 100 + Math.max(insets.bottom, 16) },
+          { paddingBottom: 96 + Math.max(insets.bottom, 16) },
         ]}
       >
         {/* Drag handle */}
@@ -145,13 +152,13 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
           <CardBlock label="Currently building" answer={profile.currently_working_on!} />
         ) : null}
 
-        {/* Photos 3, 4, 5 */}
+        {/* Photos 3, 4, 5 — gallery run with consistent gap */}
         {photo3 ? <PhotoBlock photo={photo3} /> : null}
         {photo4 ? <PhotoBlock photo={photo4} /> : null}
         {photo5 ? <PhotoBlock photo={photo5} /> : null}
       </ScrollView>
 
-      {/* Floating Pass / Connect bar */}
+      {/* Floating Pass / Connect bar — no hard border, soft overlay */}
       <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <TouchableOpacity
           style={[styles.actionBtn, styles.passBtn]}
@@ -185,7 +192,7 @@ const styles = StyleSheet.create({
   handleRow: {
     alignItems: 'center',
     paddingTop: 10,
-    paddingBottom: 8,
+    paddingBottom: 6,
   },
   handle: {
     width: 36,
@@ -194,36 +201,43 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(124,92,191,0.25)',
   },
 
-  // Name header
+  // Name header — tight lead-in before first photo
   nameHeader: {
     fontFamily: FONT_CORMORANT_LIGHT,
     fontSize: 22,
     color: CLOVER_FOREST,
     textAlign: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 16,
+    marginBottom: 8,
+    paddingHorizontal: 20,
     letterSpacing: 0.3,
   },
 
-  // Square photos
+  // Photos — same margin + radius as cards (unified floating system)
+  photoWrapper: {
+    marginHorizontal: FEED_MARGIN_H,
+    marginBottom: FEED_GAP,
+    borderRadius: FEED_RADIUS,
+    overflow: 'hidden', // clips the image to the border radius
+  },
   photo: {
     width: PHOTO_SIZE,
     height: PHOTO_SIZE,
   },
 
-  // White prompt cards (about, cwo)
+  // White prompt cards (About, Currently building)
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 13,
-    marginHorizontal: 12,
-    marginVertical: 10,
-    padding: 18,
+    borderRadius: FEED_RADIUS,
+    marginHorizontal: FEED_MARGIN_H,
+    marginBottom: FEED_GAP,
+    paddingHorizontal: 18,
+    paddingVertical: 18,
   },
   cardLabel: {
     fontFamily: FONT_DM_SANS_LIGHT,
-    fontSize: 12,
-    color: 'rgba(30,61,40,0.45)',
-    letterSpacing: 0.5,
+    fontSize: 11,
+    color: 'rgba(30,61,40,0.40)',
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
     marginBottom: 6,
   },
@@ -234,15 +248,15 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
 
-  // Personal info section
+  // Personal info section — same card treatment
   infoSection: {
     backgroundColor: '#ffffff',
-    borderRadius: 13,
-    marginHorizontal: 12,
-    marginVertical: 10,
+    borderRadius: FEED_RADIUS,
+    marginHorizontal: FEED_MARGIN_H,
+    marginBottom: FEED_GAP,
     paddingHorizontal: 18,
-    paddingVertical: 14,
-    gap: 10,
+    paddingVertical: 16,
+    gap: 12,
   },
   infoRow: {
     flexDirection: 'row',
@@ -250,8 +264,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   infoEmoji: {
-    fontSize: 16,
-    width: 24,
+    fontSize: 15,
+    width: 22,
     textAlign: 'center',
   },
   infoText: {
@@ -261,7 +275,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Floating action bar
+  // Floating action bar — soft overlay, no hard border
   actionBar: {
     position: 'absolute',
     bottom: 0,
@@ -270,10 +284,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     paddingHorizontal: 20,
-    paddingTop: 14,
-    backgroundColor: 'rgba(242,240,248,0.92)',
-    borderTopWidth: 1,
-    borderTopColor: CLOVER_LAVENDER,
+    paddingTop: 16,
+    backgroundColor: 'rgba(242,240,248,0.96)',
   },
   actionBtn: {
     flex: 1,
