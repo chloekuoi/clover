@@ -42,6 +42,18 @@ function formatDistance(km: number): string {
   return `${Math.round(km)} km away`;
 }
 
+function calculateAge(birthday: string): number | null {
+  const birth = new Date(birthday);
+  if (isNaN(birth.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age > 0 ? age : null;
+}
+
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function PhotoBlock({ photo }: { photo: ProfilePhoto }) {
@@ -103,9 +115,13 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
   const distanceLabel = distance > 0 ? formatDistance(distance) : null;
   const nameDistance = [profile.name, distanceLabel].filter(Boolean).join(' · ');
 
+  const age = profile.birthday ? calculateAge(profile.birthday) : null;
+
   const hasPersonalInfo =
+    !!age ||
     !!profile.city ||
     !!profile.neighborhood ||
+    !!profile.work ||
     !!profile.work_type ||
     !!availableText ||
     !!profile.school;
@@ -139,9 +155,11 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         {/* Personal info section */}
         {hasPersonalInfo ? (
           <View style={styles.infoSection}>
+            {age ? <InfoRow emoji="🎂" text={`${age} years old`} /> : null}
             {profile.city ? <InfoRow emoji="🏙️" text={profile.city} /> : null}
             {profile.neighborhood ? <InfoRow emoji="📍" text={profile.neighborhood} /> : null}
-            {profile.work_type ? <InfoRow emoji="💼" text={profile.work_type} /> : null}
+            {profile.work ? <InfoRow emoji="💼" text={profile.work} /> : null}
+            {profile.work_type ? <InfoRow emoji="🏷️" text={profile.work_type} /> : null}
             {availableText ? <InfoRow emoji="🕐" text={availableText} /> : null}
             {profile.school ? <InfoRow emoji="🎓" text={profile.school} /> : null}
           </View>
