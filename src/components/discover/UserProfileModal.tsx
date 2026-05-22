@@ -313,8 +313,6 @@ const styles = StyleSheet.create({
   sectionDivider: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgba(30,61,40,0.10)',
-    marginTop: 12,
-    marginBottom: 12,
     marginHorizontal: -18, // bleed flush to card edges
   },
 
