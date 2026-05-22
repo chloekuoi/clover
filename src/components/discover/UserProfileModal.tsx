@@ -323,7 +323,8 @@ const styles = StyleSheet.create({
     marginHorizontal: FEED_MARGIN_H,
     marginBottom: FEED_GAP,
     paddingHorizontal: 18,
-    paddingVertical: 16,
+    paddingTop: 12,
+    paddingBottom: 16,
     gap: 12,
   },
   infoRow: {
