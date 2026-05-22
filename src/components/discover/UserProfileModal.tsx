@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   View,
   Text,
@@ -117,14 +117,15 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
 
   const age = profile.birthday ? calculateAge(profile.birthday) : null;
 
-  const hasPersonalInfo =
-    !!age ||
-    !!profile.city ||
-    !!profile.neighborhood ||
-    !!profile.work ||
-    !!profile.work_type ||
-    !!availableText ||
-    !!profile.school;
+  const topRowItems = [
+    age                  ? { key: 'age',  emoji: '🎂', text: `${age}` }              : null,
+    profile.city         ? { key: 'city', emoji: '🏙️', text: profile.city }          : null,
+    profile.neighborhood ? { key: 'hood', emoji: '📍', text: profile.neighborhood }  : null,
+  ].filter((x): x is { key: string; emoji: string; text: string } => x !== null);
+
+  const hasTopRow     = topRowItems.length > 0;
+  const hasDetailRows = !!profile.work || !!profile.work_type || !!profile.school;
+  const hasPersonalInfo = hasTopRow || hasDetailRows;
 
   return (
     <View style={styles.container}>
@@ -155,13 +156,28 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         {/* Personal info section */}
         {hasPersonalInfo ? (
           <View style={styles.infoSection}>
-            {age ? <InfoRow emoji="🎂" text={`${age}`} /> : null}
-            {profile.city ? <InfoRow emoji="🏙️" text={profile.city} /> : null}
-            {profile.neighborhood ? <InfoRow emoji="📍" text={profile.neighborhood} /> : null}
-            {profile.work ? <InfoRow emoji="💼" text={profile.work} /> : null}
+            {/* Top strip: age · city · neighborhood */}
+            {hasTopRow ? (
+              <View style={styles.highlightsRow}>
+                {topRowItems.map((item, index) => (
+                  <Fragment key={item.key}>
+                    {index > 0 ? <View style={styles.verticalDivider} /> : null}
+                    <View style={styles.highlightChip}>
+                      <Text style={styles.highlightEmoji}>{item.emoji}</Text>
+                      <Text style={styles.highlightText} numberOfLines={1}>{item.text}</Text>
+                    </View>
+                  </Fragment>
+                ))}
+              </View>
+            ) : null}
+
+            {/* Horizontal rule between strip and detail rows */}
+            {hasTopRow && hasDetailRows ? <View style={styles.sectionDivider} /> : null}
+
+            {/* Detail rows */}
+            {profile.work      ? <InfoRow emoji="💼" text={profile.work}      /> : null}
             {profile.work_type ? <InfoRow emoji="🏷️" text={profile.work_type} /> : null}
-            {availableText ? <InfoRow emoji="🕐" text={availableText} /> : null}
-            {profile.school ? <InfoRow emoji="🎓" text={profile.school} /> : null}
+            {profile.school    ? <InfoRow emoji="🎓" text={profile.school}    /> : null}
           </View>
         ) : null}
 
@@ -264,6 +280,42 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: CLOVER_FOREST,
     lineHeight: 28,
+  },
+
+  // Hinge-style highlights strip (age · city · neighborhood)
+  highlightsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 36,
+  },
+  highlightChip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    paddingVertical: 2,
+  },
+  highlightEmoji: {
+    fontSize: 14,
+  },
+  highlightText: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 14,
+    color: CLOVER_FOREST,
+    flexShrink: 1,
+  },
+  verticalDivider: {
+    width: StyleSheet.hairlineWidth,
+    height: 20,
+    backgroundColor: 'rgba(30,61,40,0.18)',
+  },
+  sectionDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(30,61,40,0.10)',
+    marginTop: 12,
+    marginBottom: 12,
+    marginHorizontal: -18, // bleed flush to card edges
   },
 
   // Personal info section — same card treatment
