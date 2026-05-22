@@ -155,7 +155,7 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         {/* Personal info section */}
         {hasPersonalInfo ? (
           <View style={styles.infoSection}>
-            {age ? <InfoRow emoji="🎂" text={`${age} years old`} /> : null}
+            {age ? <InfoRow emoji="🎂" text={`${age}`} /> : null}
             {profile.city ? <InfoRow emoji="🏙️" text={profile.city} /> : null}
             {profile.neighborhood ? <InfoRow emoji="📍" text={profile.neighborhood} /> : null}
             {profile.work ? <InfoRow emoji="💼" text={profile.work} /> : null}
