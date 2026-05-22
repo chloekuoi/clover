@@ -286,7 +286,6 @@ const styles = StyleSheet.create({
   highlightsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 36,
   },
   highlightChip: {
     flex: 1,
@@ -294,7 +293,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
-    paddingVertical: 2,
   },
   highlightEmoji: {
     fontSize: 14,
