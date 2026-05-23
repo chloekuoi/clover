@@ -121,10 +121,11 @@ function toIsoDate(date: Date): string {
 
 export default function EditProfileScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { user, refreshProfile } = useAuth();
+  const { user, refreshProfile, signOut, deleteAccount } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [photos, setPhotos] = useState<PhotoSlotItem[]>([]);
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
@@ -386,6 +387,49 @@ export default function EditProfileScreen({ navigation }: Props) {
     navigation.goBack();
   };
 
+  const handleSignOut = () => {
+    Alert.alert("Sign out?", "You'll be logged out of your account.", [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign Out', style: 'destructive', onPress: () => void signOut() },
+    ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This will permanently delete your account and all your data. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: () =>
+            Alert.alert(
+              'Final Confirmation',
+              'This action is permanent and cannot be reversed.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Confirm Delete',
+                  style: 'destructive',
+                  onPress: async () => {
+                    setDeleting(true);
+                    const { error } = await deleteAccount();
+                    if (error) {
+                      setDeleting(false);
+                      Alert.alert('Delete failed', error.message);
+                    }
+                    // On success: deleteAccount calls signOut internally,
+                    // onAuthStateChange fires → RootNavigator routes to Welcome screen
+                  },
+                },
+              ]
+            ),
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -593,8 +637,60 @@ export default function EditProfileScreen({ navigation }: Props) {
             </View>
           </TouchableOpacity>
 
+          {/* Group 5: Account */}
+          <View style={styles.groupSep} />
+
+          <Text style={styles.accountSectionLabel}>Account</Text>
+
+          <View style={styles.fieldRow}>
+            <Text style={styles.fieldLabel}>Email</Text>
+            <Text style={styles.fieldInput} numberOfLines={1}>{user?.email ?? '—'}</Text>
+          </View>
+          <View style={styles.rowSep} />
+          <View style={styles.fieldRow}>
+            <Text style={styles.fieldLabel}>Sign in with</Text>
+            <Text style={styles.fieldInput}>
+              {user?.app_metadata?.provider === 'apple' ? 'Apple' : 'Email'}
+            </Text>
+          </View>
+
         </View>
+
+        {/* ── Actions: Sign Out + Delete Account ── */}
+        <View style={styles.groupSep} />
+
+        <TouchableOpacity
+          style={styles.signOutBtn}
+          onPress={handleSignOut}
+          disabled={saving || photoBusy || deleting}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.signOutBtnText}>Sign Out</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.deleteBtn}
+          onPress={handleDeleteAccount}
+          disabled={saving || photoBusy || deleting}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.deleteBtnText}>Delete Account</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.deleteDisclaimer}>
+          This permanently deletes your account and all your data.
+        </Text>
+
       </ScrollView>
+
+      {/* Full-screen overlay while deletion is in progress */}
+      {deleting ? (
+        <View style={styles.deletingOverlay}>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={styles.deletingText}>Deleting account...</Text>
+        </View>
+      ) : null}
+
     </View>
   );
 }
@@ -706,5 +802,64 @@ const styles = StyleSheet.create({
   groupSep: {
     height: 8,
     backgroundColor: colors.bgSecondary,
+  },
+  accountSectionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textTertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[3],
+    paddingBottom: spacing[1],
+    backgroundColor: theme.surface,
+  },
+  signOutBtn: {
+    height: 52,
+    borderRadius: 9999,
+    backgroundColor: theme.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: spacing[4],
+    marginTop: spacing[3],
+  },
+  signOutBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  deleteBtn: {
+    height: 52,
+    borderRadius: 9999,
+    backgroundColor: '#8b1a1a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: spacing[4],
+    marginTop: spacing[2],
+  },
+  deleteBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  deleteDisclaimer: {
+    fontSize: 12,
+    color: colors.textTertiary,
+    textAlign: 'center',
+    marginHorizontal: spacing[4],
+    marginTop: spacing[1],
+    marginBottom: spacing[4],
+  },
+  deletingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 99,
+  },
+  deletingText: {
+    marginTop: spacing[2],
+    fontSize: 14,
+    color: theme.textSecondary,
   },
 });

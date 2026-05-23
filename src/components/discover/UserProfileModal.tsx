@@ -90,8 +90,9 @@ function InfoRow({ emoji, text }: { emoji: string; text: string }) {
 
 interface DiscoverProfileViewProps {
   card: DiscoveryCard;
-  onPass: () => void;
-  onConnect: () => void;
+  /** When omitted the Pass / Connect bar is hidden (used on own Profile screen). */
+  onPass?: () => void;
+  onConnect?: () => void;
 }
 
 export default function DiscoverProfileView({ card, onPass, onConnect }: DiscoverProfileViewProps) {
@@ -133,7 +134,7 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: 96 + Math.max(insets.bottom, 16) },
+          { paddingBottom: onPass ? 96 + Math.max(insets.bottom, 16) : Math.max(insets.bottom, 24) },
         ]}
       >
         {/* Drag handle */}
@@ -192,23 +193,25 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         {photo5 ? <PhotoBlock photo={photo5} /> : null}
       </ScrollView>
 
-      {/* Floating Pass / Connect bar — no hard border, soft overlay */}
-      <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-        <TouchableOpacity
-          style={[styles.actionBtn, styles.passBtn]}
-          onPress={onPass}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.passBtnText}>Pass</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionBtn, styles.connectBtn]}
-          onPress={onConnect}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.connectBtnText}>Connect</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Floating Pass / Connect bar — hidden when used on own profile */}
+      {onPass && onConnect ? (
+        <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.passBtn]}
+            onPress={onPass}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.passBtnText}>Pass</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.connectBtn]}
+            onPress={onConnect}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.connectBtnText}>Connect</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </View>
   );
 }
