@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
 import { DiscoveryCard, ProfilePhoto } from '../../types';
 import {
   CLOVER_BG,
@@ -134,7 +135,7 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: onPass ? 96 + Math.max(insets.bottom, 16) : Math.max(insets.bottom, 24) },
+          { paddingBottom: onPass ? 84 + Math.max(insets.bottom, 16) : Math.max(insets.bottom, 24) },
         ]}
       >
         {/* Drag handle */}
@@ -193,23 +194,44 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         {photo5 ? <PhotoBlock photo={photo5} /> : null}
       </ScrollView>
 
-      {/* Floating Pass / Connect bar — hidden when used on own profile */}
+      {/* Floating Pass / Connect circles — hidden when used on own profile */}
       {onPass && onConnect ? (
         <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-          <TouchableOpacity
-            style={[styles.actionBtn, styles.passBtn]}
-            onPress={onPass}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.passBtnText}>Pass</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionBtn, styles.connectBtn]}
-            onPress={onConnect}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.connectBtnText}>Connect</Text>
-          </TouchableOpacity>
+          {/* Pass — white circle, black X */}
+          <View style={styles.btnCol}>
+            <TouchableOpacity
+              style={[styles.circleBtn, styles.passCircle]}
+              onPress={onPass}
+              activeOpacity={0.8}
+            >
+              <Svg width={20} height={20} viewBox="0 0 20 20">
+                <Path
+                  d="M4 4 L16 16 M16 4 L4 16"
+                  stroke="#1a1a1a"
+                  strokeWidth={2.2}
+                  strokeLinecap="round"
+                />
+              </Svg>
+            </TouchableOpacity>
+            <Text style={styles.btnLabel}>Pass</Text>
+          </View>
+
+          {/* Connect — forest green circle, purple heart */}
+          <View style={styles.btnCol}>
+            <TouchableOpacity
+              style={[styles.circleBtn, styles.connectCircle]}
+              onPress={onConnect}
+              activeOpacity={0.8}
+            >
+              <Svg width={22} height={20} viewBox="0 0 24 22">
+                <Path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  fill={CLOVER_VIOLET}
+                />
+              </Svg>
+            </TouchableOpacity>
+            <Text style={styles.btnLabel}>Connect</Text>
+          </View>
         </View>
       ) : null}
     </View>
@@ -345,43 +367,44 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Floating action bar — soft overlay, no hard border
+  // Floating action circles — no background bar, floats on profile content
   actionBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    backgroundColor: 'rgba(242,240,248,0.96)',
+    justifyContent: 'space-between',
+    paddingHorizontal: 40,
+    paddingTop: 12,
+    backgroundColor: 'transparent',
   },
-  actionBtn: {
-    flex: 1,
-    height: 52,
-    borderRadius: 9999,
+  btnCol: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  circleBtn: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.13,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  passBtn: {
+  passCircle: {
     backgroundColor: '#ffffff',
-    borderWidth: 1.5,
-    borderColor: CLOVER_LAVENDER,
   },
-  passBtnText: {
-    fontFamily: FONT_DM_SANS_MEDIUM,
-    fontSize: 15,
-    color: CLOVER_VIOLET,
-    letterSpacing: 0.3,
-  },
-  connectBtn: {
+  connectCircle: {
     backgroundColor: CLOVER_FOREST,
   },
-  connectBtnText: {
-    fontFamily: FONT_DM_SANS_MEDIUM,
-    fontSize: 15,
-    color: CLOVER_BG,
+  btnLabel: {
+    fontFamily: FONT_DM_SANS_LIGHT,
+    fontSize: 11,
+    color: 'rgba(30,61,40,0.45)',
     letterSpacing: 0.3,
   },
 });
