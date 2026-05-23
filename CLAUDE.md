@@ -1,88 +1,189 @@
-# CoWork Connect
+# Clover — AI Session Context
 
 **"Find your people. Do the work."**
+Co-working discovery app. Users set a daily work intent, browse nearby people working today, connect, and meet up. Think Hinge for co-working.
 
-Location-based social app that helps remote workers, freelancers, and independent professionals find co-working partners. Think Tinder for co-working: swipe through profiles of people nearby who want to work together, match, and meet up.
+---
+
+## Quick Commands
+
+```bash
+npm run ios       # Run on iOS simulator (primary target)
+npm start         # Expo dev server
+npx tsc --noEmit  # Type check — always run before committing
+```
+
+---
 
 ## Tech Stack
 
-- **Framework**: React Native 0.81 with Expo SDK 54
-- **Backend**: Supabase
-- **Storage**: AsyncStorage for local persistence
-- **Location**: expo-location
+| Layer | Choice |
+|-------|--------|
+| Framework | React Native 0.81 + Expo SDK 54 |
+| Backend | Supabase (Postgres + Auth + Storage) |
+| Navigation | React Navigation (native stack + bottom tabs) |
+| Auth | Email/password + Apple Sign-In (iOS) |
+| Location | expo-location |
+| Images | expo-image |
 
-## Commands
+---
 
-```bash
-npm start       # Start development server
-npm run ios     # Run on iOS simulator
-npm run android # Run on Android emulator
+## App Architecture
+
+### Navigation Tree
+```
+RootNavigator
+├── AuthStack (unauthenticated)
+│   ├── Welcome
+│   ├── Login       ← Apple Sign-In + email/password
+│   └── Signup      ← Apple Sign-In + email/password
+└── MainTabs (authenticated, onboarding_complete = true)
+    ├── Discover    → DiscoverScreen (Hinge-style scrollable profile feed)
+    ├── Friends     → FriendsStack → FriendsScreen / FriendProfileModal
+    ├── Matches     → MatchesStack → MatchesListScreen / ChatScreen / GroupChatScreen
+    └── Profile     → ProfileStack → ProfileScreen / EditProfileScreen
 ```
 
-## User Preferences
+### Key Routing Logic (`src/navigation/index.tsx`)
+- `user == null` → AuthStack
+- `user != null && !profile?.onboarding_complete` → Onboarding (CinematicOnboardingFlow)
+- `user != null && onboarding_complete` → MainTabs
+- Apple Sign-In new users land in Onboarding automatically via `onAuthStateChange`
 
-- **Non-developer user** - explain technical concepts simply, avoid jargon
-- **UI/UX focused** - prioritize clean, modern, friendly design
-- **Always show the running app** after making changes
-- **Commit after each working feature** - atomic commits with clear messages
+---
 
-## Design Guidelines
+## Design System
 
-- Modern, clean, friendly aesthetic - not corporate/sterile
-- Plenty of whitespace, consistent spacing and typography
-- Smooth animations and transitions
-- Accessible touch targets (minimum 44pt)
-- Clear visual feedback for interactions
+### Brand Tokens (`src/constants/clover.ts`)
+```ts
+CLOVER_BG       = '#ede8ff'  // Soft lavender — screen background
+CLOVER_FOREST   = '#1e3d28'  // Dark green — primary text, buttons, icons
+CLOVER_VIOLET   = '#7c5cbf'  // Violet — accents
+CLOVER_LAVENDER = '#d0c8f0'  // Muted lavender — dividers, heart icon
+```
 
-## Product Context
+### Typography
+```ts
+FONT_CORMORANT_LIGHT        // Serif — screen titles, profile names, card answers (32px headers, 22px cards)
+FONT_CORMORANT_LIGHT_ITALIC // Serif italic — secondary decorative
+FONT_DM_SANS_LIGHT          // Sans — body text, field inputs, labels (13–15px)
+FONT_DM_SANS_MEDIUM         // Sans medium — buttons, bold labels
+```
 
-### Target Users
-- Remote workers (combat isolation, find structure)
-- Freelancers (accountability, networking)
-- Founders & indie hackers (community, motivation)
-- Students (study partners, focus sessions)
-- Digital nomads (meet locals, find work spots)
+### Feed Layout (Discovery + Profile + Friend Profile)
+All three screens share `DiscoverProfileView` (`src/components/discover/UserProfileModal.tsx`):
+- `FEED_MARGIN_H = 16` horizontal margin on all cards and photos
+- `FEED_GAP = 12` vertical gap between every feed item
+- `FEED_RADIUS = 14` border radius on photos and cards
+- Photos are **square** (`SCREEN_WIDTH - 32` × `SCREEN_WIDTH - 32`)
+- Feed order: drag handle → name · distance → photo1 → About card → photo2 → info section → Currently Building card → photos 3–5
 
-### MVP Features (v1)
-1. User profiles with "today's work intent"
-2. Swipe-based discovery (location + availability)
-3. Matching and basic messaging
-4. Add friends after session
-5. Simple session check-in/check-out
+### Action Buttons
+- **Discovery**: Pass (white 56px circle, black ✕, left) + Connect (forest green 56px circle, lavender ♥, right) — no text labels
+- **Friend profile**: Message (white 56px circle, black chat SVG, right) — no text label
+- **Profile screen**: Edit pill (forest green, top-right header)
 
-### Deferred to v2
-- Group chats and communities
-- Virtual co-working sessions
-- Gamification and challenges
-- Premium features
+---
 
-## Core Screens
+## Core Features & Files
 
-### Discovery (Swipe Interface)
-Cards showing:
-- Profile photo and name
-- Current project/task
-- Work style tags ("Deep focus", "Chat mode", "Flexible")
-- Preferred location type (cafe, library, video call)
-- Availability window
-- Distance
+### Discovery (`src/screens/discover/DiscoverScreen.tsx`)
+- Fetches cards via `fetchDiscoveryCards(userId, lat, lng)`
+- One profile at a time, Pass/Connect advances the index
+- Focus sheet (bottom sheet) lets user set today's work intent
+- Match modal fires on mutual connect
 
-Actions: swipe right (interested), swipe left (pass), tap (full profile)
+### Profile (`src/screens/profile/ProfileScreen.tsx`)
+- Uses `DiscoverProfileView` with `distance: 0` and no onPass/onConnect
+- Header: `[Profile  ·  Edit pill →]` — left-aligned title matching other tabs
 
-### Profiles
-- Basic: name, photo, bio, city, profession, links
-- Work preferences: availability, session length, work style, favorite spots
-- Today's intent: what working on, when available, where
+### Edit Profile (`src/screens/profile/EditProfileScreen.tsx`)
+- Photo slots (stack layout, square, 4 slots)
+- Form fields: Name, Username, Phone, About (tagline), Currently working on, Work, School, Neighbourhood, City, Birthday, Work type
+- Bottom section: Account info (email + sign-in method) → Sign Out → Delete Account
 
-### Friends & Connections
-- Add friends after successful sessions
-- See when friends are working/available
-- Quick invite to propose sessions
+### Friends (`src/screens/friends/FriendsScreen.tsx`)
+- Lists friends, pending requests, available-today section
+- Tap friend → `FriendProfileModal` (pageSheet modal, uses `DiscoverProfileView`)
+- Friend profile has Message button (right side, white circle, chat SVG)
 
-### Sessions
-- Check-in: share goal
-- Timer (optional Pomodoro)
-- Check-out: share accomplishment
+### Matches / Chat (`src/screens/matches/`)
+- `MatchesListScreen` — DMs + Group Chats tabs
+- `ChatScreen` — 1:1 messaging with session proposal cards in timeline
+- `GroupChatScreen` — group messaging with session proposals
 
-## Key Metric
-Weekly active co-working sessions per user
+### Auth (`src/context/AuthContext.tsx`)
+Key methods: `signIn`, `signUp`, `signOut`, `signInWithApple`, `deleteAccount`, `refreshProfile`
+
+---
+
+## Database Schema (Supabase)
+
+### Key Tables
+| Table | Purpose |
+|-------|---------|
+| `profiles` | User profile (name, bio, city, work, school, birthday, etc.) |
+| `profile_photos` | Up to 5 photos per user, ordered by `position` |
+| `work_intents` | Today's focus: task, availability window, location, coords |
+| `swipes` | Pass/connect swipe records |
+| `matches` | Mutual connects |
+| `messages` | DM messages |
+| `sessions` | Proposed co-work sessions within DMs |
+| `friendships` | Friend connections (pending/accepted/declined) |
+| `group_chats` / `group_messages` / `group_members` | Group chat system |
+
+### Key RPCs
+- `fetch_discovery_cards(user_id, lat, lng)` — returns nearby users with intent today
+- `record_swipe(swiper, swiped, direction)` — returns `{ is_match, match_id }`
+- `delete_account()` — cascade deletes all user data + auth.users row
+
+---
+
+## Service Layer (`src/services/`)
+
+| File | Responsibility |
+|------|---------------|
+| `profileService.ts` | `getFullProfile`, `updateProfile` |
+| `discoveryService.ts` | `fetchDiscoveryCards`, `recordSwipe`, `getTodayIntent` |
+| `photoService.ts` | `getPhotos`, `uploadPhoto`, `deletePhoto`, `setPrimaryPhoto` |
+| `messagingService.ts` | Messages, matches, sessions |
+| `friendsService.ts` | Friendships, friend list, pending requests |
+| `groupChatsService.ts` | Group chat CRUD |
+| `sessionService.ts` | Session proposals and status |
+
+---
+
+## What's Been Built (Phase Summary)
+
+| Phase | What shipped |
+|-------|-------------|
+| 1 | Auth, onboarding, profile creation |
+| 2 | Discovery feed (swipe cards → Hinge scroll), matching |
+| 3 | 1:1 messaging, chat screen |
+| 4 | Session proposals in chat |
+| 5 | Friends system, friend profile modal |
+| 6 | Group chats |
+| 7 | UI polish, design system unification |
+| 8 | Unmatch flow |
+| 9 | Apple Sign-In, Delete Account, Profile tab redesign, feed-style friend profiles |
+
+---
+
+## Developer Preferences
+
+- **Non-developer user** — explain changes clearly, avoid jargon
+- **UI/UX first** — design quality matters as much as function
+- **Mockups before big UI changes** — create HTML mockup in `.claude/` and `open` it for review
+- **Commit after each feature** — atomic commits, clear messages, `Co-Authored-By: Claude`
+- **TypeScript must pass** — always run `npx tsc --noEmit` before committing
+- **Branch strategy** — feature branches (`feat/phaseN`) merged into `main` when complete
+
+---
+
+## Docs Reference
+
+Full details in `docs/` — key files:
+- `docs/API_CONTRACT.md` — all Supabase RPC signatures
+- `docs/RUNBOOK.md` — manual test flows (57 flows)
+- `docs/UI_SPEC.md` — design spec
+- `docs/STATUS.md` — current status and what's next
