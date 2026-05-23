@@ -219,10 +219,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgSecondary,
   },
   stackPrimary: {
-    aspectRatio: 1.1,
+    aspectRatio: 1,
   },
   stackSecondary: {
-    aspectRatio: 1.72,
+    aspectRatio: 1,
   },
   emptyStackSlot: {
     flex: 1,
