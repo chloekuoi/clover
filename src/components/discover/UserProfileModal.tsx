@@ -198,40 +198,34 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
       {onPass && onConnect ? (
         <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
           {/* Pass — white circle, black X */}
-          <View style={styles.btnCol}>
-            <TouchableOpacity
-              style={[styles.circleBtn, styles.passCircle]}
-              onPress={onPass}
-              activeOpacity={0.8}
-            >
-              <Svg width={20} height={20} viewBox="0 0 20 20">
-                <Path
-                  d="M4 4 L16 16 M16 4 L4 16"
-                  stroke="#1a1a1a"
-                  strokeWidth={2.2}
-                  strokeLinecap="round"
-                />
-              </Svg>
-            </TouchableOpacity>
-            <Text style={styles.btnLabel}>Pass</Text>
-          </View>
+          <TouchableOpacity
+            style={[styles.circleBtn, styles.passCircle]}
+            onPress={onPass}
+            activeOpacity={0.8}
+          >
+            <Svg width={20} height={20} viewBox="0 0 20 20">
+              <Path
+                d="M4 4 L16 16 M16 4 L4 16"
+                stroke="#1a1a1a"
+                strokeWidth={2.2}
+                strokeLinecap="round"
+              />
+            </Svg>
+          </TouchableOpacity>
 
           {/* Connect — forest green circle, purple heart */}
-          <View style={styles.btnCol}>
-            <TouchableOpacity
-              style={[styles.circleBtn, styles.connectCircle]}
-              onPress={onConnect}
-              activeOpacity={0.8}
-            >
-              <Svg width={22} height={20} viewBox="0 0 24 22">
-                <Path
-                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                  fill={CLOVER_VIOLET}
-                />
-              </Svg>
-            </TouchableOpacity>
-            <Text style={styles.btnLabel}>Connect</Text>
-          </View>
+          <TouchableOpacity
+            style={[styles.circleBtn, styles.connectCircle]}
+            onPress={onConnect}
+            activeOpacity={0.8}
+          >
+            <Svg width={22} height={20} viewBox="0 0 24 22">
+              <Path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                fill={CLOVER_VIOLET}
+              />
+            </Svg>
+          </TouchableOpacity>
         </View>
       ) : null}
     </View>
@@ -379,10 +373,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     backgroundColor: 'transparent',
   },
-  btnCol: {
-    alignItems: 'center',
-    gap: 6,
-  },
   circleBtn: {
     width: 56,
     height: 56,
@@ -400,11 +390,5 @@ const styles = StyleSheet.create({
   },
   connectCircle: {
     backgroundColor: CLOVER_FOREST,
-  },
-  btnLabel: {
-    fontFamily: FONT_DM_SANS_LIGHT,
-    fontSize: 11,
-    color: 'rgba(30,61,40,0.45)',
-    letterSpacing: 0.3,
   },
 });

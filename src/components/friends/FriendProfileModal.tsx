@@ -2,16 +2,17 @@ import React from 'react';
 import {
   ActivityIndicator,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { borderRadius, colors, shadows, spacing, theme } from '../../constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
+import { colors, theme, spacing } from '../../constants';
+import { CLOVER_FOREST } from '../../constants/clover';
 import { Profile, ProfilePhoto, WorkIntent } from '../../types';
-import UserProfileView from '../profile/UserProfileView';
+import DiscoverProfileView from '../discover/UserProfileModal';
 
 interface FriendProfileModalProps {
   visible: boolean;
@@ -32,6 +33,8 @@ export default function FriendProfileModal({
   onDismiss,
   onMessage,
 }: FriendProfileModalProps) {
+  const insets = useSafeAreaInsets();
+
   return (
     <Modal
       visible={visible}
@@ -39,43 +42,39 @@ export default function FriendProfileModal({
       presentationStyle="pageSheet"
       onRequestClose={onDismiss}
     >
-      <SafeAreaView style={styles.container}>
-        {/* Drag handle only — no header button */}
-        <View style={styles.header}>
-          <View style={styles.handle} />
-        </View>
-
+      <View style={styles.container}>
         {loading || !profile ? (
           <View style={styles.loadingState}>
             <ActivityIndicator size="large" color={colors.accentPrimary} />
             <Text style={styles.loadingText}>Loading profile...</Text>
           </View>
         ) : (
-          <ScrollView
-            style={styles.scroll}
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
-          >
-            <UserProfileView
-              profile={profile}
-              photos={photos}
-              todayIntent={intent}
-              isOwnProfile={false}
-            />
-          </ScrollView>
+          <DiscoverProfileView
+            card={{ profile, intent, distance: 0, photos }}
+          />
         )}
 
-        {/* Floating message button — fixed bottom-right, does not scroll */}
-        <TouchableOpacity
-          style={styles.fab}
-          onPress={onMessage}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Message friend"
-        >
-          <Text style={styles.fabEmoji}>💬</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+        {/* Floating message button — right side, no label */}
+        {!loading && profile ? (
+          <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+            <View style={styles.spacer} />
+            <TouchableOpacity
+              style={[styles.circleBtn, styles.messageCircle]}
+              onPress={onMessage}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Message friend"
+            >
+              <Svg width={22} height={22} viewBox="0 0 24 24">
+                <Path
+                  d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"
+                  fill="#1a1a1a"
+                />
+              </Svg>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+      </View>
     </Modal>
   );
 }
@@ -83,35 +82,7 @@ export default function FriendProfileModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
-  },
-  header: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: spacing[2],
-    paddingBottom: spacing[1],
-    position: 'relative',
-  },
-  handle: {
-    width: 36,
-    height: 4,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.borderDefault,
-  },
-  fab: {
-    position: 'absolute',
-    bottom: spacing[5],
-    right: spacing[4],
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadows.card,
-  },
-  fabEmoji: {
-    fontSize: 22,
+    backgroundColor: '#f2f0f8',
   },
   loadingState: {
     flex: 1,
@@ -124,10 +95,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.textSecondary,
   },
-  scroll: {
-    flex: 1,
+  // Floating action bar — mirrors Discovery layout
+  actionBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 40,
+    paddingTop: 12,
+    backgroundColor: 'transparent',
   },
-  content: {
-    paddingBottom: spacing[4],
+  spacer: {
+    width: 56,
+    height: 56,
+  },
+  circleBtn: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.13,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  messageCircle: {
+    backgroundColor: '#ffffff',
   },
 });
