@@ -81,7 +81,6 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       {/* ── Header ── */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
-        <View style={styles.headerAction} />
         <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity
           style={styles.headerAction}
