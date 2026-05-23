@@ -515,7 +515,7 @@ export default function EditProfileScreen({ navigation }: Props) {
           <View style={styles.rowSep} />
 
           <View style={styles.fieldRow}>
-            <Text style={styles.fieldLabel}>Tagline</Text>
+            <Text style={styles.fieldLabel}>About</Text>
             <TextInput
               style={styles.fieldInput}
               value={form.tagline}
