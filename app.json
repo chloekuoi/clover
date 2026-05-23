@@ -16,6 +16,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.chloeguo.clover",
       "buildNumber": "1",
+      "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "cowork uses your location to find co-workers nearby."
@@ -33,6 +34,7 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
+      "expo-apple-authentication",
       [
         "expo-location",
         {

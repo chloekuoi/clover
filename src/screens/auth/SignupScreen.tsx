@@ -14,6 +14,7 @@ import {
   Easing,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthStackParamList } from '../../navigation/AuthStack';
 import { useAuth } from '../../context/AuthContext';
@@ -47,7 +48,7 @@ function SpinningMiniClover() {
 }
 
 export default function SignupScreen({ navigation }: Props) {
-  const { signUp } = useAuth();
+  const { signUp, signInWithApple } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -78,6 +79,15 @@ export default function SignupScreen({ navigation }: Props) {
         'We sent you a confirmation link. Please check your email to complete signup.',
         [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
       );
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setLoading(true);
+    const { error } = await signInWithApple();
+    setLoading(false);
+    if (error) {
+      Alert.alert('Apple Sign-In failed', error.message);
     }
   };
 
@@ -169,6 +179,18 @@ export default function SignupScreen({ navigation }: Props) {
           <Text style={styles.dividerLabel}>or</Text>
           <View style={styles.dividerLine} />
         </View>
+
+        {Platform.OS === 'ios' && (
+          <View pointerEvents={loading ? 'none' : 'auto'} style={loading ? styles.appleButtonDisabled : undefined}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+              cornerRadius={9999}
+              style={styles.appleButton}
+              onPress={handleAppleSignIn}
+            />
+          </View>
+        )}
 
         <View style={styles.signInRow}>
           <Text style={styles.signInPrompt}>Already have an account?</Text>
@@ -322,6 +344,15 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 11 * 0.06,
     color: 'rgba(12,31,14,0.28)',
+  },
+
+  appleButton: {
+    height: 52,
+    width: '100%',
+  },
+
+  appleButtonDisabled: {
+    opacity: 0.6,
   },
 
   signInRow: {

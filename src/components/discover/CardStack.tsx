@@ -14,7 +14,7 @@ import { theme } from '../../constants';
 import { DiscoveryCard } from '../../types';
 import SwipeCard, { CARD_WIDTH, CARD_HEIGHT } from './SwipeCard';
 import SwipeButtons from './SwipeButtons';
-import UserProfileModal from './UserProfileModal';
+// UserProfileModal no longer used in CardStack (replaced by DiscoverProfileView in DiscoverScreen)
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
@@ -28,7 +28,6 @@ type CardStackProps = {
 
 export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedCard, setSelectedCard] = useState<DiscoveryCard | null>(null);
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -105,16 +104,7 @@ export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
       }
     });
 
-  // Tap opens the profile modal — Exclusive means pan wins if user moves finger
-  const tapGesture = Gesture.Tap()
-    .maxDuration(250)
-    .onEnd(() => {
-      if (currentCard) {
-        runOnJS(setSelectedCard)(currentCard);
-      }
-    });
-
-  const composedGesture = Gesture.Exclusive(tapGesture, panGesture);
+  const composedGesture = panGesture;
 
   const cardAnimatedStyle = useAnimatedStyle(() => {
     const rotate = interpolate(
@@ -219,20 +209,6 @@ export default function CardStack({ cards, onSwipe, onEmpty }: CardStackProps) {
         onSwipeRight={() => handleButtonSwipe('right')}
       />
 
-      {/* Profile modal — Skip/Connect trigger same animation as physical swipe */}
-      <UserProfileModal
-        visible={selectedCard !== null}
-        card={selectedCard}
-        onDismiss={() => setSelectedCard(null)}
-        onSkip={() => {
-          setSelectedCard(null);
-          handleButtonSwipe('left');
-        }}
-        onConnect={() => {
-          setSelectedCard(null);
-          handleButtonSwipe('right');
-        }}
-      />
     </View>
   );
 }

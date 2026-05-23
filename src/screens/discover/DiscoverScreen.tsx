@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
-  Dimensions,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,11 +21,11 @@ import {
 } from '../../services/discoveryService';
 import { DiscoveryCard, Profile } from '../../types';
 import IntentScreen from './IntentScreen';
-import CardStack from '../../components/discover/CardStack';
+import DiscoverProfileView from '../../components/discover/UserProfileModal';
 import MatchModal from '../../components/matches/MatchModal';
 import { MainTabsParamList } from '../../navigation/MainTabs';
 
-const SHEET_HEIGHT = Dimensions.get('window').height * 0.65;
+const SHEET_HEIGHT = 500; // intent bottom sheet height
 
 type DiscoverState = 'loading' | 'error' | 'discovering' | 'empty';
 
@@ -64,6 +63,7 @@ export default function DiscoverScreen() {
 
   const [state, setState] = useState<DiscoverState>('loading');
   const [cards, setCards] = useState<DiscoveryCard[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isFocusModalVisible, setIsFocusModalVisible] = useState(false);
   const [matchModal, setMatchModal] = useState<{
     visible: boolean;
@@ -83,7 +83,7 @@ export default function DiscoverScreen() {
   // Toast animation: fade in → hold → fade out
   useEffect(() => {
     if (!showToast) return;
-    toastOpacity.setValue(0); // reset in case of rapid re-trigger
+    toastOpacity.setValue(0);
     Animated.timing(toastOpacity, {
       toValue: 1,
       duration: 200,
@@ -98,7 +98,7 @@ export default function DiscoverScreen() {
       }, 2500);
     });
     return () => {
-      toastOpacity.stopAnimation(); // cancel any in-flight fade
+      toastOpacity.stopAnimation();
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -135,6 +135,7 @@ export default function DiscoverScreen() {
     setState('loading');
 
     const discoveryCards = await fetchDiscoveryCards(user.id, latitude, longitude);
+    setCurrentIndex(0);
     setState(discoveryCards.length > 0 ? 'discovering' : 'empty');
     setCards(discoveryCards);
   }, [user, latitude, longitude]);
@@ -156,19 +157,37 @@ export default function DiscoverScreen() {
     }
   }, [user, latitude, longitude, locationLoading, locationError, loadDiscoveryData]);
 
-  // Handle swipe
-  const handleSwipe = async (card: DiscoveryCard, direction: 'left' | 'right') => {
+  // Advance to next person after pass or connect
+  const advanceCard = (nextIndex: number) => {
+    if (nextIndex >= cards.length) {
+      setState('empty');
+    } else {
+      setCurrentIndex(nextIndex);
+    }
+  };
+
+  const handlePass = async () => {
     if (!user) return;
+    const card = cards[currentIndex];
+    if (!card) return;
+
+    await recordSwipe(user.id, card.profile.id, 'left');
+    advanceCard(currentIndex + 1);
+  };
+
+  const handleConnect = async () => {
+    if (!user) return;
+    const card = cards[currentIndex];
+    if (!card) return;
 
     const { isMatch, error, matchId, matchedUser } = await recordSwipe(
       user.id,
       card.profile.id,
-      direction
+      'right'
     );
 
     if (error) {
       console.error('Failed to record swipe:', error);
-      return;
     }
 
     const resolvedMatchedUser = matchedUser || card.profile;
@@ -179,11 +198,8 @@ export default function DiscoverScreen() {
         matchedUser: resolvedMatchedUser,
       });
     }
-  };
 
-  // Handle when all cards are swiped
-  const handleEmpty = () => {
-    setState('empty');
+    advanceCard(currentIndex + 1);
   };
 
   const renderMatchModal = () => {
@@ -215,7 +231,7 @@ export default function DiscoverScreen() {
         activeOpacity={0.8}
       >
         <PencilIcon />
-          <Text style={styles.focusPillText}> Focus</Text>
+        <Text style={styles.focusPillText}> Focus</Text>
       </TouchableOpacity>
     </View>
   );
@@ -249,7 +265,7 @@ export default function DiscoverScreen() {
     </>
   );
 
-  // Render based on state
+  // ── Loading state ────────────────────────────────────────────────────────────
   if (state === 'loading') {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -263,6 +279,7 @@ export default function DiscoverScreen() {
     );
   }
 
+  // ── Error state ──────────────────────────────────────────────────────────────
   if (state === 'error') {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -280,6 +297,7 @@ export default function DiscoverScreen() {
     );
   }
 
+  // ── Empty state ──────────────────────────────────────────────────────────────
   if (state === 'empty') {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -301,11 +319,20 @@ export default function DiscoverScreen() {
     );
   }
 
-  // State: discovering
+  // ── Discovering state ────────────────────────────────────────────────────────
+  const currentCard = cards[currentIndex];
+  if (!currentCard) return null;
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {renderHeader()}
-      <CardStack cards={cards} onSwipe={handleSwipe} onEmpty={handleEmpty} />
+      <View style={styles.profileContainer}>
+        <DiscoverProfileView
+          card={currentCard}
+          onPass={handlePass}
+          onConnect={handleConnect}
+        />
+      </View>
       {renderMatchModal()}
       {renderFocusSheet()}
       <ToastBanner visible={showToast} opacity={toastOpacity} />
@@ -317,6 +344,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
+  },
+  profileContainer: {
+    flex: 1,
   },
   centerContent: {
     flex: 1,

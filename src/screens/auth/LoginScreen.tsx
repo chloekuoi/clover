@@ -14,6 +14,7 @@ import {
   Easing,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthStackParamList } from '../../navigation/AuthStack';
 import { useAuth } from '../../context/AuthContext';
@@ -47,13 +48,12 @@ function SpinningMiniClover() {
 }
 
 export default function LoginScreen({ navigation }: Props) {
-  const { signIn } = useAuth();
+  const { signIn, signInWithApple } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const insets = useSafeAreaInsets();
 
-  // Auth logic unchanged
   const handleLogin = async () => {
     if (!email.trim() || !password) {
       Alert.alert('Missing fields', 'Please enter both email and password.');
@@ -64,6 +64,15 @@ export default function LoginScreen({ navigation }: Props) {
     setLoading(false);
     if (error) {
       Alert.alert('Login failed', error.message);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setLoading(true);
+    const { error } = await signInWithApple();
+    setLoading(false);
+    if (error) {
+      Alert.alert('Apple Sign-In failed', error.message);
     }
   };
 
@@ -99,11 +108,9 @@ export default function LoginScreen({ navigation }: Props) {
 
       {/* Main content */}
       <View style={styles.content}>
-        {/* Heading */}
         <Text style={styles.heading}>{'Welcome\nback'}</Text>
         <Text style={styles.subheading}>Sign in to continue</Text>
 
-        {/* Email input */}
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -117,7 +124,6 @@ export default function LoginScreen({ navigation }: Props) {
 
         <View style={styles.inputGap} />
 
-        {/* Password input */}
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -128,7 +134,6 @@ export default function LoginScreen({ navigation }: Props) {
           autoComplete="password"
         />
 
-        {/* Sign In button */}
         <TouchableOpacity
           style={[styles.primaryButton, loading && styles.buttonDisabled]}
           onPress={handleLogin}
@@ -142,14 +147,24 @@ export default function LoginScreen({ navigation }: Props) {
           )}
         </TouchableOpacity>
 
-        {/* Divider */}
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
           <Text style={styles.dividerLabel}>or</Text>
           <View style={styles.dividerLine} />
         </View>
 
-        {/* Sign up row — navigation unchanged */}
+        {Platform.OS === 'ios' && (
+          <View pointerEvents={loading ? 'none' : 'auto'} style={loading ? styles.appleButtonDisabled : undefined}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+              cornerRadius={9999}
+              style={styles.appleButton}
+              onPress={handleAppleSignIn}
+            />
+          </View>
+        )}
+
         <View style={styles.signUpRow}>
           <Text style={styles.signUpPrompt}>Don't have an account?</Text>
           <TouchableOpacity
@@ -170,7 +185,6 @@ const styles = StyleSheet.create({
     backgroundColor: CLOVER_BG,
   },
 
-  // Ghost clover: partially off-screen, bottom-right
   ghostCorner: {
     position: 'absolute',
     bottom: -72,
@@ -214,7 +228,7 @@ const styles = StyleSheet.create({
   miniWordmark: {
     fontFamily: FONT_CORMORANT_LIGHT,
     fontSize: 20,
-    letterSpacing: 20 * 0.06,   // 0.06em
+    letterSpacing: 20 * 0.06,
     color: CLOVER_FOREST,
     opacity: 0.65,
   },
@@ -228,7 +242,7 @@ const styles = StyleSheet.create({
   heading: {
     fontFamily: FONT_CORMORANT_LIGHT,
     fontSize: 36,
-    lineHeight: 36 * 1.08,   // line-height 1.08
+    lineHeight: 36 * 1.08,
     color: CLOVER_FOREST,
   },
 
@@ -281,7 +295,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     fontFamily: FONT_DM_SANS_MEDIUM,
     fontSize: 15,
-    letterSpacing: 15 * 0.05,   // 0.05em
+    letterSpacing: 15 * 0.05,
     color: CLOVER_BG,
   },
 
@@ -301,8 +315,17 @@ const styles = StyleSheet.create({
   dividerLabel: {
     fontFamily: FONT_DM_SANS_LIGHT,
     fontSize: 11,
-    letterSpacing: 11 * 0.06,   // 0.06em
+    letterSpacing: 11 * 0.06,
     color: 'rgba(12,31,14,0.28)',
+  },
+
+  appleButton: {
+    height: 52,
+    width: '100%',
+  },
+
+  appleButtonDisabled: {
+    opacity: 0.6,
   },
 
   signUpRow: {

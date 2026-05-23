@@ -4,22 +4,20 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
-  ScrollView,
   ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { colors, theme, spacing, borderRadius } from '../../constants';
+import { colors, theme, spacing } from '../../constants';
 import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { getFullProfile } from '../../services/profileService';
 import { getTodayIntent } from '../../services/discoveryService';
 import { Profile, ProfilePhoto, WorkIntent } from '../../types';
 import { ProfileStackParamList } from '../../navigation/ProfileStack';
-import UserProfileView from '../../components/profile/UserProfileView';
+import DiscoverProfileView from '../../components/discover/UserProfileModal';
 
 function PencilIcon() {
   return (
@@ -35,7 +33,7 @@ function PencilIcon() {
 export default function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
   const insets = useSafeAreaInsets();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile } = useAuth();
   const [profileData, setProfileData] = useState<Profile | null>(profile);
   const [photos, setPhotos] = useState<ProfilePhoto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,24 +66,6 @@ export default function ProfileScreen() {
     }, [loadProfile])
   );
 
-  const handleSignOut = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: signOut },
-    ]);
-  };
-
-  const isProfileEmpty =
-    photos.length === 0 &&
-    !profileData?.name &&
-    !profileData?.tagline &&
-    !profileData?.currently_working_on &&
-    !profileData?.work &&
-    !profileData?.school &&
-    !profileData?.neighborhood &&
-    !profileData?.city &&
-    !profileData?.work_type;
-
   if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -115,42 +95,12 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        {profileData !== null ? (
-          <UserProfileView
-            profile={profileData}
-            photos={photos}
-            todayIntent={todayIntent}
-            isOwnProfile
-            onSetFocusPress={() => navigation.getParent()?.navigate('Discover' as never)}
-          />
-        ) : null}
-
-        {/* Nudge card — shown when profile is completely blank */}
-        {isProfileEmpty ? (
-          <View style={styles.nudgeCard}>
-            <Text style={styles.nudgeTitle}>Your profile is blank</Text>
-            <Text style={styles.nudgeBody}>
-              Add a photo and a few details so co-workers know who they'll be meeting.
-            </Text>
-            <TouchableOpacity
-              style={styles.nudgeCta}
-              onPress={() => navigation.navigate('EditProfile')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.nudgeCtaText}>Complete your profile</Text>
-            </TouchableOpacity>
-          </View>
-        ) : null}
-
-        <TouchableOpacity
-          style={styles.signOutLink}
-          onPress={handleSignOut}
-          hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}
-        >
-          <Text style={styles.signOutLinkText}>Sign out</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      {/* ── Profile content — same layout as Discovery, no Pass/Connect ── */}
+      {profileData !== null ? (
+        <DiscoverProfileView
+          card={{ profile: profileData, intent: todayIntent, distance: 0, photos }}
+        />
+      ) : null}
     </View>
   );
 }
@@ -177,6 +127,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[2],
+    minHeight: 56,
+    backgroundColor: theme.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderDefault,
   },
   headerTitle: {
     fontFamily: 'CormorantGaramond-Light',
@@ -202,57 +156,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: CLOVER_BG,
-  },
-  scroll: {
-    flex: 1,
-  },
-  // No paddingHorizontal — UserProfileView owns horizontal spacing per section
-  content: {
-    paddingBottom: spacing[12],
-  },
-  nudgeCard: {
-    marginTop: spacing[4],
-    marginHorizontal: spacing[4],
-    backgroundColor: colors.accentSecondaryLight,
-    borderRadius: borderRadius.xl,
-    padding: spacing[5],
-    borderWidth: 1,
-    borderColor: colors.accentSecondary,
-  },
-  nudgeTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: theme.text,
-    marginBottom: spacing[2],
-  },
-  nudgeBody: {
-    fontSize: 14,
-    color: theme.textSecondary,
-    lineHeight: 21,
-    marginBottom: spacing[4],
-  },
-  nudgeCta: {
-    backgroundColor: colors.accentPrimary,
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[4],
-    alignSelf: 'flex-start',
-    minHeight: 44,
-    justifyContent: 'center',
-  },
-  nudgeCtaText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textInverse,
-  },
-  signOutLink: {
-    alignSelf: 'center',
-    marginTop: spacing[8],
-    marginBottom: spacing[6],
-  },
-  signOutLinkText: {
-    fontSize: 14,
-    color: theme.textMuted,
-    fontWeight: '400',
   },
 });

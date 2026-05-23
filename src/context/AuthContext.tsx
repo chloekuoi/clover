@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
+import { User, Session, AuthError, PostgrestError } from '@supabase/supabase-js';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { supabase } from '../../lib/supabase';
 import { Profile, AuthContextType } from '../types';
 
@@ -86,6 +87,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(null);
   };
 
+  const signInWithApple = async (): Promise<{ error: AuthError | null }> => {
+    const isAvailable = await AppleAuthentication.isAvailableAsync();
+    if (!isAvailable) {
+      return { error: { message: 'Apple Sign-In is not available on this device', name: 'AuthError', status: 0 } as AuthError };
+    }
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      if (!credential.identityToken) {
+        return { error: { message: 'No identity token returned from Apple', name: 'AuthError', status: 0 } as AuthError };
+      }
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: credential.identityToken,
+      });
+      return { error };
+    } catch (e: unknown) {
+      // User cancelled the Apple sign-in sheet — not an error worth alerting
+      if ((e as { code?: string }).code === 'ERR_REQUEST_CANCELED') {
+        return { error: null };
+      }
+      return { error: { message: (e as Error).message ?? 'Apple Sign-In failed', name: 'AuthError', status: 0 } as AuthError };
+    }
+  };
+
+  const deleteAccount = async (): Promise<{ error: PostgrestError | null }> => {
+    const { error } = await supabase.rpc('delete_account');
+    if (!error) {
+      await supabase.auth.signOut();
+    }
+    return { error };
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -97,6 +135,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUp,
         signOut,
         refreshProfile,
+        signInWithApple,
+        deleteAccount,
       }}
     >
       {children}
