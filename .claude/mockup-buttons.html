@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=390, initial-scale=1.0" />
+  <title>Pass / Connect — Size Options</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #e8e5f0;
+      font-family: -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+      padding: 36px 20px 60px;
+    }
+
+    h1 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(30,61,40,0.45);
+      text-align: center;
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      width: 320px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+      background: #f2f0f8;
+    }
+
+    /* Fake photo */
+    .profile-photo {
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(155deg, #c4bae4 0%, #9d94c8 50%, #7b6fad 100%);
+      position: relative;
+    }
+    /* head */
+    .profile-photo::before {
+      content: '';
+      position: absolute;
+      bottom: 190px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px; height: 80px;
+      background: linear-gradient(180deg, #b0a8d8 0%, #8878b8 100%);
+      border-radius: 50%;
+      z-index: 1;
+    }
+    /* body silhouette */
+    .profile-photo::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 140px; height: 200px;
+      background: linear-gradient(180deg, #9080c0 0%, #6a5fa0 100%);
+      border-radius: 70px 70px 0 0;
+    }
+    /* fade */
+    .photo-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 60px;
+      background: linear-gradient(to bottom, transparent, rgba(242,240,248,0.55));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Name strip */
+    .name-strip {
+      padding: 12px 16px 8px;
+    }
+    .name-strip .name {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      font-weight: 300;
+      color: #1e3d28;
+    }
+    .name-strip .sub {
+      font-size: 12px;
+      color: rgba(30,61,40,0.45);
+      margin-top: 2px;
+    }
+
+    /* ── Button row ── */
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 36px;
+      background: transparent;
+    }
+
+    .btn-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-label {
+      font-size: 11px;
+      color: rgba(30,61,40,0.4);
+      letter-spacing: 0.3px;
+    }
+
+    /* Circle base */
+    .btn {
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+      flex-shrink: 0;
+    }
+    .btn-pass { background: #ffffff; }
+    .btn-connect { background: #1e3d28; }
+
+    /* Sizes */
+    .sz-56  { width: 56px;  height: 56px; }
+    .sz-64  { width: 64px;  height: 64px; }
+    .sz-72  { width: 72px;  height: 72px; }
+    .sz-84  { width: 84px;  height: 84px; }
+
+    /* X icon — scales via font-size */
+    .icon-x {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-x::before, .icon-x::after {
+      content: '';
+      position: absolute;
+      background: #1a1a1a;
+      border-radius: 2px;
+    }
+
+    /* Heart SVG */
+    .icon-heart svg { fill: #7c5cbf; display: block; }
+
+    /* Tab bar */
+    .tab-bar {
+      background: rgba(255,255,255,0.9);
+      border-top: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0 8px;
+    }
+    .tab-dot {
+      width: 24px; height: 24px; border-radius: 7px;
+      background: rgba(30,61,40,0.1);
+    }
+    .tab-dot.active { background: #1e3d28; }
+
+    /* Size label chip */
+    .size-chip {
+      background: #1e3d28;
+      color: #f2f0f8;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 100px;
+      padding: 3px 10px;
+      text-align: center;
+      align-self: center;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Option B — Wide Spread · Size Options</h1>
+
+<!-- ── SIZE 1: Small 56px ── -->
+<div class="section">
+  <div class="size-chip">Small · 56 px</div>
+  <div class="phone">
+    <div class="profile-photo"><div class="photo-fade"></div></div>
+    <div class="name-strip">
+      <div class="name">Chloe · Toronto</div>
+      <div class="sub">Solo founder · 9:00 – 13:00</div>
+    </div>
+    <div class="btn-row" style="padding-top:14px; padding-bottom:20px;">
+      <div class="btn-col">
+        <button class="btn btn-pass sz-56">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <line x1="4" y1="4" x2="16" y2="16" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/>
+            <line x1="16" y1="4" x2="4" y2="16" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <span class="btn-label">Pass</span>
+      </div>
+      <div class="btn-col">
+        <button class="btn btn-connect sz-56">
+          <svg width="22" height="20" viewBox="0 0 24 22" fill="#7c5cbf">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
+        <span class="btn-label">Connect</span>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-dot active"></div><div class="tab-dot"></div><div class="tab-dot"></div><div class="tab-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SIZE 2: Medium 68px ── -->
+<div class="section">
+  <div class="size-chip">Medium · 68 px</div>
+  <div class="phone">
+    <div class="profile-photo"><div class="photo-fade"></div></div>
+    <div class="name-strip">
+      <div class="name">Chloe · Toronto</div>
+      <div class="sub">Solo founder · 9:00 – 13:00</div>
+    </div>
+    <div class="btn-row" style="padding-top:16px; padding-bottom:22px;">
+      <div class="btn-col">
+        <button class="btn btn-pass" style="width:68px;height:68px;">
+          <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+            <line x1="4" y1="4" x2="16" y2="16" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/>
+            <line x1="16" y1="4" x2="4" y2="16" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <span class="btn-label">Pass</span>
+      </div>
+      <div class="btn-col">
+        <button class="btn btn-connect" style="width:68px;height:68px;">
+          <svg width="26" height="23" viewBox="0 0 24 22" fill="#7c5cbf">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
+        <span class="btn-label">Connect</span>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-dot active"></div><div class="tab-dot"></div><div class="tab-dot"></div><div class="tab-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SIZE 3: Large 80px ── -->
+<div class="section">
+  <div class="size-chip">Large · 80 px</div>
+  <div class="phone">
+    <div class="profile-photo"><div class="photo-fade"></div></div>
+    <div class="name-strip">
+      <div class="name">Chloe · Toronto</div>
+      <div class="sub">Solo founder · 9:00 – 13:00</div>
+    </div>
+    <div class="btn-row" style="padding-top:18px; padding-bottom:24px;">
+      <div class="btn-col">
+        <button class="btn btn-pass sz-84" style="width:80px;height:80px;">
+          <svg width="28" height="28" viewBox="0 0 20 20" fill="none">
+            <line x1="4" y1="4" x2="16" y2="16" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="16" y1="4" x2="4" y2="16" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <span class="btn-label">Pass</span>
+      </div>
+      <div class="btn-col">
+        <button class="btn btn-connect" style="width:80px;height:80px;">
+          <svg width="30" height="27" viewBox="0 0 24 22" fill="#7c5cbf">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
+        <span class="btn-label">Connect</span>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-dot active"></div><div class="tab-dot"></div><div class="tab-dot"></div><div class="tab-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SIZE 4: XL 96px ── -->
+<div class="section">
+  <div class="size-chip">XL · 96 px</div>
+  <div class="phone">
+    <div class="profile-photo"><div class="photo-fade"></div></div>
+    <div class="name-strip">
+      <div class="name">Chloe · Toronto</div>
+      <div class="sub">Solo founder · 9:00 – 13:00</div>
+    </div>
+    <div class="btn-row" style="padding-top:18px; padding-bottom:24px;">
+      <div class="btn-col">
+        <button class="btn btn-pass" style="width:96px;height:96px;">
+          <svg width="34" height="34" viewBox="0 0 20 20" fill="none">
+            <line x1="4" y1="4" x2="16" y2="16" stroke="#1a1a1a" stroke-width="2.6" stroke-linecap="round"/>
+            <line x1="16" y1="4" x2="4" y2="16" stroke="#1a1a1a" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <span class="btn-label">Pass</span>
+      </div>
+      <div class="btn-col">
+        <button class="btn btn-connect" style="width:96px;height:96px;">
+          <svg width="36" height="32" viewBox="0 0 24 22" fill="#7c5cbf">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
+        <span class="btn-label">Connect</span>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-dot active"></div><div class="tab-dot"></div><div class="tab-dot"></div><div class="tab-dot"></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

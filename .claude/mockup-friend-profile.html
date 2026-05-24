@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=390, initial-scale=1.0" />
+  <title>Friend Profile — Feed Layout Mockup</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #ddd9ea;
+      font-family: -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      padding: 36px 20px 80px;
+    }
+
+    h1 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(30,61,40,0.45);
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      width: 320px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 20px 56px rgba(0,0,0,0.22);
+      background: #f2f0f8;
+      position: relative;
+    }
+
+    /* PageSheet peek — slight white rounded top = modal feel */
+    .sheet-header {
+      background: #f2f0f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10px;
+      padding-bottom: 0;
+    }
+    .drag-handle {
+      width: 36px; height: 4px;
+      border-radius: 2px;
+      background: rgba(124,92,191,0.25);
+      margin-bottom: 8px;
+    }
+
+    /* Scroll content */
+    .scroll {
+      overflow-y: auto;
+      max-height: 620px;
+      background: #f2f0f8;
+      padding-bottom: 96px; /* room for message btn */
+    }
+
+    /* Name header */
+    .name-header {
+      font-family: 'Georgia', serif;
+      font-size: 19px;
+      font-weight: 300;
+      color: #1e3d28;
+      text-align: center;
+      margin-bottom: 8px;
+      padding: 0 20px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Photos */
+    .photo-wrapper {
+      margin: 0 16px 12px;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .photo {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+    }
+    /* Placeholder photo */
+    .photo-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+    .photo-bg-1 { background: linear-gradient(145deg, #c4bae4, #8878b8); }
+    .photo-bg-2 { background: linear-gradient(145deg, #b8d4c0, #6a9e7a); }
+    .photo-bg-3 { background: linear-gradient(145deg, #e4c4ba, #b87868); }
+
+    /* White prompt cards */
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      margin: 0 16px 12px;
+      padding: 18px;
+    }
+    .card-label {
+      font-size: 11px;
+      color: rgba(30,61,40,0.40);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .card-answer {
+      font-family: 'Georgia', serif;
+      font-size: 19px;
+      color: #1e3d28;
+      line-height: 1.35;
+      font-weight: 300;
+    }
+
+    /* Info section */
+    .info-section {
+      background: #fff;
+      border-radius: 14px;
+      margin: 0 16px 12px;
+      padding: 12px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .highlights-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .highlight-chip {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .highlight-emoji { font-size: 14px; }
+    .highlight-text {
+      font-size: 13px;
+      color: #1e3d28;
+      font-weight: 300;
+    }
+    .v-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(30,61,40,0.15);
+    }
+    .h-divider {
+      height: 1px;
+      background: rgba(30,61,40,0.10);
+      margin: 0 -18px;
+    }
+    .info-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+    .info-emoji {
+      font-size: 15px;
+      width: 22px;
+      text-align: center;
+    }
+    .info-text {
+      font-size: 13px;
+      color: #1e3d28;
+      font-weight: 300;
+    }
+
+    /* ── Floating message button ── */
+    .action-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 12px 40px 24px;
+      background: transparent;
+    }
+    .btn-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .msg-btn {
+      width: 56px; height: 56px;
+      border-radius: 28px;
+      background: #ffffff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+    }
+    .msg-label {
+      font-size: 11px;
+      color: rgba(30,61,40,0.45);
+      letter-spacing: 0.3px;
+    }
+    /* invisible spacer to keep left-align */
+    .spacer { width: 56px; height: 56px; visibility: hidden; }
+
+    /* Tab bar */
+    .tab-bar {
+      background: rgba(255,255,255,0.9);
+      border-top: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0 10px;
+    }
+    .tab-dot {
+      width: 24px; height: 24px; border-radius: 7px;
+      background: rgba(30,61,40,0.1);
+    }
+    .tab-dot.active { background: #1e3d28; }
+
+    .label-chip {
+      background: #1e3d28;
+      color: #f2f0f8;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 100px;
+      padding: 3px 12px;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Friend Profile — Discovery Feed Style</h1>
+<div class="label-chip">pageSheet modal · no Pass/Connect</div>
+
+<div class="phone">
+  <!-- Sheet drag handle -->
+  <div class="sheet-header">
+    <div class="drag-handle"></div>
+  </div>
+
+  <!-- Scrollable feed content -->
+  <div class="scroll">
+
+    <!-- Name -->
+    <div class="name-header">Arda Erturk</div>
+
+    <!-- Photo 1 -->
+    <div class="photo-wrapper">
+      <div class="photo photo-placeholder photo-bg-1">🧑‍💻</div>
+    </div>
+
+    <!-- About card -->
+    <div class="card">
+      <div class="card-label">About</div>
+      <div class="card-answer">Building fintech tools for small businesses in Istanbul</div>
+    </div>
+
+    <!-- Photo 2 -->
+    <div class="photo-wrapper">
+      <div class="photo photo-placeholder photo-bg-2">🌿</div>
+    </div>
+
+    <!-- Personal info -->
+    <div class="info-section">
+      <!-- Highlights strip: age · city · neighborhood -->
+      <div class="highlights-row">
+        <div class="highlight-chip">
+          <span class="highlight-emoji">🎂</span>
+          <span class="highlight-text">31</span>
+        </div>
+        <div class="v-divider"></div>
+        <div class="highlight-chip">
+          <span class="highlight-emoji">🏙️</span>
+          <span class="highlight-text">Toronto</span>
+        </div>
+        <div class="v-divider"></div>
+        <div class="highlight-chip">
+          <span class="highlight-emoji">📍</span>
+          <span class="highlight-text">Annex</span>
+        </div>
+      </div>
+      <div class="h-divider"></div>
+      <!-- Detail rows -->
+      <div class="info-row">
+        <span class="info-emoji">💼</span>
+        <span class="info-text">Volta Labs</span>
+      </div>
+      <div class="info-row">
+        <span class="info-emoji">🏷️</span>
+        <span class="info-text">Technical / Engineer</span>
+      </div>
+      <div class="info-row">
+        <span class="info-emoji">🎓</span>
+        <span class="info-text">University of Toronto</span>
+      </div>
+    </div>
+
+    <!-- Currently building card -->
+    <div class="card">
+      <div class="card-label">Currently building</div>
+      <div class="card-answer">A real-time payments API for SMBs</div>
+    </div>
+
+    <!-- Photo 3 -->
+    <div class="photo-wrapper">
+      <div class="photo photo-placeholder photo-bg-3">☕</div>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <!-- Floating message button — right side, white circle, black SVG icon -->
+  <div class="action-bar">
+    <div class="spacer"></div>
+    <div class="btn-col">
+      <button class="msg-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"
+                fill="#1a1a1a"/>
+        </svg>
+      </button>
+      <span class="msg-label">Message</span>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+</body>
+</html>

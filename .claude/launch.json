@@ -15,8 +15,8 @@
     },
     {
       "name": "mockup",
-      "runtimeExecutable": "/usr/local/bin/node",
-      "runtimeArgs": [".superpowers/brainstorm/server.js"],
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "3457", ".claude"],
       "port": 3457
     }
   ]

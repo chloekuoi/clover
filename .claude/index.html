@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clover — Discovery Screen Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --forest: #1e3d28;
+    --bg: #ede8ff;
+    --violet: #7c5cbf;
+    --lavender: #d0c8f0;
+    --modal-bg: #f2f0f8;
+    --surface: #fff;
+    --border: #ebebeb;
+  }
+  body {
+    background: #c5bfde;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px 60px;
+    gap: 36px;
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 21px;
+    color: var(--forest);
+    opacity: 0.65;
+    letter-spacing: 0.06em;
+  }
+  .subtitle {
+    font-size: 10px;
+    color: var(--forest);
+    opacity: 0.33;
+    letter-spacing: 0.05em;
+    margin-top: -28px;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .col-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--forest);
+    opacity: 0.32;
+  }
+  .annotation {
+    font-size: 10px;
+    color: var(--forest);
+    opacity: 0.42;
+    font-style: italic;
+    text-align: center;
+    line-height: 1.55;
+  }
+
+  /* Phone */
+  .phone {
+    width: 272px;
+    background: var(--modal-bg);
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.17), 0 0 0 1px rgba(0,0,0,0.05);
+  }
+  .status-bar {
+    height: 38px;
+    background: var(--modal-bg);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 20px 6px;
+  }
+  .st { font-size: 12px; font-weight: 500; color: var(--forest); }
+  .si { font-size: 9px; color: var(--forest); }
+
+  .sheet { background: var(--modal-bg); position: relative; overflow: hidden; }
+  .handle {
+    width: 28px; height: 3px;
+    background: rgba(30,61,40,0.13);
+    border-radius: 99px;
+    margin: 8px auto 0;
+  }
+  .name-header {
+    text-align: center;
+    padding: 5px 14px 8px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 12px;
+    color: var(--forest);
+    opacity: 0.6;
+    letter-spacing: 0.04em;
+  }
+
+  .pb { margin-bottom: 8px; position: relative; }
+  .blk { margin: 0 9px 8px; }
+
+  .card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 11px 13px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  .card-lbl {
+    font-size: 8.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #bbb;
+    margin-bottom: 4px;
+  }
+  .card-ans {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 16px;
+    color: var(--forest);
+    line-height: 1.22;
+  }
+
+  .info-list {
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  .ir {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f2f2f2;
+  }
+  .ir:last-child { border-bottom: none; }
+  .ii { font-size: 11px; width: 16px; text-align: center; flex-shrink: 0; }
+  .it { font-size: 11px; font-weight: 300; color: #333; }
+  .is { font-size: 8.5px; color: #c0c0c0; font-weight: 300; }
+
+  .div-row {
+    display: flex; align-items: center; gap: 7px;
+    margin: 2px 9px 6px;
+  }
+  .div-line { flex: 1; height: 1px; background: rgba(30,61,40,0.07); }
+  .div-txt {
+    font-size: 8px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(30,61,40,0.26);
+  }
+
+  .actions {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 76px;
+    background: linear-gradient(transparent, rgba(242,240,248,0.97) 34%);
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; padding-bottom: 13px;
+  }
+  .btn-pass {
+    height: 42px; padding: 0 17px; border-radius: 99px;
+    background: var(--surface); border: 1.5px solid var(--lavender);
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500; color: var(--violet);
+    box-shadow: 0 3px 9px rgba(124,92,191,0.1);
+  }
+  .btn-connect {
+    height: 42px; padding: 0 17px; border-radius: 99px;
+    background: var(--forest); border: none;
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500; color: var(--bg);
+    box-shadow: 0 5px 14px rgba(30,61,40,0.23);
+  }
+
+  .badge {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(20,40,25,0.5);
+    color: rgba(237,232,255,0.92);
+    font-size: 8px; font-weight: 500; letter-spacing: 0.04em;
+    padding: 3px 7px; border-radius: 99px;
+  }
+  .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+
+<h2>clover · discovery redesign</h2>
+<p class="subtitle">① photo 1 → about → ② photo 2 → personal info → currently working on → ③ photo 3 → ④ photo 4 → ⑤ photo 5</p>
+
+<div class="row">
+
+  <!-- ══ PHONE 1 ══ -->
+  <div class="col">
+    <span class="col-label">Scroll 1</span>
+    <div class="phone">
+      <div class="status-bar"><span class="st">9:41</span><span class="si">▲ ■ ▌</span></div>
+      <div class="sheet" style="height:860px">
+        <div class="handle"></div>
+        <div class="name-header">margot · 0.4 km</div>
+
+        <!-- Photo 1 -->
+        <div class="pb">
+          <div style="height:272px;background:linear-gradient(145deg,#8fa89a,#2d5240);position:relative;overflow:hidden">
+            <svg class="scene" viewBox="0 0 272 272" fill="none">
+              <rect width="272" height="272" fill="url(#g1)"/>
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="272" y2="228" gradientUnits="userSpaceOnUse"><stop stop-color="#8fa89a"/><stop offset="1" stop-color="#2d5240"/></linearGradient></defs>
+              <rect x="168" y="24" width="54" height="84" rx="3" fill="rgba(255,255,255,0.08)"/>
+              <ellipse cx="136" cy="82" rx="31" ry="35" fill="rgba(20,45,28,0.64)"/>
+              <path d="M86 228 Q112 158 136 153 Q160 158 186 228Z" fill="rgba(20,45,28,0.5)"/>
+              <rect x="96" y="140" width="96" height="50" rx="4" fill="rgba(25,45,30,0.58)"/>
+              <rect x="102" y="145" width="84" height="40" rx="2" fill="rgba(120,200,160,0.15)"/>
+              <rect x="85" y="170" width="112" height="7" rx="3" fill="rgba(20,40,25,0.38)"/>
+              <rect x="31" y="138" width="5" height="30" rx="2" fill="rgba(30,80,40,0.44)"/>
+              <ellipse cx="34" cy="130" rx="12" ry="14" fill="rgba(40,120,60,0.42)"/>
+              <rect x="192" y="180" width="15" height="12" rx="2" fill="rgba(255,255,255,0.16)"/>
+            </svg>
+            <div class="badge">① Photo 1</div>
+          </div>
+        </div>
+
+        <!-- About -->
+        <div class="blk">
+          <div class="card">
+            <div class="card-lbl">About</div>
+            <div class="card-ans">Product designer obsessed with zero-friction experiences. Corner café, cold brew.</div>
+          </div>
+        </div>
+
+        <!-- Photo 2 -->
+        <div class="pb">
+          <div style="height:272px;background:linear-gradient(135deg,#c4a882,#7a5630);position:relative;overflow:hidden">
+            <svg class="scene" viewBox="0 0 272 272" fill="none">
+              <rect width="272" height="272" fill="url(#g2)"/>
+              <defs><linearGradient id="g2" x1="0" y1="0" x2="272" y2="180" gradientUnits="userSpaceOnUse"><stop stop-color="#c4a882"/><stop offset="1" stop-color="#7a5630"/></linearGradient></defs>
+              <rect x="0" y="22" width="11" height="158" fill="rgba(90,55,20,0.4)"/>
+              <rect x="14" y="38" width="8" height="106" fill="rgba(180,100,40,0.5)"/>
+              <rect x="25" y="28" width="7" height="114" fill="rgba(140,80,30,0.44)"/>
+              <rect x="34" y="34" width="10" height="110" fill="rgba(200,120,50,0.5)"/>
+              <rect x="47" y="26" width="8" height="116" fill="rgba(100,60,20,0.44)"/>
+              <rect x="58" y="42" width="9" height="100" fill="rgba(160,90,35,0.48)"/>
+              <rect x="70" y="126" width="168" height="7" rx="2" fill="rgba(90,55,20,0.44)"/>
+              <ellipse cx="154" cy="88" rx="23" ry="27" fill="rgba(60,35,15,0.65)"/>
+              <path d="M112 132 Q133 92 154 88 Q175 92 196 132Z" fill="rgba(60,35,15,0.52)"/>
+              <rect x="118" y="118" width="72" height="7" rx="2" fill="rgba(255,255,255,0.22)"/>
+              <rect x="198" y="116" width="13" height="9" rx="2" fill="rgba(255,255,255,0.18)"/>
+            </svg>
+            <div class="badge">② Photo 2</div>
+          </div>
+        </div>
+
+        <!-- Personal info -->
+        <div class="div-row">
+          <div class="div-line"></div>
+          <span class="div-txt">Personal info</span>
+          <div class="div-line"></div>
+        </div>
+        <div class="blk">
+          <div class="info-list">
+            <div class="ir"><div class="ii">🏙️</div><div><div class="it">Paris, France</div><div class="is">City</div></div></div>
+            <div class="ir"><div class="ii">📍</div><div><div class="it">Le Marais</div><div class="is">Neighbourhood</div></div></div>
+            <div class="ir"><div class="ii">💼</div><div><div class="it">Freelance · Remote & café</div><div class="is">Work style</div></div></div>
+            <div class="ir"><div class="ii">🕐</div><div><div class="it">9:00 – 13:00</div><div class="is">Available today</div></div></div>
+            <div class="ir"><div class="ii">🎓</div><div><div class="it">École des Arts Décoratifs</div><div class="is">School</div></div></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="btn-pass">✕ Pass</div>
+          <div class="btn-connect">♡ Connect</div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation">① Photo 1 → About<br>② Photo 2 → Personal info</p>
+  </div>
+
+  <!-- ══ PHONE 2 ══ -->
+  <div class="col">
+    <span class="col-label">Scroll 2</span>
+    <div class="phone">
+      <div class="status-bar"><span class="st">9:41</span><span class="si">▲ ■ ▌</span></div>
+      <div class="sheet" style="height:700px">
+        <div style="height:6px"></div>
+
+        <!-- Currently working on -->
+        <div class="blk">
+          <div class="card">
+            <div class="card-lbl">Currently working on</div>
+            <div class="card-ans">Redesigning onboarding flows that feel like they were made by humans</div>
+          </div>
+        </div>
+
+        <!-- Photo 3 — blue evening city -->
+        <div class="pb">
+          <div style="height:272px;background:linear-gradient(160deg,#7fa8c4,#1e3650);position:relative;overflow:hidden">
+            <svg class="scene" viewBox="0 0 272 272" fill="none">
+              <rect width="272" height="272" fill="url(#g3)"/>
+              <defs><linearGradient id="g3" x1="0" y1="0" x2="272" y2="214" gradientUnits="userSpaceOnUse"><stop stop-color="#7fa8c4"/><stop offset="1" stop-color="#1e3650"/></linearGradient></defs>
+              <rect x="0" y="118" width="272" height="96" fill="rgba(15,30,55,0.54)"/>
+              <rect x="16" y="86" width="24" height="128" fill="rgba(15,30,55,0.6)"/>
+              <rect x="7" y="102" width="12" height="112" fill="rgba(15,30,55,0.5)"/>
+              <rect x="48" y="96" width="18" height="118" fill="rgba(15,30,55,0.55)"/>
+              <rect x="218" y="84" width="28" height="130" fill="rgba(15,30,55,0.6)"/>
+              <rect x="236" y="100" width="16" height="114" fill="rgba(15,30,55,0.5)"/>
+              <rect x="248" y="92" width="24" height="122" fill="rgba(15,30,55,0.55)"/>
+              <rect x="22" y="92" width="4" height="3" rx="1" fill="rgba(255,220,100,0.48)"/>
+              <rect x="29" y="92" width="4" height="3" rx="1" fill="rgba(255,220,100,0.28)"/>
+              <rect x="22" y="100" width="4" height="3" rx="1" fill="rgba(255,220,100,0.38)"/>
+              <rect x="224" y="90" width="4" height="3" rx="1" fill="rgba(255,220,100,0.44)"/>
+              <rect x="232" y="90" width="4" height="3" rx="1" fill="rgba(255,220,100,0.28)"/>
+              <ellipse cx="136" cy="94" rx="20" ry="23" fill="rgba(15,30,55,0.76)"/>
+              <path d="M103 138 Q120 100 136 96 Q152 100 169 138Z" fill="rgba(15,30,55,0.62)"/>
+              <rect x="118" y="124" width="38" height="24" rx="3" fill="rgba(30,100,160,0.5)"/>
+              <rect x="122" y="128" width="30" height="16" rx="1" fill="rgba(100,180,255,0.16)"/>
+              <circle cx="234" cy="33" r="12" fill="rgba(255,245,200,0.18)"/>
+              <circle cx="239" cy="28" r="9" fill="rgba(30,70,100,0.55)"/>
+            </svg>
+            <div class="badge">③ Photo 3</div>
+          </div>
+        </div>
+
+        <!-- Photo 4 — warm desk -->
+        <div class="pb">
+          <div style="height:272px;background:linear-gradient(150deg,#d4c5a9,#8a6840);position:relative;overflow:hidden">
+            <svg class="scene" viewBox="0 0 272 272" fill="none">
+              <rect width="272" height="272" fill="url(#g4)"/>
+              <defs><linearGradient id="g4" x1="0" y1="0" x2="272" y2="196" gradientUnits="userSpaceOnUse"><stop stop-color="#d4c5a9"/><stop offset="1" stop-color="#8a6840"/></linearGradient></defs>
+              <rect x="54" y="26" width="160" height="5" rx="2" fill="rgba(80,50,20,0.27)"/>
+              <rect x="70" y="9" width="13" height="19" rx="2" fill="rgba(160,80,40,0.44)"/>
+              <rect x="87" y="12" width="10" height="16" rx="2" fill="rgba(120,60,30,0.38)"/>
+              <rect x="100" y="7" width="9" height="21" rx="2" fill="rgba(180,100,50,0.44)"/>
+              <rect x="112" y="10" width="12" height="18" rx="2" fill="rgba(100,55,25,0.38)"/>
+              <rect x="186" y="10" width="5" height="17" rx="2" fill="rgba(60,35,12,0.38)"/>
+              <ellipse cx="189" cy="6" rx="9" ry="10" fill="rgba(60,120,50,0.44)"/>
+              <rect x="0" y="140" width="272" height="8" rx="2" fill="rgba(80,50,20,0.32)"/>
+              <rect x="82" y="62" width="108" height="70" rx="4" fill="rgba(30,22,14,0.64)"/>
+              <rect x="87" y="67" width="98" height="58" rx="2" fill="rgba(80,140,200,0.13)"/>
+              <rect x="130" y="132" width="11" height="6" rx="1" fill="rgba(30,22,14,0.46)"/>
+              <rect x="88" y="142" width="96" height="9" rx="3" fill="rgba(30,22,14,0.36)"/>
+              <rect x="206" y="122" width="16" height="16" rx="3" fill="rgba(255,255,255,0.2)"/>
+              <rect x="40" y="110" width="5" height="30" rx="2" fill="rgba(60,35,12,0.35)"/>
+              <ellipse cx="43" cy="104" rx="10" ry="12" fill="rgba(60,120,50,0.4)"/>
+            </svg>
+            <div class="badge">④ Photo 4</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="btn-pass">✕ Pass</div>
+          <div class="btn-connect">♡ Connect</div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation">Currently working on<br>③ Photo 3 · ④ Photo 4</p>
+  </div>
+
+  <!-- ══ PHONE 3 ══ -->
+  <div class="col">
+    <span class="col-label">Scroll 3 — bottom</span>
+    <div class="phone">
+      <div class="status-bar"><span class="st">9:41</span><span class="si">▲ ■ ▌</span></div>
+      <div class="sheet" style="height:700px">
+        <div style="height:6px"></div>
+
+        <!-- Photo 5 — outdoor park -->
+        <div class="pb">
+          <div style="height:272px;background:linear-gradient(155deg,#a8c5a0,#2f5438);position:relative;overflow:hidden">
+            <svg class="scene" viewBox="0 0 272 272" fill="none">
+              <rect width="272" height="272" fill="url(#g5)"/>
+              <defs><linearGradient id="g5" x1="0" y1="0" x2="272" y2="430" gradientUnits="userSpaceOnUse"><stop stop-color="#a8c5a0"/><stop offset="1" stop-color="#2f5438"/></linearGradient></defs>
+              <rect x="0" y="0" width="272" height="110" fill="rgba(180,220,240,0.17)"/>
+              <ellipse cx="40" cy="80" rx="32" ry="38" fill="rgba(40,100,50,0.5)"/>
+              <rect x="34" y="116" width="10" height="314" rx="3" fill="rgba(60,35,15,0.37)"/>
+              <ellipse cx="234" cy="74" rx="28" ry="33" fill="rgba(40,100,50,0.46)"/>
+              <rect x="228" y="106" width="9" height="324" rx="3" fill="rgba(60,35,15,0.35)"/>
+              <ellipse cx="262" cy="90" rx="18" ry="22" fill="rgba(40,100,50,0.34)"/>
+              <!-- Bench -->
+              <rect x="96" y="320" width="92" height="5" rx="2" fill="rgba(90,55,20,0.5)"/>
+              <rect x="100" y="325" width="5" height="22" rx="2" fill="rgba(90,55,20,0.4)"/>
+              <rect x="180" y="325" width="5" height="22" rx="2" fill="rgba(90,55,20,0.4)"/>
+              <!-- Person -->
+              <ellipse cx="140" cy="284" rx="19" ry="22" fill="rgba(30,50,35,0.65)"/>
+              <rect x="126" y="304" width="32" height="18" rx="3" fill="rgba(30,50,35,0.55)"/>
+              <!-- Laptop -->
+              <rect x="123" y="296" width="40" height="24" rx="3" fill="rgba(20,40,25,0.56)"/>
+              <rect x="127" y="300" width="32" height="16" rx="1" fill="rgba(120,200,160,0.14)"/>
+              <!-- Path on ground -->
+              <path d="M74 430 Q136 400 140 380 Q144 400 198 430Z" fill="rgba(30,60,35,0.1)"/>
+              <!-- Birds -->
+              <path d="M76 56 Q80 52 84 56" stroke="rgba(30,61,40,0.26)" stroke-width="1.5" fill="none"/>
+              <path d="M94 44 Q98 40 102 44" stroke="rgba(30,61,40,0.2)" stroke-width="1.5" fill="none"/>
+            </svg>
+            <div class="badge">⑤ Photo 5</div>
+          </div>
+        </div>
+
+        <div style="padding: 14px 0 0; text-align:center">
+          <span style="font-size:8px;letter-spacing:0.09em;text-transform:uppercase;color:rgba(30,61,40,0.22);font-weight:500">end of profile</span>
+        </div>
+
+        <div class="actions">
+          <div class="btn-pass">✕ Pass</div>
+          <div class="btn-connect">♡ Connect</div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation">⑤ Photo 5 — tall, end of profile<br>Pass / Connect always floating</p>
+  </div>
+
+</div>
+</body>
+</html>
