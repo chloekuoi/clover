@@ -37,7 +37,7 @@ export function ContactSyncScreen({ state, setState, onNext, onBack, currentStep
       <View style={styles.spacer} />
 
       <TypewriterText
-        text="find your crew."
+        text="find your people."
         style={styles.question}
         startDelay={300}
       />
@@ -54,13 +54,9 @@ export function ContactSyncScreen({ state, setState, onNext, onBack, currentStep
         />
       ) : (
         <TouchableOpacity onPress={handleSync} style={styles.cta} activeOpacity={0.7}>
-          <Text style={styles.ctaText}>find my crew →</Text>
+          <Text style={styles.ctaText}>see who's here →</Text>
         </TouchableOpacity>
       )}
-
-      <TouchableOpacity onPress={onNext} style={styles.skip} activeOpacity={0.7}>
-        <Text style={styles.skipText}>skip for now</Text>
-      </TouchableOpacity>
 
       <ProgressBar
         currentStep={currentStep}
@@ -92,14 +88,14 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 24,
     lineHeight: 32,
-    marginBottom: 10,
+    marginBottom: 14,
   },
   body: {
     fontFamily: t.fontSerif.lightItalic,
     fontSize: 17,
     color: t.textSec,
     lineHeight: 26,
-    marginBottom: 20,
+    marginBottom: 28,
   },
   spinner: {
     marginBottom: 8,
@@ -111,16 +107,8 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontFamily: t.fontSans.regular,
-    fontSize: 15,
+    fontSize: 14,
     color: t.accent,
     letterSpacing: 0.3,
-  },
-  skip: {
-    paddingVertical: 4,
-  },
-  skipText: {
-    fontFamily: t.fontSans.light,
-    fontSize: 12,
-    color: t.placeholder,
   },
 });

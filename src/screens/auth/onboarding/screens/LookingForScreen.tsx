@@ -15,7 +15,7 @@ import type { ScreenProps } from '../CinematicOnboardingFlow';
 
 const LOOKING_FOR_OPTIONS = [
   'Open to anyone',
-  'Solo founder',
+  'Founder / Co-founder',
   'Technical / Engineer',
   'Designer',
   'Marketer / Growth',

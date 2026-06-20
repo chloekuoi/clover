@@ -58,10 +58,12 @@ export function PhotoScreen({ state, setState, onNext, onBack, currentStep, tota
       <View style={styles.spacer} />
 
       <TypewriterText
-        text="put a face to the name."
+        text="who's behind the work?"
         style={styles.question}
         startDelay={300}
       />
+
+      <Text style={styles.subtitle}>add up to 5 photos</Text>
 
       <View style={styles.gridRow}>
         {renderSlot(0)}
@@ -108,7 +110,13 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 24,
     lineHeight: 32,
-    marginBottom: 10,
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontFamily: t.fontSans.light,
+    fontSize: 13,
+    color: t.placeholder,
+    marginBottom: 14,
   },
   gridRow: {
     flexDirection: 'row',
