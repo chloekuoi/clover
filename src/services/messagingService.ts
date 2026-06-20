@@ -132,7 +132,6 @@ export async function fetchMatches(userId: string): Promise<MatchPreview[]> {
   });
 
   if (error) {
-    console.log('fetchMatches raw error:', JSON.stringify(error, null, 2));
     console.error('Error fetching matches:', error);
     return [];
   }
