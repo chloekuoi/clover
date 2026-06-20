@@ -19,13 +19,14 @@ import type { ScreenProps } from '../CinematicOnboardingFlow';
 const KEYBOARD_ACCESSORY_ID = 'onboarding-building-keyboard-accessory';
 
 export function BuildingScreen({ state, setState, onNext, onBack, currentStep, totalSteps }: ScreenProps) {
+  const canAdvance = state.currentlyWorkingOn.trim().length > 0;
   return (
     <Pressable style={styles.screen} onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.kav}
       >
-        <Text style={styles.wordmark}>cowork</Text>
+        <Text style={styles.wordmark}>clover</Text>
         <View style={styles.spacer} />
 
         <TypewriterText
@@ -43,7 +44,7 @@ export function BuildingScreen({ state, setState, onNext, onBack, currentStep, t
           autoCapitalize="none"
           returnKeyType="done"
           blurOnSubmit
-          onSubmitEditing={onNext}
+          onSubmitEditing={canAdvance ? onNext : Keyboard.dismiss}
           {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
         />
 
@@ -51,14 +52,14 @@ export function BuildingScreen({ state, setState, onNext, onBack, currentStep, t
           currentStep={currentStep}
           totalSteps={totalSteps}
           onBack={onBack}
-          onNext={onNext}
+          onNext={canAdvance ? onNext : undefined}
         />
       </KeyboardAvoidingView>
 
       {Platform.OS === 'ios' ? (
         <InputAccessoryView nativeID={KEYBOARD_ACCESSORY_ID}>
           <View style={styles.keyboardAccessory}>
-            <TouchableOpacity onPress={onNext} style={styles.keyboardDoneButton}>
+            <TouchableOpacity onPress={canAdvance ? onNext : Keyboard.dismiss} style={styles.keyboardDoneButton}>
               <Text style={styles.keyboardDoneText}>Next</Text>
             </TouchableOpacity>
           </View>

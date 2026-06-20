@@ -45,7 +45,7 @@ export function LookingForScreen({ state, setState, onNext, onBack, currentStep,
 
   return (
     <Pressable style={styles.screen} onPress={Keyboard.dismiss}>
-      <Text style={styles.wordmark}>cowork</Text>
+      <Text style={styles.wordmark}>clover</Text>
 
       <ScrollView
         style={styles.scroll}
@@ -85,7 +85,7 @@ export function LookingForScreen({ state, setState, onNext, onBack, currentStep,
         currentStep={currentStep}
         totalSteps={totalSteps}
         onBack={onBack}
-        onNext={onNext}
+        onNext={selected.length > 0 ? onNext : undefined}
       />
     </Pressable>
   );

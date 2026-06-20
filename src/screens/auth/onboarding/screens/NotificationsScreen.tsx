@@ -30,7 +30,7 @@ export function NotificationsScreen({ state, setState, onNext, onBack, currentSt
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.wordmark}>cowork</Text>
+      <Text style={styles.wordmark}>clover</Text>
       <View style={styles.spacer} />
 
       <TypewriterText

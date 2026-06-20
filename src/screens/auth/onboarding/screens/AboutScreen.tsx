@@ -63,7 +63,7 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.kav}
       >
-        <Text style={styles.wordmark}>cowork</Text>
+        <Text style={styles.wordmark}>clover</Text>
 
         <ScrollView
           style={styles.scroll}
@@ -119,7 +119,7 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
           currentStep={currentStep}
           totalSteps={totalSteps}
           onBack={onBack}
-          onNext={handleNext}
+          onNext={selectedTypes.length > 0 ? handleNext : undefined}
         />
       </KeyboardAvoidingView>
 
