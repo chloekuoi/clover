@@ -86,10 +86,9 @@ BEGIN
   WHERE requester_id = v_uid
      OR recipient_id = v_uid;
 
-  -- 13. Remove uploaded photos from storage bucket
-  DELETE FROM storage.objects
-  WHERE bucket_id = 'avatars'
-    AND (storage.foldername(name))[1] = v_uid::text;
+  -- 13. Uploaded photos in the 'avatars' storage bucket are removed by the
+  --     client via the Storage API BEFORE this function is called. Supabase
+  --     blocks direct DELETE on storage.objects from SQL, so it is not done here.
 
   -- 14. Profile row (ON DELETE CASCADE from auth.users also does this, but
   --     deleting explicitly keeps the ordering clean)
