@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontFamily: t.fontSans.regular,
-    fontSize: 15,
+    fontSize: 14,
     color: t.accent,
     letterSpacing: 0.3,
   },

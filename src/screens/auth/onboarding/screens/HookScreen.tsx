@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontFamily: t.fontSans.light,
-    fontSize: 13,
+    fontSize: 14,
     color: t.accent,
     letterSpacing: 0.5,
   },
