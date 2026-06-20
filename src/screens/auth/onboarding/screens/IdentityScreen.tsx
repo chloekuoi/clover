@@ -41,7 +41,7 @@ export function IdentityScreen({ state, setState, onNext, onBack, currentStep, t
     }
   };
 
-  const canAdvance = state.name.trim().length > 0;
+  const canAdvance = state.name.trim().length > 0 && !!state.photoUris[0];
 
   return (
     <Pressable style={styles.screen} onPress={Keyboard.dismiss}>

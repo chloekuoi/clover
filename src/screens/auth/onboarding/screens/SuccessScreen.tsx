@@ -94,7 +94,7 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
       <View style={styles.spacer} />
 
       <TypewriterText
-        text="welcome to cowork."
+        text="welcome to clover."
         style={styles.question}
         startDelay={300}
       />
@@ -110,7 +110,7 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
         activeOpacity={0.7}
         hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
       >
-        <Text style={styles.ctaText}>let's find your people →</Text>
+        <Text style={styles.ctaText}>see who's working nearby →</Text>
       </TouchableOpacity>
     </View>
   );
