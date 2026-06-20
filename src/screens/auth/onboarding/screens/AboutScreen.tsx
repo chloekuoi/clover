@@ -20,7 +20,7 @@ import type { ScreenProps } from '../CinematicOnboardingFlow';
 const KEYBOARD_ACCESSORY_ID = 'onboarding-about-keyboard-accessory';
 
 const WORK_OPTIONS = [
-  'Solo founder',
+  'Founder / Co-founder',
   'Technical / Engineer',
   'Designer',
   'Marketer / Growth',

@@ -22,7 +22,7 @@ import { deletePhoto, getPhotos, pickImage, setPrimaryPhoto, uploadPhoto } from 
 import { getFullProfile, updateProfile } from '../../services/profileService';
 
 const WORK_TYPES = [
-  'Solo founder',
+  'Founder / Co-founder',
   'Technical / Engineer',
   'Designer',
   'Marketer / Growth',
