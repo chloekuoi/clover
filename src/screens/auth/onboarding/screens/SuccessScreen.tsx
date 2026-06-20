@@ -90,7 +90,7 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.wordmark}>cowork</Text>
+      <Text style={styles.wordmark}>clover</Text>
       <View style={styles.spacer} />
 
       <TypewriterText

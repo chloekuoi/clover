@@ -201,7 +201,7 @@ export default function IntentScreen({
         <View style={styles.loadingContainer}>
           <Text style={styles.errorTitle}>Location Required</Text>
           <Text style={styles.errorText}>
-            CoWork Connect needs your location to find co-workers nearby.
+            Clover needs your location to find co-workers nearby.
           </Text>
           <Button
             title="Enable Location"
