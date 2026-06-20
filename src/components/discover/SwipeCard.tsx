@@ -36,6 +36,7 @@ export default function SwipeCard({ card, translateX, isTopCard = false }: Swipe
     : '?';
 
   const getAge = () => {
+    if (profile.age) return `${profile.age}`;
     if (!profile.birthday) return null;
     const birthDate = new Date(profile.birthday);
     if (Number.isNaN(birthDate.getTime())) return null;

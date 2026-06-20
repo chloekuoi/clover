@@ -82,7 +82,7 @@ export default function FriendProfileModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f0f8',
+    backgroundColor: theme.background,
   },
   loadingState: {
     flex: 1,

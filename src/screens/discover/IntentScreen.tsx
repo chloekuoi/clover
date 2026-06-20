@@ -1,92 +1,54 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Animated,
-  Easing,
   View,
   Text,
   TextInput,
   StyleSheet,
-  ScrollView,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
   TouchableOpacity,
   Modal,
   FlatList,
   Pressable,
   Keyboard,
-  InputAccessoryView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, theme, spacing, borderRadius, shadows } from '../../constants';
-import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
-import { WorkStyle, LocationType } from '../../types';
+import { CLOVER_FOREST, CLOVER_BG, FONT_CORMORANT_LIGHT } from '../../constants/clover';
 import { upsertIntent, IntentInput, getTodayIntent, getDefaultIntentTimes } from '../../services/discoveryService';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import CloverMark from '../../components/common/CloverMark';
-
-const WORK_STYLES: { value: WorkStyle; label: string }[] = [
-  { value: 'Deep focus', label: 'Deep focus' },
-  { value: 'Chat mode', label: 'Chat mode' },
-  { value: 'Flexible', label: 'Flexible' },
-];
-const LOCATION_TYPES: { value: LocationType; label: string }[] = [
-  { value: 'Cafe', label: 'Cafe' },
-  { value: 'Library', label: 'Library' },
-  { value: 'Anywhere', label: 'Anywhere' },
-];
+import LocationSearchModal, { SearchedPlace } from '../../components/discover/LocationSearchModal';
 
 const TIME_START_MINUTES = 7 * 60;    // 07:00
 const TIME_MAX_START = 23 * 60;       // 23:00 — latest allowed start
-const TIME_MAX_END = 23 * 60 + 30;    // 23:30 — latest allowed end (so 23:00 start always has a valid end)
+const TIME_MAX_END = 23 * 60 + 30;    // 23:30 — latest allowed end
 const TIME_INTERVAL = 30;
-const KEYBOARD_ACCESSORY_ID = 'intent-screen-keyboard-accessory';
 
 type IntentScreenProps = {
   latitude: number;
   longitude: number;
   onIntentSet: () => void;
-  locationLoading?: boolean;
-  locationError?: string | null;
-  onRequestLocation?: () => void;
-  isBottomSheet?: boolean;
+  onCancel?: () => void;
 };
 
 export default function IntentScreen({
   latitude,
   longitude,
   onIntentSet,
-  locationLoading = false,
-  locationError = null,
-  onRequestLocation,
-  isBottomSheet = false,
+  onCancel,
 }: IntentScreenProps) {
   const { user } = useAuth();
   const [taskDescription, setTaskDescription] = useState('');
-  const [workStyle, setWorkStyle] = useState<WorkStyle>('Flexible');
-  const [locationType, setLocationType] = useState<LocationType>('Anywhere');
   const [locationName, setLocationName] = useState('');
+  const [venueCoords, setVenueCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [startTime, setStartTime] = useState('09:00:00');
   const [endTime, setEndTime] = useState('17:00:00');
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
+  const [isLocationSearchOpen, setIsLocationSearchOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-
-  const spinAnim = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(spinAnim, {
-        toValue: 1,
-        duration: 2400,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
-  }, [spinAnim]);
-  const spin = spinAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
   const startTimeOptions = getTimeOptions(TIME_MAX_START);
   const allEndOptions = getTimeOptions(TIME_MAX_END);
@@ -105,26 +67,12 @@ export default function IntentScreen({
       const existingIntent = await getTodayIntent(user.id);
       if (existingIntent && isMounted) {
         setTaskDescription(existingIntent.task_description || '');
-        const rawWorkStyle = existingIntent.work_style as string;
-        const normalizedWorkStyle: WorkStyle =
-          rawWorkStyle === 'Pomodoro fan'
-            ? 'Flexible'
-            : rawWorkStyle === 'Happy to chat'
-              ? 'Chat mode'
-              : rawWorkStyle === 'Deep focus' || rawWorkStyle === 'Chat mode' || rawWorkStyle === 'Flexible'
-                ? rawWorkStyle
-                : 'Flexible';
-        setWorkStyle(normalizedWorkStyle);
-        
-        const rawLocationType = existingIntent.location_type as string;
-        const normalizedLocation: LocationType =
-          rawLocationType === 'Video Call' || rawLocationType === 'Anywhere/Other'
-            ? 'Anywhere'
-            : rawLocationType === 'Cafe' || rawLocationType === 'Library' || rawLocationType === 'Anywhere'
-              ? rawLocationType
-              : 'Anywhere';
-        setLocationType(normalizedLocation);
-        setLocationName(existingIntent.location_name || '');
+        if (existingIntent.location_name) {
+          setLocationName(existingIntent.location_name);
+          if (existingIntent.latitude != null && existingIntent.longitude != null) {
+            setVenueCoords({ latitude: existingIntent.latitude, longitude: existingIntent.longitude });
+          }
+        }
         setStartTime(existingIntent.available_from);
         setEndTime(existingIntent.available_until);
       } else if (isMounted) {
@@ -162,12 +110,9 @@ export default function IntentScreen({
       task_description: taskDescription.trim(),
       available_from: startTime,
       available_until: endTime,
-      work_style: workStyle,
-      location_type: locationType,
-      location_name:
-        locationType === 'Cafe' || locationType === 'Library' ? locationName.trim() || null : null,
-      latitude,
-      longitude,
+      location_name: locationName.trim() || null,
+      latitude: venueCoords?.latitude ?? latitude,
+      longitude: venueCoords?.longitude ?? longitude,
     };
 
     const { error } = await upsertIntent(user.id, intentData);
@@ -182,190 +127,107 @@ export default function IntentScreen({
     onIntentSet();
   };
 
-  const Wrapper = isBottomSheet ? View : SafeAreaView;
-
-  if (locationLoading || initialLoading) {
+  if (initialLoading) {
     return (
-      <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
-      </Wrapper>
-    );
-  }
-
-  if (locationError) {
-    return (
-      <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.errorTitle}>Location Required</Text>
-          <Text style={styles.errorText}>
-            Clover needs your location to find co-workers nearby.
-          </Text>
-          <Button
-            title="Enable Location"
-            onPress={onRequestLocation || (() => {})}
-            style={styles.button}
-          />
-        </View>
-      </Wrapper>
+      <View style={[styles.card, styles.loadingCard]}>
+        <ActivityIndicator size="small" color={theme.primary} />
+      </View>
     );
   }
 
   return (
-    <Wrapper style={styles.container} {...(!isBottomSheet && { edges: ['top'] as const })}>
-      <Pressable style={styles.flex} onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          behavior={isBottomSheet ? 'padding' : (Platform.OS === 'ios' ? 'padding' : 'height')}
-          style={styles.flex}
+    <View style={styles.card}>
+      <View style={styles.titleRow}>
+        <CloverMark size={22} />
+        <Text style={styles.title}>Today's focus</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>WHAT ARE YOU WORKING ON?</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder="e.g., Writing a blog post, Coding my app"
+          placeholderTextColor={theme.textMuted}
+          value={taskDescription}
+          onChangeText={setTaskDescription}
+          multiline
+          numberOfLines={2}
+          textAlignVertical="top"
+          returnKeyType="done"
+          blurOnSubmit
+          onSubmitEditing={Keyboard.dismiss}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>LOCATION</Text>
+        <TouchableOpacity
+          style={[styles.textInput, styles.locationField]}
+          onPress={() => setIsLocationSearchOpen(true)}
+          activeOpacity={0.7}
         >
-          <ScrollView
-            style={styles.flex}
-            contentContainerStyle={[styles.content, isBottomSheet && styles.bottomSheetContent]}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+          <Text style={styles.locationPin}>📍</Text>
+          <Text
+            style={[styles.locationText, !locationName && styles.locationPlaceholder]}
+            numberOfLines={1}
           >
-          <View style={styles.titleRow}>
-            <Animated.View style={{ transform: [{ rotate: spin }] }}>
-              <CloverMark size={22} />
-            </Animated.View>
-            <Text style={styles.title}>what are we cooking today?</Text>
-          </View>
+            {locationName || 'Search a café, library, place…'}
+          </Text>
+          {locationName ? (
+            <TouchableOpacity
+              onPress={() => {
+                setLocationName('');
+                setVenueCoords(null);
+              }}
+              hitSlop={10}
+            >
+              <Text style={styles.locationClear}>✕</Text>
+            </TouchableOpacity>
+          ) : null}
+        </TouchableOpacity>
+      </View>
 
-          <View style={styles.section}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="e.g., Writing a blog post, Coding my app"
-              placeholderTextColor={theme.textMuted}
-              value={taskDescription}
-              onChangeText={setTaskDescription}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-              returnKeyType="done"
-              blurOnSubmit
-              onSubmitEditing={Keyboard.dismiss}
-              {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
-            />
-          </View>
-
-          <View style={styles.optionsCard}>
-            <View style={styles.section}>
-              <Text style={styles.label}>Work vibe</Text>
-              <View style={styles.chipRow}>
-                {WORK_STYLES.map((style, index) => {
-                  const selected = workStyle === style.value;
-                  const isLast = index === WORK_STYLES.length - 1;
-                  return (
-                    <TouchableOpacity
-                      key={style.value}
-                      onPress={() => setWorkStyle(style.value)}
-                      style={[
-                        styles.chip,
-                        selected && styles.chipSelected,
-                        !isLast && styles.chipSpacer,
-                      ]}
-                    >
-                      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
-                        {style.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.section}>
-              <Text style={styles.label}>Where</Text>
-              <View style={styles.chipRow}>
-                {LOCATION_TYPES.map((type, index) => {
-                  const selected = locationType === type.value;
-                  const isLast = index === LOCATION_TYPES.length - 1;
-                  return (
-                    <TouchableOpacity
-                      key={type.value}
-                      onPress={() => setLocationType(type.value)}
-                      style={[
-                        styles.chip,
-                        selected && styles.chipSelected,
-                        !isLast && styles.chipSpacer,
-                      ]}
-                    >
-                      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
-                        {type.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
-          </View>
-
-          {(locationType === 'Cafe' || locationType === 'Library') && (
-            <View style={styles.section}>
-              <Text style={styles.label}>Specific place (optional)</Text>
-              <TextInput
-                style={[styles.textInput, styles.singleLineInput]}
-                placeholder="e.g., Blue Bottle Coffee, Downtown Library"
-                placeholderTextColor={theme.textMuted}
-                value={locationName}
-                onChangeText={setLocationName}
-                returnKeyType="done"
-                blurOnSubmit
-                onSubmitEditing={Keyboard.dismiss}
-                {...(Platform.OS === 'ios' ? { inputAccessoryViewID: KEYBOARD_ACCESSORY_ID } : null)}
-              />
+      <View style={styles.section}>
+        <Text style={styles.label}>AVAILABLE</Text>
+        <View style={styles.timeRow}>
+          <TouchableOpacity
+            style={styles.timePicker}
+            onPress={() => setIsStartPickerOpen(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.timePickerText}>{formatDisplayTime(startTime)}</Text>
+          </TouchableOpacity>
+          <Text style={styles.timeSeparator}>→</Text>
+          <TouchableOpacity
+            style={styles.timePicker}
+            onPress={() => setIsEndPickerOpen(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.timePickerText}>
+              {endTimeOptions.length > 0 ? formatDisplayTime(endTime) : '--'}
+            </Text>
+          </TouchableOpacity>
+          {durationLabel !== '--' && (
+            <View style={styles.durationBadge}>
+              <Text style={styles.durationBadgeText}>{durationLabel}</Text>
             </View>
           )}
+        </View>
+      </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Available</Text>
-            <View style={styles.timeRow}>
-              <TouchableOpacity
-                style={styles.timePicker}
-                onPress={() => setIsStartPickerOpen(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.timePickerText}>{formatDisplayTime(startTime)}</Text>
-              </TouchableOpacity>
-              <Text style={styles.timeSeparator}>→</Text>
-              <TouchableOpacity
-                style={styles.timePicker}
-                onPress={() => setIsEndPickerOpen(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.timePickerText}>
-                  {endTimeOptions.length > 0 ? formatDisplayTime(endTime) : '--'}
-                </Text>
-              </TouchableOpacity>
-              {durationLabel !== '--' && (
-                <View style={styles.durationBadge}>
-                  <Text style={styles.durationBadgeText}>{durationLabel}</Text>
-                </View>
-              )}
-            </View>
-          </View>
-
-          <Button
-            title="Save focus"
-            onPress={handleSubmit}
-            loading={loading}
-            style={styles.button}
-          />
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </Pressable>
-
-      {Platform.OS === 'ios' ? (
-        <InputAccessoryView nativeID={KEYBOARD_ACCESSORY_ID}>
-          <View style={styles.keyboardAccessory}>
-            <TouchableOpacity onPress={Keyboard.dismiss} style={styles.keyboardDoneButton}>
-              <Text style={styles.keyboardDoneText}>Done</Text>
-            </TouchableOpacity>
-          </View>
-        </InputAccessoryView>
-      ) : null}
+      <View style={styles.actions}>
+        {onCancel ? (
+          <TouchableOpacity style={styles.cancelButton} onPress={onCancel} activeOpacity={0.7}>
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+        ) : null}
+        <Button
+          title="Save focus"
+          onPress={handleSubmit}
+          loading={loading}
+          style={styles.saveButton}
+        />
+      </View>
 
       <TimePickerModal
         visible={isStartPickerOpen}
@@ -392,148 +254,101 @@ export default function IntentScreen({
           setEndTime(value);
         }}
       />
-    </Wrapper>
+
+      <LocationSearchModal
+        visible={isLocationSearchOpen}
+        onClose={() => setIsLocationSearchOpen(false)}
+        biasLatitude={latitude}
+        biasLongitude={longitude}
+        hereLabel="No specific place"
+        onSelectHere={() => {
+          setLocationName('');
+          setVenueCoords(null);
+          setIsLocationSearchOpen(false);
+        }}
+        onSelectPlace={(loc: SearchedPlace) => {
+          setLocationName(loc.name);
+          setVenueCoords({ latitude: loc.latitude, longitude: loc.longitude });
+          setIsLocationSearchOpen(false);
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.background,
+  card: {
+    backgroundColor: colors.bgCard,
+    borderRadius: borderRadius.lg,
+    padding: 14,
+    marginBottom: 10,
+    ...shadows.card,
   },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing[4],
-    paddingBottom: spacing[2],
-  },
-  bottomSheetContent: {
-    paddingBottom: spacing[10],
+  loadingCard: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 100,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     marginBottom: spacing[3],
-  },
-  star: {
-    fontSize: 22,
-    color: colors.accentSecondaryDark,
-    lineHeight: 28,
   },
   title: {
     flex: 1,
-    fontFamily: 'CormorantGaramond-Light',
-    fontSize: 28,
+    fontFamily: FONT_CORMORANT_LIGHT,
+    fontSize: 24,
     fontWeight: '300',
     color: theme.text,
-    lineHeight: 34,
+    lineHeight: 28,
     letterSpacing: -0.2,
   },
   section: {
-    marginBottom: spacing[4],
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing[6],
-  },
-  loadingText: {
-    marginTop: spacing[4],
-    fontSize: 16,
-    color: theme.textSecondary,
-  },
-  errorTitle: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: theme.text,
-    marginBottom: spacing[2],
-    textAlign: 'center',
-  },
-  errorText: {
-    fontSize: 16,
-    color: theme.textSecondary,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: spacing[6],
+    marginBottom: spacing[3],
   },
   label: {
-    fontFamily: 'Inter-Regular',
     fontSize: 11,
-    fontWeight: '400',
     color: theme.textMuted,
     letterSpacing: 0.5,
-    marginBottom: spacing[2],
+    marginBottom: 6,
   },
   textInput: {
     backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.borderDefault,
-    borderRadius: borderRadius.lg,
-    padding: spacing[4],
-    fontSize: 16,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[3],
+    fontSize: 15,
     color: theme.text,
-    minHeight: 50,
+    minHeight: 44,
     ...shadows.card,
   },
-  singleLineInput: {
-    minHeight: 48,
-  },
-  optionsCard: {
-    backgroundColor: colors.bgCard,
-    borderRadius: borderRadius.lg,
-    padding: 16,
-    marginBottom: spacing[4],
-  },
-  chipRow: {
+  locationField: {
     flexDirection: 'row',
-    marginTop: spacing[1],
-  },
-  chip: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
-    backgroundColor: 'transparent',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 8,
   },
-  chipSpacer: {
-    marginRight: 8,
+  locationPin: {
+    fontSize: 15,
   },
-  chipSelected: {
-    backgroundColor: CLOVER_FOREST,
-    borderColor: CLOVER_FOREST,
+  locationText: {
+    flex: 1,
+    fontSize: 15,
+    color: theme.text,
   },
-  chipText: {
-    fontSize: 12.5,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    textAlign: 'center',
+  locationPlaceholder: {
+    color: theme.textMuted,
   },
-  chipTextSelected: {
-    color: colors.textInverse,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.divider,
-    marginVertical: spacing[3],
-  },
-  availabilityText: {
-    fontSize: 16,
-    color: theme.textSecondary,
-    backgroundColor: theme.surface,
-    padding: spacing[4],
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
+  locationClear: {
+    fontSize: 15,
+    color: theme.textMuted,
+    paddingHorizontal: 4,
   },
   timeRow: {
     flexDirection: 'row',
-    gap: spacing[4],
+    gap: spacing[3],
     alignItems: 'center',
   },
   timeSeparator: {
@@ -546,11 +361,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderDefault,
     borderRadius: borderRadius.md,
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
   },
   timePickerText: {
-    fontSize: 16,
+    fontSize: 15,
     color: theme.text,
   },
   durationBadge: {
@@ -558,6 +373,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     paddingHorizontal: 10,
     paddingVertical: 3,
+    marginLeft: 'auto',
   },
   durationBadgeText: {
     fontSize: 11,
@@ -566,26 +382,25 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: CLOVER_FOREST,
   },
-  button: {
-    marginTop: spacing[2],
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    marginTop: spacing[1],
   },
-  keyboardAccessory: {
-    backgroundColor: colors.bgCard,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderDefault,
+  saveButton: {
+    flex: 1,
+  },
+  cancelButton: {
+    paddingVertical: spacing[3],
     paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    alignItems: 'flex-end',
   },
-  keyboardDoneButton: {
-    paddingVertical: spacing[1],
-    paddingHorizontal: spacing[2],
+  cancelText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: theme.textMuted,
   },
-  keyboardDoneText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CLOVER_FOREST,
-  },
+  // TimePickerModal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',

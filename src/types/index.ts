@@ -1,4 +1,4 @@
-import { User, Session, AuthError, PostgrestError } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 
 export type Profile = {
   id: string;
@@ -9,13 +9,13 @@ export type Profile = {
   work_type: string | null;
   desired_roles: string | null;
   interests: string[] | null;
-  bio: string | null;
   phone_number: string | null;
   tagline: string | null;
   currently_working_on: string | null;
   work: string | null;
   school: string | null;
   birthday: string | null;
+  age?: number | null;
   neighborhood: string | null;
   city: string | null;
   onboarding_complete: boolean;
@@ -33,7 +33,7 @@ export type AuthContextType = {
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   signInWithApple: () => Promise<{ error: AuthError | null }>;
-  deleteAccount: () => Promise<{ error: PostgrestError | null }>;
+  deleteAccount: () => Promise<{ error: { message: string } | null }>;
 };
 
 // Discovery feature types

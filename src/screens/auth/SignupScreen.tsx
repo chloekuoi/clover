@@ -18,6 +18,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthStackParamList } from '../../navigation/AuthStack';
 import { useAuth } from '../../context/AuthContext';
+import { isExpoGo } from '../../utils/runtime';
 import CloverMark from '../../components/common/CloverMark';
 import {
   CLOVER_BG,
@@ -180,7 +181,7 @@ export default function SignupScreen({ navigation }: Props) {
           <View style={styles.dividerLine} />
         </View>
 
-        {Platform.OS === 'ios' && (
+        {Platform.OS === 'ios' && !isExpoGo && (
           <View pointerEvents={loading ? 'none' : 'auto'} style={loading ? styles.appleButtonDisabled : undefined}>
             <AppleAuthentication.AppleAuthenticationButton
               buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}

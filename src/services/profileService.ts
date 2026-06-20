@@ -60,9 +60,7 @@ export async function updateProfile(
   const { data, error } = await supabase
     .from('profiles')
     .update(payload)
-    .eq('id', userId)
-    .select('*')
-    .single();
+    .eq('id', userId);
 
   if (error) {
     const message = toProfileUpdateErrorMessage(error);
@@ -70,12 +68,20 @@ export async function updateProfile(
     return { data: null, error: message };
   }
 
-  return { data: (data as Profile) || null, error: null };
+  const { data: profile, error: fetchError } = await supabase.rpc('get_profile', {
+    p_user_id: userId,
+  });
+
+  if (fetchError) {
+    return { data: null, error: toProfileUpdateErrorMessage(fetchError) };
+  }
+
+  return { data: (profile as Profile) || null, error: null };
 }
 
 export async function getFullProfile(userId: string): Promise<ServiceResult<FullProfile>> {
   const [profileResult, photosResult] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
+    supabase.rpc('get_profile', { p_user_id: userId }),
     supabase
       .from('profile_photos')
       .select('*')

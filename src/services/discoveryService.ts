@@ -29,8 +29,8 @@ export type IntentInput = {
   task_description: string;
   available_from: string;
   available_until: string;
-  work_style: WorkStyle;
-  location_type: LocationType;
+  work_style?: WorkStyle;
+  location_type?: LocationType;
   location_name?: string | null;
   latitude: number;
   longitude: number;
@@ -80,7 +80,7 @@ export async function fetchDiscoveryCards(
     { data: activeMatchesAsUser2 },
     { data: allPhotos },
   ] = await Promise.all([
-    supabase.from('profiles').select('*').neq('id', userId),
+    supabase.from('public_profiles').select('*').neq('id', userId),
     supabase.from('work_intents').select('*').eq('intent_date', getTodayDate()).neq('user_id', userId),
     supabase.from('swipes').select('swiped_id').eq('swiper_id', userId).eq('swipe_date', getTodayDate()),
     supabase.from('matches').select('user2_id').eq('user1_id', userId).eq('status', 'active'),
@@ -207,7 +207,7 @@ export async function recordSwipe(
   }
 
   const { data: matchedUser, error: profileError } = await supabase
-    .from('profiles')
+    .from('public_profiles')
     .select('*')
     .eq('id', swipedId)
     .single();
