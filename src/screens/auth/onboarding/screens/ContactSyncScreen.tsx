@@ -37,7 +37,7 @@ export function ContactSyncScreen({ state, setState, onNext, onBack, currentStep
       <View style={styles.spacer} />
 
       <TypewriterText
-        text="find your crew."
+        text="find your people."
         style={styles.question}
         startDelay={300}
       />
