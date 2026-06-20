@@ -3,6 +3,7 @@ import { User, Session, AuthError, PostgrestError } from '@supabase/supabase-js'
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { supabase } from '../../lib/supabase';
 import { Profile, AuthContextType } from '../types';
+import { deleteAllPhotos } from '../services/photoService';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -117,6 +118,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteAccount = async (): Promise<{ error: PostgrestError | null }> => {
+    // Remove the user's uploaded photos via the Storage API first — the
+    // delete_account DB function can't touch storage.objects directly.
+    // Best-effort: if cleanup fails we still proceed so the account is deleted.
+    if (user?.id) {
+      await deleteAllPhotos(user.id);
+    }
     const { error } = await supabase.rpc('delete_account');
     if (!error) {
       await supabase.auth.signOut();
