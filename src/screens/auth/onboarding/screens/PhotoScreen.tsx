@@ -76,16 +76,11 @@ export function PhotoScreen({ state, setState, onNext, onBack, currentStep, tota
         <View style={styles.slotSpacer} />
       </View>
 
-      <TouchableOpacity onPress={onNext} style={styles.skip} activeOpacity={0.7}>
-        <Text style={styles.skipText}>skip for now</Text>
-      </TouchableOpacity>
-
       <ProgressBar
         currentStep={currentStep}
         totalSteps={totalSteps}
         onBack={onBack}
-        onNext={onNext}
-        nextLabel="skip"
+        onNext={state.photoUris.some(uri => !!uri) ? onNext : undefined}
       />
     </View>
   );
@@ -159,14 +154,5 @@ const styles = StyleSheet.create({
     width: SLOT_SIZE,
     height: SLOT_SIZE,
     backgroundColor: 'transparent',
-  },
-  skip: {
-    paddingVertical: 4,
-    marginTop: 12,
-  },
-  skipText: {
-    fontFamily: t.fontSans.light,
-    fontSize: 12,
-    color: t.placeholder,
   },
 });
