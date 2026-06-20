@@ -54,7 +54,7 @@ export function ContactSyncScreen({ state, setState, onNext, onBack, currentStep
         />
       ) : (
         <TouchableOpacity onPress={handleSync} style={styles.cta} activeOpacity={0.7}>
-          <Text style={styles.ctaText}>find my crew →</Text>
+          <Text style={styles.ctaText}>see who's here →</Text>
         </TouchableOpacity>
       )}
 
