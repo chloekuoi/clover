@@ -63,7 +63,7 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.kav}
       >
-        <Text style={styles.wordmark}>cowork</Text>
+        <Text style={styles.wordmark}>clover</Text>
 
         <ScrollView
           style={styles.scroll}

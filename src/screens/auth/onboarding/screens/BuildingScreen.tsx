@@ -26,7 +26,7 @@ export function BuildingScreen({ state, setState, onNext, onBack, currentStep, t
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.kav}
       >
-        <Text style={styles.wordmark}>cowork</Text>
+        <Text style={styles.wordmark}>clover</Text>
         <View style={styles.spacer} />
 
         <TypewriterText

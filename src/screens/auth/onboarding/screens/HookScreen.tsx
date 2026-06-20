@@ -27,7 +27,7 @@ export function HookScreen({ onNext, onBack, currentStep, totalSteps }: ScreenPr
   return (
     <View style={styles.screen}>
       {/* Wordmark */}
-      <Text style={styles.wordmark}>cowork</Text>
+      <Text style={styles.wordmark}>clover</Text>
 
       {/* Spacer pushes content to lower third */}
       <View style={styles.spacer} />
