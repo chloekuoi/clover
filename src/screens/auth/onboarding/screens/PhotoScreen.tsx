@@ -80,8 +80,7 @@ export function PhotoScreen({ state, setState, onNext, onBack, currentStep, tota
         currentStep={currentStep}
         totalSteps={totalSteps}
         onBack={onBack}
-        onNext={onNext}
-        nextLabel="skip"
+        onNext={state.photoUris.some(uri => !!uri) ? onNext : undefined}
       />
     </View>
   );

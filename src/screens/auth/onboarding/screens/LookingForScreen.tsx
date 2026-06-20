@@ -85,7 +85,7 @@ export function LookingForScreen({ state, setState, onNext, onBack, currentStep,
         currentStep={currentStep}
         totalSteps={totalSteps}
         onBack={onBack}
-        onNext={onNext}
+        onNext={selected.length > 0 ? onNext : undefined}
       />
     </Pressable>
   );

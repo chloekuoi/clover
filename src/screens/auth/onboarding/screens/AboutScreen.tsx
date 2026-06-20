@@ -119,7 +119,7 @@ export function AboutScreen({ state, setState, onNext, onBack, currentStep, tota
           currentStep={currentStep}
           totalSteps={totalSteps}
           onBack={onBack}
-          onNext={handleNext}
+          onNext={selectedTypes.length > 0 ? handleNext : undefined}
         />
       </KeyboardAvoidingView>
 
