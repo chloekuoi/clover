@@ -19,7 +19,8 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocationWhenInUseUsageDescription": "cowork uses your location to find co-workers nearby."
+        "NSLocationWhenInUseUsageDescription": "cowork uses your location to find co-workers nearby.",
+        "NSPhotoLibraryUsageDescription": "cowork uses your photo library so you can add photos to your profile."
       }
     },
     "android": {

@@ -16,8 +16,6 @@ type ProfileLookupRow = {
   id: string;
   name: string | null;
   username: string;
-  email: string | null;
-  phone_number: string | null;
   photo_url: string | null;
 };
 
@@ -136,13 +134,9 @@ export async function searchUsers(
     return { data: [], error: null };
   }
 
-  const ilike = `%${normalizedQuery}%`;
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id,username,email,phone_number,name,photo_url')
-    .neq('id', currentUserId)
-    .or(`username.ilike.${ilike},email.ilike.${ilike},phone_number.ilike.${ilike}`)
-    .limit(20);
+  const { data, error } = await supabase.rpc('search_public_profiles', {
+    p_query: normalizedQuery,
+  });
 
   if (error) {
     const message = extractSupabaseErrorMessage(error, 'Failed to search users');
@@ -163,8 +157,8 @@ export async function searchUsers(
     return {
       id: user.id,
       username: user.username,
-      email: user.email,
-      phone_number: user.phone_number,
+      email: null,
+      phone_number: null,
       name: user.name,
       photo_url: user.photo_url,
       relationship_status: detail.status,

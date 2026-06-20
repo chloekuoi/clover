@@ -146,6 +146,7 @@ export default function UserProfileView({
     : '?';
 
   const ageText = useMemo(() => {
+    if (profile.age) return `${profile.age}`;
     if (!profile.birthday) return null;
     const birthDate = new Date(profile.birthday);
     if (Number.isNaN(birthDate.getTime())) return null;
@@ -154,7 +155,7 @@ export default function UserProfileView({
     const m = today.getMonth() - birthDate.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age -= 1;
     return age > 0 ? `${age}` : null;
-  }, [profile.birthday]);
+  }, [profile.age, profile.birthday]);
 
   // Only show pills that have values
   const pills: { key: string; iconType: 'work' | 'location' | 'city' | 'people'; label: string }[] = [

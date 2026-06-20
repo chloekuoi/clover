@@ -8,9 +8,9 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { colors, theme, spacing } from '../../constants';
+import { theme, spacing } from '../../constants';
 import { CLOVER_FOREST, CLOVER_BG } from '../../constants/clover';
 import { useAuth } from '../../context/AuthContext';
 import { getFullProfile } from '../../services/profileService';
@@ -32,7 +32,6 @@ function PencilIcon() {
 
 export default function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
-  const insets = useSafeAreaInsets();
   const { user, profile } = useAuth();
   const [profileData, setProfileData] = useState<Profile | null>(profile);
   const [photos, setPhotos] = useState<ProfilePhoto[]>([]);
@@ -78,9 +77,9 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* ── Header ── */}
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity
           style={styles.headerAction}
@@ -99,9 +98,10 @@ export default function ProfileScreen() {
       {profileData !== null ? (
         <DiscoverProfileView
           card={{ profile: profileData, intent: todayIntent, distance: 0, photos }}
+          showHandle={false}
         />
       ) : null}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -126,11 +126,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing[4],
-    paddingBottom: spacing[2],
-    minHeight: 56,
-    backgroundColor: theme.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderDefault,
+    paddingTop: spacing[2],
+    paddingBottom: spacing[3],
   },
   headerTitle: {
     fontFamily: 'CormorantGaramond-Light',

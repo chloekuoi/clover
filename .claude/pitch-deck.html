@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clover — Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css" />
+  <style>
+    :root {
+      --bg:       #ede8ff;
+      --forest:   #1e3d28;
+      --violet:   #7c5cbf;
+      --lavender: #d0c8f0;
+      --white:    #ffffff;
+    }
+
+    .reveal {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+    }
+
+    /* ─── Base slide ─── */
+    .reveal .slides section {
+      top: 0 !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 80px;
+      box-sizing: border-box;
+    }
+
+    /* ─── Background variants ─── */
+    .reveal .slides section.dark {
+      background: var(--forest);
+    }
+    .reveal .slides section.light {
+      background: var(--bg);
+    }
+    .reveal .slides section.violet-bg {
+      background: var(--violet);
+    }
+
+    /* ─── Progress bar ─── */
+    .reveal .progress {
+      color: var(--violet);
+      height: 4px;
+    }
+
+    /* ─── Typography ─── */
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      line-height: 1.15;
+      margin: 0 0 0.4em;
+      text-transform: none;
+      letter-spacing: 0.01em;
+    }
+
+    .reveal p, .reveal li, .reveal span {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* Dark slide text */
+    .dark h1, .dark h2, .dark h3 { color: var(--lavender); }
+    .dark p, .dark li, .dark span { color: #c8e6d4; }
+    .dark .sub { color: rgba(208,200,240,0.7); }
+
+    /* Light slide text */
+    .light h1, .light h2, .light h3 { color: var(--forest); }
+    .light p, .light li, .light span { color: #3a4a3f; }
+    .light .sub { color: var(--violet); }
+
+    /* Violet slide text */
+    .violet-bg h1, .violet-bg h2, .violet-bg h3 { color: #fff; }
+    .violet-bg p, .violet-bg li { color: rgba(255,255,255,0.88); }
+
+    /* ─── Slide 1 — Hook quote ─── */
+    .hook-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 1.55em;
+      color: var(--lavender);
+      line-height: 1.4;
+      max-width: 820px;
+    }
+
+    /* ─── Slide 2 — Story ─── */
+    .story-label {
+      font-size: 0.75em;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--violet);
+      margin-bottom: 0.6em;
+    }
+
+    /* ─── Two-column layout ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 32px;
+      text-align: left;
+    }
+    .two-col .col {
+      background: rgba(255,255,255,0.5);
+      border-radius: 16px;
+      padding: 28px 32px;
+    }
+    .two-col .col h3 {
+      font-size: 1.1em;
+      margin-bottom: 0.5em;
+    }
+    .two-col .col p {
+      font-size: 0.8em;
+      line-height: 1.65;
+    }
+
+    /* ─── Three-point list ─── */
+    .insight-list {
+      list-style: none;
+      padding: 0;
+      margin: 32px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .insight-list li {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 1em;
+      text-align: left;
+    }
+    .insight-list .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--violet);
+      flex-shrink: 0;
+    }
+    .dark .insight-list .dot { background: var(--lavender); }
+
+    /* ─── Tagline / logo area ─── */
+    .logo-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 3em;
+      color: var(--forest);
+      line-height: 1;
+      margin-bottom: 0.1em;
+    }
+    .tagline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1em;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--violet);
+      margin-bottom: 1.2em;
+    }
+    .one-liner {
+      max-width: 560px;
+      font-size: 0.95em;
+      color: #3a4a3f;
+      line-height: 1.7;
+    }
+
+    /* ─── How it works steps ─── */
+    .steps {
+      display: flex;
+      gap: 40px;
+      margin-top: 36px;
+      justify-content: center;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      max-width: 200px;
+    }
+    .step-num {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--forest);
+      color: var(--lavender);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-title {
+      font-weight: 500;
+      font-size: 0.95em;
+      color: var(--forest);
+    }
+    .step-desc {
+      font-size: 0.78em;
+      color: #5a6a5f;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .step-arrow {
+      align-self: center;
+      font-size: 1.4em;
+      color: var(--lavender);
+      margin-top: -20px;
+    }
+
+    /* ─── Phone mockups ─── */
+    .phones {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      margin-top: 32px;
+    }
+    .phone {
+      width: 140px;
+      height: 280px;
+      border: 3px solid var(--forest);
+      border-radius: 28px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .phone::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      width: 40px;
+      height: 5px;
+      background: var(--forest);
+      border-radius: 4px;
+      opacity: 0.3;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 12px 16px;
+      box-sizing: border-box;
+      gap: 6px;
+    }
+    /* Mini feed card inside phone */
+    .mini-card {
+      width: 100%;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 0.48em;
+      text-align: left;
+      color: var(--forest);
+    }
+    .mini-card .mini-photo {
+      width: 100%;
+      height: 50px;
+      background: var(--lavender);
+      border-radius: 7px;
+      margin-bottom: 4px;
+    }
+    .mini-card .mini-name { font-weight: 500; font-size: 1em; }
+    .mini-card .mini-tag { color: var(--violet); font-size: 0.9em; }
+
+    .phone-label {
+      font-size: 0.72em;
+      color: var(--forest);
+      font-weight: 500;
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+    .phone-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Match screen variant */
+    .match-screen {
+      background: var(--forest);
+    }
+    .match-screen .match-icon {
+      font-size: 2em;
+      margin-bottom: 4px;
+    }
+    .match-screen .match-text {
+      font-size: 0.45em;
+      color: var(--lavender);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ─── Mirror moment slide ─── */
+    .mirror-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1.45em;
+      color: var(--lavender);
+      max-width: 780px;
+      line-height: 1.4;
+    }
+
+    /* ─── Status list ─── */
+    .status-list {
+      list-style: none;
+      padding: 0;
+      margin: 32px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .status-list li {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 1em;
+      text-align: left;
+    }
+    .status-list .check {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--forest);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75em;
+      flex-shrink: 0;
+    }
+
+    /* ─── CTA slide ─── */
+    .qr-box {
+      width: 160px;
+      height: 160px;
+      border: 3px solid var(--lavender);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 28px auto 0;
+      opacity: 0.7;
+    }
+    .qr-box .qr-label {
+      font-size: 0.55em;
+      letter-spacing: 0.08em;
+      color: var(--lavender);
+    }
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 14px);
+      grid-template-rows: repeat(5, 14px);
+      gap: 2px;
+    }
+    .qr-cell {
+      background: var(--lavender);
+      border-radius: 2px;
+    }
+    .qr-cell.empty { background: transparent; }
+
+    .cta-url {
+      font-size: 0.78em;
+      letter-spacing: 0.1em;
+      color: rgba(208,200,240,0.6);
+      margin-top: 16px;
+    }
+
+    /* ─── Slide number ─── */
+    .slide-num {
+      position: absolute;
+      bottom: 20px;
+      right: 28px;
+      font-size: 0.55em;
+      opacity: 0.35;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .dark .slide-num { color: white; }
+    .light .slide-num { color: var(--forest); }
+    .violet-bg .slide-num { color: white; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- ─── Slide 1: Hook ─── -->
+    <section class="dark">
+      <p class="hook-quote">"You're sitting in a cafe. The person next to you is building something incredible. You'll never know."</p>
+      <span class="slide-num">1 / 10</span>
+    </section>
+
+    <!-- ─── Slide 2: Your Story ─── -->
+    <section class="light">
+      <p class="story-label">Why I built this</p>
+      <h2 style="font-size:1.5em; max-width:700px;">The best work sessions I've had weren't solo.</h2>
+      <p style="max-width:580px; font-size:0.75em; margin-top:16px;">
+        I love Shopify Builder Sunday — the energy, the accountability, the focus that comes from being around people who are building. But it's once a week. And in a group of 20, it's hard to truly lock in.<br/><br/>
+        The sweet spot? One or two people. Same energy. Working side by side.
+      </p>
+      <span class="slide-num">2 / 10</span>
+    </section>
+
+    <!-- ─── Slide 3: The Problem ─── -->
+    <section class="light">
+      <h2 style="font-size:1.5em; max-width:700px;">Solo builders are everywhere. They're just invisible to each other.</h2>
+      <div class="two-col" style="max-width:780px;">
+        <div class="col">
+          <h3>The reality</h3>
+          <p>At cafes, libraries, and co-working spaces across your city — people are heads-down on projects, startups, and side hustles. Right next to you.</p>
+        </div>
+        <div class="col">
+          <h3>The gap</h3>
+          <p>We don't have a way to find each other. So we stay strangers. We work alone. And we miss out on the people who get it.</p>
+        </div>
+      </div>
+      <span class="slide-num">3 / 10</span>
+    </section>
+
+    <!-- ─── Slide 4: The Insight ─── -->
+    <section class="dark">
+      <h2 style="font-size:1.5em;">Small group coworking hits different.</h2>
+      <ul class="insight-list" style="max-width:500px;">
+        <li>
+          <span class="dot"></span>
+          <span>Accountability without the noise</span>
+        </li>
+        <li>
+          <span class="dot"></span>
+          <span>Real conversation, not networking</span>
+        </li>
+        <li>
+          <span class="dot"></span>
+          <span>You already share the same mindset</span>
+        </li>
+      </ul>
+      <span class="slide-num">4 / 10</span>
+    </section>
+
+    <!-- ─── Slide 5: Meet Clover ─── -->
+    <section class="light">
+      <div class="logo-mark">Clover</div>
+      <div class="tagline">Find your people. Do the work.</div>
+      <p class="one-liner">
+        Clover is a discovery app for builders. Set your work intent for today, see who's nearby and what they're building, connect and meet up.
+      </p>
+      <span class="slide-num">5 / 10</span>
+    </section>
+
+    <!-- ─── Slide 6: How It Works ─── -->
+    <section class="light">
+      <h2 style="font-size:1.4em;">How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-title">Set your intent</div>
+          <div class="step-desc">What are you working on today? Where are you working from?</div>
+        </div>
+        <div class="step-arrow" style="color: var(--violet); font-size:1.6em; align-self:center; margin-top:0;">→</div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-title">Browse nearby builders</div>
+          <div class="step-desc">See their projects, their vibe, and where they're working today.</div>
+        </div>
+        <div class="step-arrow" style="color: var(--violet); font-size:1.6em; align-self:center; margin-top:0;">→</div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-title">Connect &amp; meet up</div>
+          <div class="step-desc">Mutual interest → match → meet IRL and get to work.</div>
+        </div>
+      </div>
+      <span class="slide-num">6 / 10</span>
+    </section>
+
+    <!-- ─── Slide 7: Product ─── -->
+    <section class="light">
+      <h2 style="font-size:1.3em;">Built and live on TestFlight.</h2>
+      <div class="phones">
+        <!-- Discovery Feed -->
+        <div class="phone-wrapper">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="mini-card">
+                <div class="mini-photo"></div>
+                <div class="mini-name">Sarah K.</div>
+                <div class="mini-tag">Building a dev tool</div>
+              </div>
+              <div class="mini-card" style="background:white; border:1px solid var(--lavender);">
+                <div class="mini-name" style="font-size:0.85em; color:#888;">Currently working on</div>
+                <div style="font-size:0.9em; color:var(--forest);">AI code reviewer for solo devs</div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-label">Discovery Feed</div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="phone-wrapper">
+          <div class="phone">
+            <div class="phone-screen">
+              <div style="width:60px;height:60px;border-radius:50%;background:var(--lavender);margin-bottom:6px;"></div>
+              <div style="font-size:0.6em;font-weight:500;color:var(--forest);">Alex M.</div>
+              <div style="font-size:0.48em;color:var(--violet);margin-bottom:8px;">0.3 km away</div>
+              <div class="mini-card">
+                <div class="mini-tag">Indie hacker · Shoreditch</div>
+              </div>
+              <div class="mini-card" style="background:white;border:1px solid var(--lavender);">
+                <div style="font-size:0.85em;color:#888;">Building</div>
+                <div style="font-size:0.9em;color:var(--forest);">SaaS for freelancers</div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-label">Profile Card</div>
+        </div>
+
+        <!-- Match -->
+        <div class="phone-wrapper">
+          <div class="phone">
+            <div class="phone-screen match-screen">
+              <div class="match-icon">🌿</div>
+              <div class="match-text">
+                <strong style="color:var(--lavender);font-size:1.3em;display:block;margin-bottom:4px;">It's a match!</strong>
+                You and Alex both want to co-work today.
+              </div>
+              <div style="margin-top:12px;background:var(--lavender);color:var(--forest);border-radius:20px;padding:6px 14px;font-size:0.45em;font-weight:500;">
+                Send a message
+              </div>
+            </div>
+          </div>
+          <div class="phone-label" style="color:var(--forest);">Match</div>
+        </div>
+      </div>
+      <span class="slide-num">7 / 10</span>
+    </section>
+
+    <!-- ─── Slide 8: Mirror Moment ─── -->
+    <section class="dark">
+      <p class="mirror-quote">"If you've ever worked alone in a cafe and wished someone would just ask what you're building — this is for you."</p>
+      <span class="slide-num">8 / 10</span>
+    </section>
+
+    <!-- ─── Slide 9: Where We Are ─── -->
+    <section class="light">
+      <h2 style="font-size:1.4em;">Where we are</h2>
+      <ul class="status-list" style="max-width:520px;">
+        <li>
+          <span class="check">✓</span>
+          <span>App built and live on <strong>iOS TestFlight</strong></span>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <span>Friends who heard the idea <strong>immediately wanted in</strong></span>
+        </li>
+        <li>
+          <span class="check" style="background:var(--violet);">→</span>
+          <span>Looking for <strong>early beta users</strong> to shape what this becomes</span>
+        </li>
+      </ul>
+      <span class="slide-num">9 / 10</span>
+    </section>
+
+    <!-- ─── Slide 10: CTA ─── -->
+    <section class="dark">
+      <div class="logo-mark" style="color:var(--lavender);">Clover</div>
+      <h2 style="font-size:1.4em; color:white; margin-bottom:0.2em;">Be the first builders on Clover.</h2>
+      <p style="color:rgba(208,200,240,0.75); font-size:0.85em;">Scan to join the beta waitlist</p>
+      <div class="qr-box">
+        <!-- Placeholder QR pattern -->
+        <div class="qr-grid">
+          <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+          <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div>
+          <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+          <div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+          <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+        </div>
+        <div class="qr-label">Replace with real QR</div>
+      </div>
+      <div class="cta-url">yourwaitlist.com/clover</div>
+      <span class="slide-num">10 / 10</span>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    transition: 'fade',
+    transitionSpeed: 'slow',
+    progress: true,
+    controls: false,
+    center: false,
+    width: 1280,
+    height: 720,
+    margin: 0,
+  });
+</script>
+</body>
+</html>

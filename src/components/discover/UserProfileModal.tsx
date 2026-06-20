@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { DiscoveryCard, ProfilePhoto } from '../../types';
+import { theme } from '../../constants';
 import {
   CLOVER_BG,
   CLOVER_FOREST,
@@ -93,9 +94,27 @@ interface DiscoverProfileViewProps {
   /** When omitted the Pass / Connect bar is hidden (used on own Profile screen). */
   onPass?: () => void;
   onConnect?: () => void;
+  /** When provided, replaces Pass/Connect with a single "Invite to co-work today" button. */
+  onInvite?: () => void;
+  inviteSent?: boolean;
+  /** When provided (alongside onInvite), shows a "+ Add friend" text link below the invite button. */
+  onAddFriend?: () => void;
+  /** Controls the Add friend link label/disabled state. */
+  friendStatus?: 'none' | 'pending_sent' | 'friends';
+  /** Drag handle is shown in modal contexts; hide it when embedded in a tab screen. */
+  showHandle?: boolean;
 }
 
-export default function DiscoverProfileView({ card, onPass, onConnect }: DiscoverProfileViewProps) {
+export default function DiscoverProfileView({
+  card,
+  onPass,
+  onConnect,
+  onInvite,
+  inviteSent = false,
+  onAddFriend,
+  friendStatus = 'none',
+  showHandle = true,
+}: DiscoverProfileViewProps) {
   const insets = useSafeAreaInsets();
   const { profile, intent, distance, photos } = card;
 
@@ -105,7 +124,7 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
   const photo4 = photos[3];
   const photo5 = photos[4];
 
-  const aboutText = profile.tagline || profile.bio;
+  const aboutText = profile.tagline;
   const hasCwo = !!profile.currently_working_on;
 
   let availableText: string | null = null;
@@ -116,7 +135,7 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
   const distanceLabel = distance > 0 ? formatDistance(distance) : null;
   const nameDistance = [profile.name, distanceLabel].filter(Boolean).join(' · ');
 
-  const age = profile.birthday ? calculateAge(profile.birthday) : null;
+  const age = profile.age ?? (profile.birthday ? calculateAge(profile.birthday) : null);
 
   const topRowItems = [
     age                  ? { key: 'age',  emoji: '🎂', text: `${age}` }              : null,
@@ -134,13 +153,15 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: onPass ? 84 + Math.max(insets.bottom, 16) : Math.max(insets.bottom, 24) },
+          { paddingBottom: onPass || onInvite ? 84 + (onInvite && onAddFriend ? 38 : 0) + Math.max(insets.bottom, 16) : Math.max(insets.bottom, 24) },
         ]}
       >
-        {/* Drag handle */}
-        <View style={styles.handleRow}>
-          <View style={styles.handle} />
-        </View>
+        {/* Drag handle — only in modal contexts */}
+        {showHandle ? (
+          <View style={styles.handleRow}>
+            <View style={styles.handle} />
+          </View>
+        ) : null}
 
         {/* Name · distance */}
         <Text style={styles.nameHeader}>{nameDistance}</Text>
@@ -193,8 +214,47 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
         {photo5 ? <PhotoBlock photo={photo5} /> : null}
       </ScrollView>
 
+      {/* Invite button — single full-width action, replaces Pass/Connect */}
+      {onInvite ? (
+        <View style={[styles.inviteBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+          <TouchableOpacity
+            style={[styles.inviteButton, inviteSent && styles.inviteButtonSent]}
+            onPress={onInvite}
+            disabled={inviteSent}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.inviteButtonText}>
+              {inviteSent ? 'Invite sent ✓' : 'Invite to co-work today'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Add friend — lightweight text link below the invite button */}
+          {onAddFriend ? (
+            <TouchableOpacity
+              style={styles.addFriendLink}
+              onPress={onAddFriend}
+              disabled={friendStatus !== 'none'}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.addFriendLinkText,
+                  friendStatus !== 'none' && styles.addFriendLinkTextDone,
+                ]}
+              >
+                {friendStatus === 'friends'
+                  ? 'Friends ✓'
+                  : friendStatus === 'pending_sent'
+                  ? 'Request sent ✓'
+                  : '+ Add friend'}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      ) : null}
+
       {/* Floating Pass / Connect circles — hidden when used on own profile */}
-      {onPass && onConnect ? (
+      {!onInvite && onPass && onConnect ? (
         <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
           {/* Pass — white circle, black X */}
           <TouchableOpacity
@@ -234,7 +294,7 @@ export default function DiscoverProfileView({ card, onPass, onConnect }: Discove
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f0f8',
+    backgroundColor: theme.background,
   },
   scrollContent: {
     // paddingBottom set dynamically for floating bar
@@ -389,5 +449,52 @@ const styles = StyleSheet.create({
   },
   connectCircle: {
     backgroundColor: CLOVER_FOREST,
+  },
+
+  // Invite button bar
+  inviteBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: FEED_MARGIN_H,
+    paddingTop: 12,
+    backgroundColor: 'transparent',
+  },
+  inviteButton: {
+    backgroundColor: CLOVER_FOREST,
+    borderRadius: 28,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.13,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  inviteButtonSent: {
+    backgroundColor: 'rgba(30,61,40,0.45)',
+  },
+  inviteButtonText: {
+    fontFamily: FONT_DM_SANS_MEDIUM,
+    fontSize: 15,
+    letterSpacing: 0.3,
+    color: CLOVER_BG,
+  },
+  addFriendLink: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    marginTop: 2,
+  },
+  addFriendLinkText: {
+    fontFamily: FONT_DM_SANS_MEDIUM,
+    fontSize: 14,
+    letterSpacing: 0.2,
+    color: CLOVER_FOREST,
+  },
+  addFriendLinkTextDone: {
+    color: 'rgba(30,61,40,0.5)',
   },
 });

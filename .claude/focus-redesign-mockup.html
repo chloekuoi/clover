@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clover — Focus Redesign (exact design system)</title>
+<!-- Closest web equivalents to the app fonts: Cormorant Garamond + DM Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* exact tokens */
+    --bg: #F5F4F1;        /* colors.bgPrimary */
+    --card: #FFFFFF;      /* colors.bgCard */
+    --border: #E4E3E0;    /* colors.borderDefault */
+    --text: #1A1A1A;      /* textPrimary */
+    --muted: #9B9B9B;     /* textTertiary / theme.textMuted */
+    --secondary: #6B6B6B; /* textSecondary */
+    --forest: #1e3d28;    /* CLOVER_FOREST */
+    --violet: #7c5cbf;    /* CLOVER_VIOLET */
+    --lavender: #d0c8f0;  /* CLOVER_LAVENDER */
+    --cloverbg: #ede8ff;  /* CLOVER_BG (duration badge) */
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'DM Sans', -apple-system, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #c9c4d8;
+    font-family: var(--sans);
+    display: flex; gap: 36px; flex-wrap: wrap; justify-content: center;
+    padding: 40px 20px;
+  }
+  .col { display: flex; flex-direction: column; align-items: center; }
+  .caption { font-size: 13px; color: #333; margin-bottom: 10px; font-weight: 500; }
+  .phone {
+    width: 390px; height: 810px; background: var(--bg);
+    border-radius: 40px; overflow: hidden; border: 10px solid #111;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    display: flex; flex-direction: column;
+  }
+  .header { padding: 22px 16px 10px; }
+  .title { font-family: var(--serif); font-size: 32px; font-weight: 300; color: var(--forest); }
+
+  /* ---- pill row ---- */
+  .pill-row { padding: 4px 16px 12px; display: flex; gap: 10px; }
+  .pill {
+    flex: 1; height: 50px; border-radius: 9999px; padding: 0 16px;
+    display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 400;
+  }
+  .pill.set   { background: var(--forest); color: #fff; }
+  .pill.unset { background: transparent; border: 1.5px dashed var(--forest); color: var(--forest); }
+  .pill .clover { width: 18px; height: 18px; flex-shrink: 0; }
+  .pill .ptext  { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pill .paction{ font-size: 13px; opacity: .85; font-weight: 500; }
+  .pill.loc { flex: 0 0 110px; background: #fff; color: var(--forest); border: 1px solid var(--border); }
+
+  /* ---- expanded card (exact tokens) ---- */
+  .focus-card {
+    margin: 0 16px 12px; background: var(--card);
+    border-radius: 16px; padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.04);
+  }
+  .title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .title-row .clover { width: 22px; height: 22px; }
+  .title-row h2 {
+    font-family: var(--serif); font-size: 28px; font-weight: 300;
+    color: var(--text); line-height: 34px; letter-spacing: -0.2px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-family: var(--sans); font-size: 11px; font-weight: 400;
+    color: var(--muted); letter-spacing: 0.5px; margin-bottom: 8px;
+  }
+  .input {
+    width: 100%; background: var(--card);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 16px; font-family: var(--sans); font-size: 16px; color: var(--text);
+    box-shadow: 0 4px 12px rgba(0,0,0,.04);
+  }
+  .input.placeholder { color: var(--muted); }
+  textarea.input { min-height: 50px; resize: none; }
+
+  .search { position: relative; }
+  .search .pin { position: absolute; left: 16px; top: 16px; font-size: 16px; }
+  .search .input { padding-left: 42px; }
+  .suggestions {
+    margin-top: 6px; background: #fff; border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  }
+  .sug { padding: 12px 16px; border-bottom: 1px solid #f1f0ed; }
+  .sug:last-child { border-bottom: none; }
+  .sug .main { font-size: 15px; color: var(--text); }
+  .sug .sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .time-row { display: flex; gap: 16px; align-items: center; }
+  .time-pick {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 16px; font-size: 16px; color: var(--text);
+  }
+  .time-pick.empty { color: var(--muted); }
+  .arrow { font-size: 14px; color: var(--muted); }
+  .dur {
+    background: var(--cloverbg); border-radius: 999px; padding: 3px 10px;
+    font-size: 11px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase;
+    color: var(--forest); margin-left: auto;
+  }
+
+  .actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+  .btn-save {
+    flex: 1; background: var(--forest); color: #fff; border: none;
+    border-radius: 14px; padding: 16px; font-family: var(--sans);
+    font-size: 16px; font-weight: 500; box-shadow: 0 4px 16px rgba(63,84,67,.2);
+  }
+  .btn-cancel {
+    background: none; border: none; color: var(--muted);
+    font-family: var(--sans); font-size: 15px; font-weight: 500; padding: 16px 8px;
+  }
+
+  /* ---- people list ---- */
+  .people { padding: 4px 16px; overflow-y: auto; flex: 1; }
+  .person {
+    background: #fff; border-radius: 16px; padding: 12px; margin-bottom: 10px;
+    display: flex; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.04);
+  }
+  .avatar { width: 48px; height: 48px; border-radius: 24px;
+    background: linear-gradient(135deg, var(--lavender), var(--violet)); flex-shrink: 0; }
+  .pinfo { flex: 1; }
+  .pname  { font-size: 15px; color: var(--forest); font-weight: 500; }
+  .pvenue { font-size: 13px; color: var(--violet); margin: 2px 0; }
+  .ptask  { font-size: 13px; color: var(--secondary); }
+  .pdist  { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- A · collapsed, focus set -->
+<div class="col">
+  <div class="caption">A · Collapsed — focus set</div>
+  <div class="phone">
+    <div class="header"><div class="title">Discover</div></div>
+    <div class="pill-row">
+      <div class="pill set">
+        <svg class="clover" viewBox="0 0 24 24" fill="#d0c8f0"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="8" r="4"/><circle cx="8" cy="16" r="4"/><circle cx="16" cy="16" r="4"/></svg>
+        <span class="ptext">Editing my novel draft</span>
+        <span class="paction">Edit</span>
+      </div>
+    </div>
+    <div class="people">
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Maya</div><div class="pvenue">Verve Coffee</div><div class="ptask">Designing a pitch deck</div></div><div class="pdist">0.4 mi</div></div>
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Jordan</div><div class="pvenue">Public Library</div><div class="ptask">Studying for the bar</div></div><div class="pdist">0.8 mi</div></div>
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Sam</div><div class="pvenue">Blue Bottle</div><div class="ptask">Writing React Native</div></div><div class="pdist">1.1 mi</div></div>
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Priya</div><div class="pvenue">Sightglass</div><div class="ptask">Grant application</div></div><div class="pdist">1.5 mi</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- B · expanded inline -->
+<div class="col">
+  <div class="caption">B · Tapped pill → expands inline</div>
+  <div class="phone">
+    <div class="header"><div class="title">Discover</div></div>
+    <div class="pill-row">
+      <div class="pill set">
+        <svg class="clover" viewBox="0 0 24 24" fill="#d0c8f0"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="8" r="4"/><circle cx="8" cy="16" r="4"/><circle cx="16" cy="16" r="4"/></svg>
+        <span class="ptext">Editing my novel draft</span>
+        <span class="paction">▲</span>
+      </div>
+    </div>
+
+    <div class="focus-card">
+      <div class="title-row">
+        <svg class="clover" viewBox="0 0 24 24" fill="#1e3d28"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="8" r="4"/><circle cx="8" cy="16" r="4"/><circle cx="16" cy="16" r="4"/></svg>
+        <h2>Today's focus</h2>
+      </div>
+
+      <div class="field">
+        <label>WHAT ARE YOU WORKING ON?</label>
+        <textarea class="input">Editing my novel draft</textarea>
+      </div>
+
+      <div class="field search">
+        <label>LOCATION</label>
+        <span class="pin">📍</span>
+        <input class="input" value="Blue Bottle" />
+        <div class="suggestions">
+          <div class="sug"><div class="main">Blue Bottle Coffee</div><div class="sub">66 Mint St, San Francisco</div></div>
+          <div class="sug"><div class="main">Blue Bottle — Ferry Building</div><div class="sub">1 Ferry Building, San Francisco</div></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>AVAILABLE</label>
+        <div class="time-row">
+          <div class="time-pick">10:00 AM</div>
+          <span class="arrow">→</span>
+          <div class="time-pick">2:00 PM</div>
+          <span class="dur">4 hr</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-cancel">Cancel</button>
+        <button class="btn-save">Save focus</button>
+      </div>
+    </div>
+
+    <div class="people">
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Maya</div><div class="pvenue">Verve Coffee</div><div class="ptask">Designing a pitch deck</div></div><div class="pdist">0.4 mi</div></div>
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Jordan</div><div class="pvenue">Public Library</div><div class="ptask">Studying for the bar</div></div><div class="pdist">0.8 mi</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- C · empty state stays collapsed -->
+<div class="col">
+  <div class="caption">C · No focus yet — stays collapsed</div>
+  <div class="phone">
+    <div class="header"><div class="title">Discover</div></div>
+    <div class="pill-row">
+      <div class="pill unset">
+        <svg class="clover" viewBox="0 0 24 24" fill="#1e3d28"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="8" r="4"/><circle cx="8" cy="16" r="4"/><circle cx="16" cy="16" r="4"/></svg>
+        <span class="ptext">Today's focus…</span>
+        <span class="paction">Set →</span>
+      </div>
+    </div>
+    <div class="people">
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Maya</div><div class="pvenue">Verve Coffee</div><div class="ptask">Designing a pitch deck</div></div><div class="pdist">0.4 mi</div></div>
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Jordan</div><div class="pvenue">Public Library</div><div class="ptask">Studying for the bar</div></div><div class="pdist">0.8 mi</div></div>
+      <div class="person"><div class="avatar"></div><div class="pinfo"><div class="pname">Sam</div><div class="pvenue">Blue Bottle</div><div class="ptask">Writing React Native</div></div><div class="pdist">1.1 mi</div></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

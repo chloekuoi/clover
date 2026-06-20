@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Add Friend button — options</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500&display=swap');
+  body { margin:0; background:#d9d4ea; font-family:'DM Sans',sans-serif; display:flex; gap:36px; justify-content:center; padding:48px 20px; flex-wrap:wrap; align-items:flex-start; }
+  .col { display:flex; flex-direction:column; align-items:center; }
+  .phone { width:340px; background:#F5F4F1; border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden; }
+  .scroll { padding:16px 16px 0; }
+  .namerow { display:flex; align-items:center; justify-content:center; gap:10px; margin:8px 0 14px; }
+  .name { font-family:Georgia,serif; font-weight:300; font-size:22px; color:#1A1A1A; }
+  .photo { width:100%; aspect-ratio:1; background:linear-gradient(135deg,#cfc6ee,#a99fd6); border-radius:14px; }
+  .barwrap { padding:12px 16px 22px; }
+  .invite { background:#1e3d28; color:#ede8ff; height:56px; border-radius:28px; display:flex; align-items:center; justify-content:center; font-weight:500; font-size:15px; letter-spacing:.3px; box-shadow:0 4px 10px rgba(0,0,0,.13); flex:1; }
+  .label { text-align:center; font-size:13px; color:#3a3a3a; margin-top:14px; max-width:300px; font-weight:500; }
+  .sub { font-size:11px; color:#666; margin-top:4px; max-width:300px; text-align:center; }
+
+  /* Option A: small circular icon button left of the invite button */
+  .row { display:flex; align-items:center; gap:10px; }
+  .iconbtn { width:56px; height:56px; border-radius:28px; border:1.5px solid #1e3d28; display:flex; align-items:center; justify-content:center; color:#1e3d28; font-size:22px; background:transparent; flex:0 0 auto; }
+
+  /* Option B: person+ icon chip up by the name */
+  .namechip { width:34px; height:34px; border-radius:17px; border:1.5px solid #1e3d28; display:flex; align-items:center; justify-content:center; color:#1e3d28; font-size:17px; }
+
+  /* Option C: slimmer text link under the green button */
+  .textlink { text-align:center; margin-top:12px; color:#1e3d28; font-weight:500; font-size:14px; letter-spacing:.2px; }
+  .textlink .plus { font-size:16px; }
+
+  /* Option D: ghost pill, smaller height stacked */
+  .addslim { margin-top:10px; height:44px; border-radius:22px; border:1.5px solid #1e3d28; color:#1e3d28; display:flex; align-items:center; justify-content:center; font-weight:500; font-size:14px; }
+</style>
+</head>
+<body>
+
+  <!-- Option A -->
+  <div class="col">
+    <div class="phone">
+      <div class="scroll">
+        <div class="namerow"><span class="name">Iris Guo · 1.2 km</span></div>
+        <div class="photo"></div>
+      </div>
+      <div class="barwrap">
+        <div class="row">
+          <div class="iconbtn" title="Add friend">+&#128100;</div>
+          <div class="invite">Invite to co-work today</div>
+        </div>
+      </div>
+    </div>
+    <div class="label">A · Icon + main button (side by side)</div>
+    <div class="sub">Round outlined person+ icon to the left of the co-work button. Compact, one row. Tap the icon → fills in / shows ✓.</div>
+  </div>
+
+  <!-- Option B -->
+  <div class="col">
+    <div class="phone">
+      <div class="scroll">
+        <div class="namerow"><span class="name">Iris Guo · 1.2 km</span><span class="namechip">+&#128100;</span></div>
+        <div class="photo"></div>
+      </div>
+      <div class="barwrap">
+        <div class="invite">Invite to co-work today</div>
+      </div>
+    </div>
+    <div class="label">B · Small icon by the name</div>
+    <div class="sub">Person+ chip next to the name at top. Bottom keeps only the single co-work button — cleanest, but the action is less obvious.</div>
+  </div>
+
+  <!-- Option C -->
+  <div class="col">
+    <div class="phone">
+      <div class="scroll">
+        <div class="namerow"><span class="name">Iris Guo · 1.2 km</span></div>
+        <div class="photo"></div>
+      </div>
+      <div class="barwrap">
+        <div class="invite">Invite to co-work today</div>
+        <div class="textlink"><span class="plus">+</span> Add friend</div>
+      </div>
+    </div>
+    <div class="label">C · Text link under the button</div>
+    <div class="sub">No second box — just a tappable green text link. Lightest footprint while staying readable.</div>
+  </div>
+
+  <!-- Option D -->
+  <div class="col">
+    <div class="phone">
+      <div class="scroll">
+        <div class="namerow"><span class="name">Iris Guo · 1.2 km</span></div>
+        <div class="photo"></div>
+      </div>
+      <div class="barwrap">
+        <div class="invite">Invite to co-work today</div>
+        <div class="addslim">+ Add friend</div>
+      </div>
+    </div>
+    <div class="label">D · Slimmer stacked pill</div>
+    <div class="sub">Same idea as before but shorter (44px) and tighter — less bulky than the original.</div>
+  </div>
+
+</body>
+</html>

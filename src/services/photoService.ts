@@ -296,6 +296,30 @@ export async function deletePhoto(
   return { data: { promoted: true }, error: null };
 }
 
+export async function deleteAllUserPhotoFiles(userId: string): Promise<{ error: string | null }> {
+  const bucket = supabase.storage.from(AVATAR_BUCKET);
+  const { data: files, error: listError } = await bucket.list(userId, { limit: 100 });
+
+  if (listError) {
+    return { error: toErrorMessage(listError, 'Failed to list account photos') };
+  }
+
+  const paths = (files || [])
+    .filter((file) => file.name && file.name !== '.emptyFolderPlaceholder')
+    .map((file) => `${userId}/${file.name}`);
+
+  if (paths.length === 0) {
+    return { error: null };
+  }
+
+  const { error: removeError } = await bucket.remove(paths);
+  if (removeError) {
+    return { error: toErrorMessage(removeError, 'Failed to delete account photos') };
+  }
+
+  return { error: null };
+}
+
 export async function setPrimaryPhoto(
   userId: string,
   fromPosition: number

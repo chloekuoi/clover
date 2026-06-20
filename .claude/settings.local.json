@@ -25,7 +25,10 @@
       "Bash(npm test -- --testPathPattern=\"src/components/session/__tests__/GroupSessionRSVPCard\" --watchAll=false --rootDir /Users/chloe/Documents/Claude/Clover)",
       "Bash(git stash pop)",
       "Bash(grep -r \"work_type\\\\|currently_working_on\\\\|school\" /Users/chloe/Documents/Claude/Clover/supabase/*.sql)",
-      "Bash(npm test *)"
+      "Bash(npm test *)",
+      "Read(//Users/chloe/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.1/**)",
+      "Bash(bash scripts/start-server.sh --project-dir /Users/chloe/Documents/Claude/clover)",
+      "Bash(find /Users/chloe/.claude/plugins/cache/claude-plugins-official/superpowers -name \"start-server.sh\" 2>/dev/null | head -5)"
     ]
   }
 }

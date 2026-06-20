@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { User, Session, AuthError, PostgrestError } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { supabase } from '../../lib/supabase';
 import { Profile, AuthContextType } from '../types';
+import { deleteAllUserPhotoFiles } from '../services/photoService';
+import { isExpoGo } from '../utils/runtime';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -13,11 +15,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    const { data, error } = await supabase.rpc('get_profile', {
+      p_user_id: userId,
+    });
 
     if (error && error.code !== 'PGRST116') {
       // PGRST116 = no rows returned (new user, no profile yet)
@@ -88,6 +88,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithApple = async (): Promise<{ error: AuthError | null }> => {
+    if (isExpoGo) {
+      return {
+        error: {
+          message: 'Apple Sign-In must be tested in a Clover development or TestFlight build, not Expo Go.',
+          name: 'AuthError',
+          status: 0,
+        } as AuthError,
+      };
+    }
+
     const isAvailable = await AppleAuthentication.isAvailableAsync();
     if (!isAvailable) {
       return { error: { message: 'Apple Sign-In is not available on this device', name: 'AuthError', status: 0 } as AuthError };
@@ -116,7 +126,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const deleteAccount = async (): Promise<{ error: PostgrestError | null }> => {
+  const deleteAccount = async (): Promise<{ error: { message: string } | null }> => {
+    if (!user) {
+      return { error: { message: 'Not authenticated' } };
+    }
+
+    const photoCleanup = await deleteAllUserPhotoFiles(user.id);
+    if (photoCleanup.error) {
+      return { error: { message: photoCleanup.error } };
+    }
+
     const { error } = await supabase.rpc('delete_account');
     if (!error) {
       await supabase.auth.signOut();
