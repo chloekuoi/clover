@@ -94,7 +94,7 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
       <View style={styles.spacer} />
 
       <TypewriterText
-        text="welcome to cowork."
+        text="welcome to clover."
         style={styles.question}
         startDelay={300}
       />
