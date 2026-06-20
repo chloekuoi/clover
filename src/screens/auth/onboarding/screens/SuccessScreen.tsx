@@ -104,7 +104,12 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
         <Text style={styles.badgeValue}>{archetype}</Text>
       </Animated.View>
 
-      <TouchableOpacity onPress={refreshProfile} style={styles.cta} activeOpacity={0.7}>
+      <TouchableOpacity
+        onPress={refreshProfile}
+        style={styles.cta}
+        activeOpacity={0.7}
+        hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+      >
         <Text style={styles.ctaText}>let's find your people →</Text>
       </TouchableOpacity>
     </View>
@@ -169,7 +174,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   cta: {
-    paddingVertical: 6,
+    paddingVertical: 10,
+    marginBottom: 40,
   },
   ctaText: {
     fontFamily: t.fontSans.regular,
