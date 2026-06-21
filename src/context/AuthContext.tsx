@@ -20,8 +20,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error && error.code !== 'PGRST116') {
-      // PGRST116 = no rows returned (new user, no profile yet)
+      // PGRST116 = no rows returned (new user, no profile yet).
+      // For any other error (network blip, transient RLS hiccup) keep the
+      // profile we already have rather than wiping it to null — wiping would
+      // bounce a fully-onboarded user back into the onboarding flow.
       console.error('Error fetching profile:', error);
+      return;
     }
 
     setProfile(data || null);
@@ -32,6 +36,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await fetchProfile(user.id);
     }
   }, [user, fetchProfile]);
+
+  // Apply a known profile directly to local state. Used to flip navigation
+  // immediately (e.g. after onboarding completes) without waiting on a
+  // network re-fetch that could fail and leave the user stuck.
+  const applyProfile = useCallback((next: Profile) => {
+    setProfile(next);
+  }, []);
 
   useEffect(() => {
     // Get initial session
@@ -154,6 +165,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUp,
         signOut,
         refreshProfile,
+        applyProfile,
         signInWithApple,
         deleteAccount,
       }}

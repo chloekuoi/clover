@@ -23,10 +23,11 @@ const ARCHETYPES = [
   'The Explorer',
 ];
 
-export function SuccessScreen({ state, onComplete }: ScreenProps) {
-  const { user, refreshProfile } = useAuth();
+export function SuccessScreen({ state }: ScreenProps) {
+  const { user, profile, refreshProfile, applyProfile } = useAuth();
   const [saving, setSaving] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [continuing, setContinuing] = useState(false);
   const [archetype] = useState(
     () => ARCHETYPES[Math.floor(Math.random() * ARCHETYPES.length)]
   );
@@ -64,6 +65,28 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
   useEffect(() => {
     save();
   }, []);
+
+  // Enter the app. The profile was already marked onboarding_complete in save(),
+  // so flip navigation immediately using the profile we already hold — this
+  // doesn't depend on a network re-fetch succeeding. Then sync the full latest
+  // profile in the background.
+  const handleContinue = async () => {
+    if (continuing) return;
+    setContinuing(true);
+    if (profile) {
+      applyProfile({ ...profile, onboarding_complete: true });
+      // Best-effort background sync; navigation has already advanced.
+      void refreshProfile();
+      return;
+    }
+    // No cached profile to flip optimistically — fall back to a re-fetch.
+    try {
+      await refreshProfile();
+    } catch {
+      setError('something went wrong');
+      setContinuing(false);
+    }
+  };
 
   if (saving) {
     return (
@@ -105,12 +128,15 @@ export function SuccessScreen({ state, onComplete }: ScreenProps) {
       </Animated.View>
 
       <TouchableOpacity
-        onPress={refreshProfile}
+        onPress={handleContinue}
+        disabled={continuing}
         style={styles.cta}
         activeOpacity={0.7}
         hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
       >
-        <Text style={styles.ctaText}>see who's working nearby →</Text>
+        <Text style={styles.ctaText}>
+          {continuing ? 'loading...' : "see who's working nearby →"}
+        </Text>
       </TouchableOpacity>
     </View>
   );

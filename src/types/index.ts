@@ -32,6 +32,7 @@ export type AuthContextType = {
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  applyProfile: (profile: Profile) => void;
   signInWithApple: () => Promise<{ error: AuthError | null }>;
   deleteAccount: () => Promise<{ error: { message: string } | null }>;
 };
