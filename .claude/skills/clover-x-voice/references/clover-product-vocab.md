@@ -11,9 +11,12 @@ consistent, it does not flatten her tone. Source: `.claude/brand-deck-rules.md`.
 - Tagline: **"Find your people. Do the work."**
 
 ## Naming rules
-- Always **Clover** — capital C, no article. "open Clover," not "open the Clover."
-- Never ALL CAPS, never all-lowercase for the brand name itself (her sentences
-  can be casual; the brand name stays "Clover").
+- In **formal / company contexts**: **Clover** — capital C, no article. "open
+  Clover," not "open the Clover." Never ALL CAPS.
+- In **Chloe's casual personal X posts**: she often writes **clover** lowercase,
+  and that's fine — it reads natural and texty. Match her lead; don't force the
+  capital C into her journal-style voice. (Capitalization matters for the
+  company brand, not for how she casually types about her own app.)
 
 ## Words to use
 - **builders** (the people on Clover) — never "users" or "customers"

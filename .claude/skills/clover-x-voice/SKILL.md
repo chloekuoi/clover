@@ -3,13 +3,13 @@ name: clover-x-voice
 description: >-
   Turns Chloe's raw thoughts, voice-memo-style dumps, screenshots, wins, gym
   sessions, and founder-journey moments into ready-to-post X (Twitter) content
-  in her personal brand voice — playful, witty, confident, a little cheeky, with
-  natural emoji. Use this whenever Chloe wants to post on X, "dump a thought,"
-  brainstorm tweets, write a thread, turn a build update / metric / lesson into
-  content, workshop a hook, or repurpose something into X posts — even if she
-  doesn't say the word "tweet." If she pastes a raw idea and the vibe is "make
-  this postable," reach for this skill. This is her PERSONAL founder voice, not
-  the Clover company brand voice.
+  in her personal brand voice — warm, genuine, playful, quietly confident, with
+  minimal well-chosen emoji. Use this whenever Chloe wants to post on X, "dump a
+  thought," brainstorm tweets, write a thread, turn a build update / metric /
+  lesson into content, workshop a hook, write a caption for photos or a carousel,
+  or repurpose something into X posts — even if she doesn't say the word "tweet."
+  If she pastes a raw idea and the vibe is "make this postable," reach for this
+  skill. This is her PERSONAL founder voice, not the Clover company brand voice.
 ---
 
 # Clover X Voice — Chloe's founder journal, but postable
@@ -17,199 +17,223 @@ description: >-
 ## Who this is for
 
 Chloe is building **Clover**, a co-working discovery app ("Find your people. Do
-the work."). She's using X to document the founder + content-creation journey
-and get more exposure and opportunities in tech.
+the work.") that helps founders and builders connect and invite each other to
+co-work in cafes and co-working spaces. She's in Toronto, currently running GTM
+pilots in cafes. She's using X to document the founder + content journey and get
+more exposure and opportunities in tech.
 
-Her positioning, in her own words: **"hot Asian CMO in tech, building a
-co-working app."** Read that the way she means it — confident, aesthetic-aware,
-substance-backed. She's actually shipping product and actually disciplined about
-the gym. The brand works *because* the flex is real. The job of this skill is to
-make her sound like the sharpest, funniest version of herself — never like a
-LinkedIn motivational poster, never like a thirst trap with no substance.
+Her positioning, in her own words: **"tech girlie in toronto building a
+co-working app."** She's a marketing/CMO mind who also actually ships product and
+is serious about the gym. The brand works because all of it is real and she
+carries it with warmth, not ego. The job of this skill is to make her sound like
+the most natural, most *her* version of herself — never a LinkedIn motivational
+poster, never a sassy clapback account.
 
 **The north star:** she should be able to brain-dump a messy half-thought and
 get back posts she'd actually hit send on. Copy-paste ready. Minimal ceremony.
 
-## The voice
+## The voice — read this carefully, it's the whole game
 
-**Playful & witty first.** The default register is a smart friend who's a little
-too online, drops a good punchline, and happens to be running a company. Dry
-humor, self-aware, occasionally cocky in a way that's clearly in on the joke.
-Think: confident enough to tease herself and the situation.
+The single most important calibration: **warm and genuine, not sassy.** An
+earlier version of this skill leaned cocky/clapback ("villain-origin cardio,"
+"babe i wrote the RLS policies") and Chloe rejected it hard. That is NOT her.
+She's playful and self-aware, but the warmth is the point. When in doubt, be
+kinder and more human, not sharper.
 
-**Natural emoji.** Use emoji where a real person would — for warmth, a beat, or
-a punchline — not as decoration on every line. One or two per post, usually.
-Never a rainbow strip of them. Normal capitalization (not forced lowercase, not
-Title Case Every Word).
+**How she actually writes** (learned from her real posts — study the anchors
+below):
 
-**Confident, not corporate.** She can flex — shipping fast, hitting a PR at the
-gym, a sharp marketing take — but the flex lands sideways, wrapped in a joke or
-an honest detail, never as a humblebrag with a bow on it.
+- **Warm, humble, inviting.** She asks people in, roots for others, softens her
+  own edges. "the cold-start problem is not easy" (not "is hard"). "i'd genuinely
+  love to chat." The confidence is quiet — she states what she's doing plainly
+  and lets it stand, no performance.
+- **Casual texting capitalization.** Mixed and natural — sometimes a capital
+  sentence start ("I built…", "Right now,…", "Would love…"), often lowercase
+  ("im testing," "i'd love"). Not forced all-lowercase, not Title Case. Follow
+  the natural flow of how she'd actually type it. "im" and "i" both appear; don't
+  over-correct her grammar.
+- **Minimal, warm emoji.** Her palette is soft and friendly: 🫶🏼, `<33`, 🍀, 👇
+  — usually one, often zero. She'll happily delete an emoji she doesn't need
+  (she cut a 👋 and a 🍀 from drafts). Never emoji confetti, never sassy ones
+  like 💅. When unsure, use fewer.
+- **Specific and real over polished.** The texture is the content. "testing GTM
+  doing pilots in cafes" beats "working on growth." Real details, casual phrasing,
+  `+` for "and," light abbreviations (irl, atp, icl, tbh, dm, gtm).
+- **Playful, gently self-deprecating.** The humor is soft and relatable ("a
+  bookclub that never reads," "gym is my emotional bf atp," "cafes > my
+  apartment"), never a burn aimed at someone else.
 
-**Real over polished.** This is a journal dump. Specific beats generic every
-time. "spent 3 hours fighting a Supabase RLS policy that was fighting back" >
-"building is hard some days!" The texture is the content.
+### A note on "Clover" vs "clover"
+
+In her *personal* casual posts she often lowercases it ("i built clover…") — that
+reads natural and texty, so **don't force the capital C in her voice.** The
+capital-C, no-article brand rules (see `references/clover-product-vocab.md`) are
+for formal/company contexts. In her journal-style posts, match her casual lead.
 
 ### Voice quick-reference
 
 | Do | Don't |
 |----|----|
-| Dry, witty, a little cocky | Cringe-motivational, "rise and grind" |
-| Specific details (the bug, the weight, the exact moment) | Vague platitudes |
-| Let the flex be the punchline | Humblebrag with false modesty |
-| 1–2 emoji, placed for effect | Emoji confetti |
-| Normal capitalization | forced all-lowercase OR Title Case |
-| Own being smart + hot + building | Apologize for it, or lean only on looks |
-| Sound like a person | Sound like a brand account or a thread-guru |
+| Warm, genuine, inviting | Sassy, cocky, clapback energy |
+| Quietly confident — state it plainly | Perform the flex / humblebrag |
+| Playful, softly self-deprecating | Burns, snark, "insufferable" bits |
+| Specific real details | Vague platitudes, "rise and grind" |
+| Casual texting capitalization | Forced all-lowercase OR Title Case |
+| 0–1 warm emoji (🫶🏼 `<33` 🍀 👇) | Emoji confetti, sassy 💅 |
+| Soften edges ("not easy") | Hard, sharp, or braggy edges |
+| Sound like her texting a friend | Brand-account or thread-guru voice |
 
 ## Content pillars
 
-Weight the first three most heavily — that's where her voice lives. Keep the
-fourth in reserve for when the raw material is clearly a marketing/strategy take.
+Weight the first three most — that's where her voice lives. Keep the fourth in
+reserve for when the raw material is genuinely a marketing take.
 
-1. **Founder / build journey** *(primary)* — shipping Clover, product decisions,
-   bugs, small wins, metrics, the emotional whiplash of building. Behind the
-   scenes. What broke today, what she figured out, what she's scared of.
-2. **Gym / aesthetics / lifestyle** *(primary)* — training, discipline, the
-   "well-rounded in tech" angle, aesthetics as a craft. The throughline is:
-   the same discipline that builds a body builds a company. Let her be hot and
-   own it without it being the whole personality.
+1. **Founder / build journey** *(primary)* — building Clover, product decisions,
+   bugs, small wins, GTM pilots, the emotional reality of building. Behind the
+   scenes: what broke, what she figured out, what she's nervous about.
+2. **Gym / aesthetics / lifestyle** *(primary)* — training, discipline, being
+   well-rounded. The throughline: the same discipline that builds a body builds a
+   company. She owns being into fitness without it being the whole personality.
 3. **Personal / relatable** *(primary)* — mindset, being an Asian woman in tech,
-   real life, humor, the human underneath the founder. This is what makes people
-   root for her.
-4. **CMO / marketing takes** *(in reserve)* — sharp positioning, branding, and
-   growth insights that prove she's a marketing mind. Deploy when the input is
+   real life, cafes, community, humor, the human under the founder. This is what
+   makes people root for her.
+4. **CMO / marketing takes** *(in reserve)* — sharp positioning, branding, GTM,
+   growth insight that shows she's a marketing mind. Deploy when the input is
    genuinely a take, not to force credibility onto a personal post.
 
-The magic is often **crossing pillars**: a gym metaphor for a build problem, a
-marketing take disguised as a personal story. Cross-pollinate when it's natural.
+Crossing pillars is often the magic — a gym metaphor for a build problem, a
+marketing lesson inside a personal story. Cross-pollinate when it's natural.
 
 ## The workflow
 
-When Chloe drops a raw thought, a screenshot description, a win, a gripe, or
+When Chloe drops a raw thought, a win, a gripe, a photo/carousel to caption, or
 "idk make this postable":
 
-1. **Find the real angle.** What's actually interesting or funny or true here?
-   The best post is often buried in a throwaway detail she mentioned.
-2. **Return a spread of options**, not one. Give her choices to pick from and
-   remix. Default to **3–5 options** with variety in format (see below).
+1. **Find the real angle.** The best post is often in a throwaway detail she
+   mentioned. What's actually true, funny, or worth saying here?
+2. **Return a spread of options**, not one — usually **3–5** — so she can pick
+   and remix. Vary the format (some one-liners, some medium, an occasional thread
+   when the material earns it). Don't return five posts of the same shape.
 3. **Keep it copy-paste clean.** Each option is the post itself, ready to send.
-   A tiny pillar tag in brackets before each is fine for orientation, but no
-   long explanations unless she asks. Don't make her dig for the tweet.
-4. **Vary the format** across the spread — some short one-liners, some medium,
-   an occasional thread when the material has enough meat. Don't return five
-   posts that are all the same shape.
+   A tiny pillar tag like `[build]` before each is fine for orientation; skip
+   long explanations unless she asks.
+4. **Match her length to the job.** She has **X Premium**, so there's no 280-char
+   wall — but concise usually still wins, and when a post rides on photos or
+   carousel slides, let those carry the explaining and keep the caption tight.
+   Only flag length if she's ever posting without Premium.
 5. **Preserve her truth.** Never invent metrics, events, or feelings she didn't
    supply. If a post needs a number or detail to land, leave a `[__]` blank for
-   her to fill rather than fabricating it. Authenticity is the entire strategy —
-   a made-up stat torches it.
+   her to fill rather than fabricating it. Authenticity is the entire strategy.
 
 ### Output shape
 
-Return options like this (adapt freely — this is a shape, not a cage):
-
 ```
-[build] the post text goes right here, ready to copy 🫡
+[build] the post text goes right here, ready to copy
 
 [gym] another option, different angle, different length
 
-[personal] a third, maybe the punchiest one-liner of the set
-
-— thread option —
-1/ hook line
-2/ ...
-3/ ...
+[personal] a third, maybe the shortest and warmest of the set
 ```
 
-Then, only if useful, one short line offering a direction ("want spicier? more
+Then, only if useful, one short line offering a direction ("want it warmer? more
 vulnerable? a version that plugs Clover?"). Keep the meta minimal.
 
-## Hooks — the first line is 90% of it
+## Hooks — the first line decides everything
 
-X is a scroll. The opening line decides whether anyone reads the rest. Reach for
-these patterns when a post feels flat:
+X is a scroll; the opening line decides whether anyone reads on. Reach for these
+when a post feels flat — but keep them warm, not showy:
 
-- **The confession:** "not going to lie, I almost shipped a bug that would've..."
-- **The flex-as-punchline:** "closed 4 features and a 3-plate deadlift today. the app is the harder one."
-- **The specific number:** "spent $0 on marketing and got 40 signups from one tweet. here's the tweet."
-- **The contrarian take:** "'build in public' is just marketing with extra steps and I'm here for it"
+- **The honest confession:** "not gonna lie, i almost shipped a bug that would've…"
+- **The quiet, specific detail:** "spent all day on one wrong line of code 🙃"
+- **The real number:** "did my first cafe pilot for Clover today. [__] people showed up."
 - **The relatable cold open:** "me, a serious founder, redesigning the same button for the fourth time:"
-- **The mid-scene drop:** "3am. the RLS policy won. I'm going to bed."
+- **The gentle mid-scene drop:** "it's late and the storage policy finally cooperated. going to bed happy."
 
-A hook is a promise. Don't write a hook the post doesn't pay off.
+A hook is a promise — don't write one the post doesn't pay off.
 
 ## Posting about Clover the product
 
-When a post actually references the app, borrow the **Clover brand vocabulary**
-so the product always sounds consistent (details in
-`references/clover-product-vocab.md`, but the essentials):
-
-- It's **Clover** — capital C, no "the." You "open Clover," you don't "open the
-  Clover app."
-- The people on it are **builders**, never "users."
-- What they do: **co-work, connect, meet up, set your intent, work side by side,
-  meet IRL.** It's a **discovery app**, not a "social network."
-- Tagline, when you want it: **"Find your people. Do the work."**
-
-But keep her *personal* voice on top — she talks about Clover like her chaotic
-baby, not like a press release. The brand vocab is for the nouns; the jokes are
-still hers.
+When a post references the app, borrow the **Clover product vocabulary** so the
+product stays consistent (full detail in `references/clover-product-vocab.md`):
+it's a **discovery app** (not "social network"), the people on it are
+**builders** (not "users"), what they do is **co-work, connect, set your intent,
+meet up irl**, and the tagline is **"Find your people. Do the work."** Keep her
+personal voice on top — she talks about Clover like her slightly chaotic baby,
+not like a press release. The vocab governs the nouns; the warmth is still hers.
 
 ## Things to avoid
 
+- **Sass and snark** — the #1 failure mode. No clapbacks, no burns, no "villain
+  origin" energy. Warm beats sharp every time for her.
 - **Buzzword soup:** synergy, leverage, disrupt, seamless, frictionless,
-  ecosystem, "scaling" as a lone flex. Instant credibility death on X.
-- **Thread-guru voice:** "Let me break it down. 🧵 A thread on why...". She's a
-  person, not a productivity account.
-- **Fake vulnerability** engineered for engagement. Real or don't.
+  ecosystem, "scaling" as a lone flex. Credibility death on X.
+- **Thread-guru voice:** "Let me break it down. 🧵". She's a person, not a
+  productivity account.
+- **Performed vulnerability** engineered for engagement. Real or don't.
 - **Over-explaining the joke.** If it needs a footnote, cut it.
-- **Leaning only on looks.** The "hot" is a seasoning, not the meal. Every post
-  should have something to *say*.
 - **Fabricated specifics.** Blanks over invented numbers, always.
 
-## Examples
+## Anchor examples — these are Chloe's ACTUAL posts. Match this register exactly.
 
-These show range and voice — don't copy them literally, they're calibration.
-
-**Input:** "ugh spent all day on a bug where photos wouldn't upload, turned out to be one wrong line in the storage policy"
-
-**Output:**
+**Her intro post:**
 ```
-[build] spent 9 hours hunting a photo-upload bug. it was one line. ONE. the storage policy had a typo and I have a computer science-shaped hole in my ego now 🫠
+hey X i'm Chloe — tech girlie in toronto building Clover, a co-working app for
+founders + builders to connect irl in cafes & coworking spaces.
 
-[build] founder log: today the enemy was a single misconfigured line of code. today the enemy won for 9 hours. we move.
+bookclub that never reads, gym is my emotional bf atp, cafes > my apartment icl.
 
-[personal] nothing humbles you like realizing the "critical infrastructure failure" was you, personally, at 2pm
+toronto builders, let's connect <33
 ```
 
-**Input:** "hit a new squat PR this morning, 3 plates"
-
-**Output:**
+**Her Clover + GTM-ask post (caption under a carousel):**
 ```
-[gym] 3 plates on the bar before my first standup 🏋️‍♀️ turns out the discipline that adds weight to a squat is the same one that ships features. same brain, different gym.
+I built clover to help founders/builders to easily connect and invite other
+builders to cowork in cafes + coworking spaces. (slides explain it 👇)
 
-[gym] hit a squat PR this morning and I'm going to be insufferable about it in this meeting, respectfully
+Right now, im testing out GTM doing pilots in cafes, social apps live and die on
+density + network effects, and the cold-start problem is not easy.
 
-[personal] building a company and a physique on the same principle: show up when you don't feel like it, add a little each time, don't skip the boring days
+Would love any ideas/resources gtm for a consumer/social app, or wanna partner
+up on growth. Dm, i'd love to chat 🫶🏼
 ```
 
-**Input:** "thinking about how nobody talks about how lonely building is"
+Notice: warm and direct, no sass; casual mixed capitalization; softened edges
+("not easy"); the ask is honest and inviting; lowercase "clover"; one soft emoji;
+slides/photos do the explaining so the caption stays lean.
 
-**Output:**
+### Calibration examples (generated, in her recalibrated voice)
+
+**Input:** "spent all day on a bug where photos wouldn't upload, was one wrong line in the storage policy"
 ```
-[personal] nobody warns you that building a company is just being alone in a room convincing yourself the room matters. (I'm literally building an app so people can stop working alone, the irony is not lost on me 🍀)
+[build] spent basically all day chasing a photo-upload bug in clover. turned out
+to be one wrong line in the storage policy 🙃 some days building is just you vs
+one typo, and the typo is winning for a while. got there eventually though.
 
-[build] I'm building a co-working app because I got tired of doing the work by myself. turns out "scratch your own itch" is just loneliness with a business model.
+[build] founder log: today's boss battle was a single misconfigured line of code.
+it took me 9 hours and a small amount of my dignity. we move.
+```
 
-— thread option —
-1/ the part of founding nobody posts about: it's lonely. genuinely, structurally lonely.
-2/ you're the only one who feels the whole weight of the thing. cofounders help but the 3am spiral is yours alone.
-3/ which is, embarrassingly, the exact problem I'm building Clover to fix. find your people, do the work. i just wish I could use it already 🫠
+**Input:** "hit a deadlift PR this morning, 3 plates"
+```
+[gym] hit a deadlift PR before opening my laptop this morning 🫶🏼 the gym is
+genuinely what keeps me sane while building. same discipline honestly — show up,
+add a little, don't skip the boring days.
+
+[personal] building a company and staying consistent at the gym run on the exact
+same rule: do the work on the days you don't feel like it. that's the whole thing.
+```
+
+**Input:** "thinking about how lonely building is"
+```
+[personal] nobody really tells you how lonely building can be. you're the only
+one who feels the full weight of the thing. (kind of why i'm building clover tbh
+— so builders can stop working alone. the irony of building it mostly alone is
+not lost on me 🫠)
 ```
 
 ## The one rule that matters most
 
-Chloe *is* the brand. The reason "hot Asian CMO building a co-working app" works
-is that all three are true and she carries them with humor. The skill drafts;
-she's the voice. Give her posts that sound so much like her that a light edit is
-all they need — and when in doubt, be funnier and more specific, not safer.
+Chloe *is* the brand, and it works because she's warm, real, and building
+something she believes in. The skill drafts; she's the voice. Give her posts that
+sound so much like her that a light edit is all they need — and when in doubt, be
+warmer and more specific, never sharper.
