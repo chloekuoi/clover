@@ -1,0 +1,279 @@
+<title>Clover humans covers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+/* Layout: one column of review sections. Hero pair of 9:16 covers, then a 3:4 profile-grid strip, then the spec table. */
+:root {
+  /* Clover brand tokens (fixed, used inside the covers) */
+  --clover: #1e3d28;
+  --clover-on: #eef3ee;
+  --yours: #ddd5f5;
+  --yours-line: #4a2f7d;
+  --yours-on: #f6f3ff;
+  --ground-brand: #f2f1f6;
+
+  /* Page chrome (theme-aware) */
+  --bg: #f2f1f6;
+  --surface: #faf9fd;
+  --line: #dcd9e8;
+  --rest: #aca8bf;
+  --fg: #1e3d28;
+  --muted: #5d6a61;
+  --accent: #4a2f7d;
+
+  --f-display: 'Caprasimo', 'Cooper Black', Georgia, serif;
+  --f-serif: 'Cormorant Garamond', 'Cormorant', Georgia, serif;
+  --f-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15161a; --surface: #1d1f24; --line: #34343f; --rest: #6f6c80;
+    --fg: #e4ece5; --muted: #a3ada6; --accent: #c6b8f2; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15161a; --surface: #1d1f24; --line: #34343f; --rest: #6f6c80;
+  --fg: #e4ece5; --muted: #a3ada6; --accent: #c6b8f2; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-sans); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 56px; }
+
+header h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(36px, 6vw, 56px); line-height: 1; margin: 0; letter-spacing: -0.01em; }
+header h1 em { font-family: var(--f-serif); font-style: italic; font-weight: 300; letter-spacing: 0.25em; font-size: 0.62em; margin-left: 0.3em; color: var(--accent); }
+header p { color: var(--muted); max-width: 62ch; margin: 14px 0 0; }
+
+section { display: grid; gap: 20px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; }
+h2 { font-family: var(--f-serif); font-weight: 400; font-size: 30px; margin: 0; line-height: 1.1; }
+.sec-head p { margin: 4px 0 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+.toggle { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; user-select: none; }
+.toggle input { accent-color: var(--clover); width: 16px; height: 16px; margin: 0; }
+.toggle:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+figcaption { display: grid; gap: 2px; }
+figcaption b { font-weight: 500; font-size: 14px; }
+figcaption span { color: var(--muted); font-size: 13px; }
+
+/* Cover frame: holds a 1080x1920 cover scaled to fit */
+.frame { position: relative; width: 100%; max-width: 100%; aspect-ratio: 9 / 16; overflow: hidden; border-radius: 18px; background: #222; box-shadow: 0 1px 0 var(--line), 0 18px 40px -24px rgba(30, 61, 40, .45); }
+.frame.grid34 { aspect-ratio: 3 / 4; border-radius: 4px; }
+.cover { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; overflow: hidden; }
+
+/* ---------- Cover internals (all px are on the 1080x1920 canvas) ---------- */
+.cover .photo { position: absolute; inset: 0; }
+.cover .photo svg { width: 100%; height: 100%; display: block; }
+.cover .scrim { position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(30,61,40,.28) 0px, rgba(30,61,40,0) 420px),
+    linear-gradient(to bottom, rgba(30,61,40,0) 900px, rgba(30,61,40,.38) 1250px, rgba(30,61,40,.62) 1920px); }
+.cover .ep { position: absolute; top: 300px; left: 0; right: 0; text-align: center; font: 500 30px/1 var(--f-sans); letter-spacing: 0.22em; color: rgba(246,243,255,.85); }
+.cover .ep i { font-style: normal; opacity: .55; margin: 0 14px; }
+
+.cover .mark { position: absolute; left: 0; right: 0; top: 820px; transform: rotate(-6deg); transform-origin: 50% 50%; text-align: center; color: var(--yours-on); }
+.cover .mark .word { display: block; font: 400 252px/0.9 var(--f-display); letter-spacing: -0.02em; text-shadow: 0 2px 24px rgba(30,61,40,.35); }
+.cover .mark .sub { display: block; font: italic 400 108px/1 var(--f-serif); letter-spacing: 0.32em; margin-top: -18px; padding-left: 300px; opacity: .95; text-shadow: 0 2px 18px rgba(30,61,40,.4); }
+
+.cover .info { position: absolute; left: 150px; right: 170px; top: 1300px; display: flex; flex-direction: column; align-items: center; gap: 26px; text-align: center; }
+.cover .pill { font: 500 28px/1 var(--f-sans); letter-spacing: 0.16em; padding: 18px 36px; border-radius: 999px; }
+.cover.building .pill { background: var(--yours); color: var(--yours-line); }
+.cover.hottake .pill { background: var(--yours-line); color: var(--yours-on); }
+.cover .desc { font: 500 80px/1.02 var(--f-serif); color: var(--yours-on); text-wrap: balance; text-shadow: 0 2px 20px rgba(30,61,40,.45); }
+.cover.hottake .desc { font-style: italic; }
+.cover .guest { font: 300 32px/1.2 var(--f-sans); color: rgba(246,243,255,.8); letter-spacing: 0.02em; margin-top: -6px; }
+
+/* No-photo fallback */
+.cover.plain { background: var(--ground-brand); }
+.cover.plain .ep { color: rgba(30,61,40,.7); }
+.cover.plain .mark { color: var(--clover); top: 640px; }
+.cover.plain .mark .word, .cover.plain .mark .sub, .cover.plain .desc { text-shadow: none; }
+.cover.plain .mark .sub { color: var(--yours-line); }
+.cover.plain .info { top: 1180px; }
+.cover.plain .desc { color: var(--clover); font-size: 96px; }
+.cover.plain .guest { color: rgba(30,61,40,.7); }
+.cover.plain .leaf { position: absolute; width: 560px; height: 560px; border-radius: 50%; background: #e6e0f9; right: -180px; top: -120px; }
+.cover.plain .leaf2 { position: absolute; width: 380px; height: 380px; border-radius: 50%; background: #ddd5f5; left: -140px; bottom: 160px; }
+
+/* IG overlay guides */
+.cover .ig { position: absolute; inset: 0; pointer-events: none; display: none; }
+.show-ig .cover .ig { display: block; }
+.ig .top { position: absolute; left: 0; right: 0; top: 0; height: 240px; background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.15)); }
+.ig .top .t { position: absolute; top: 160px; left: 0; right: 0; text-align: center; font: 500 46px var(--f-sans); color: #fff; }
+.ig .bot { position: absolute; left: 0; right: 0; bottom: 0; height: 240px; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.55)); }
+.ig .handle { position: absolute; left: 44px; bottom: 150px; display: flex; align-items: center; gap: 22px; font: 500 40px var(--f-sans); color: #fff; }
+.ig .handle i { width: 76px; height: 76px; border-radius: 50%; background: var(--clover); border: 3px solid #fff; display: block; }
+.ig .cap { position: absolute; left: 44px; bottom: 80px; font: 400 36px var(--f-sans); color: rgba(255,255,255,.9); }
+.ig .rail { position: absolute; right: 36px; bottom: 260px; display: grid; gap: 64px; justify-items: center; }
+.ig .rail i { width: 66px; height: 66px; border: 6px solid #fff; border-radius: 50%; display: block; opacity: .9; }
+.ig .crop { position: absolute; left: 0; right: 0; border-top: 4px dashed #fff; opacity: .9; }
+.ig .crop span { position: absolute; right: 24px; top: 8px; font: 500 26px var(--f-sans); color: #fff; background: rgba(0,0,0,.5); padding: 6px 14px; border-radius: 8px; letter-spacing: .08em; }
+
+/* Profile grid strip */
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; background: var(--surface); padding: 3px; border: 1px solid var(--line); border-radius: 10px; }
+@media (max-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.grid .frame { box-shadow: none; }
+
+/* Spec */
+.spec-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 14px; }
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 500; white-space: nowrap; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; border: 1px solid var(--line); }
+code { font-size: 12.5px; color: var(--accent); }
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.note { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 6px; }
+.note b { font-weight: 500; }
+.note p { margin: 0; color: var(--muted); font-size: 14px; }
+</style>
+
+<div class="wrap" id="app">
+  <header>
+    <div class="eyebrow">IG Reels cover · 1080 × 1920 · mockup v1</div>
+    <h1>Clover<em>humans</em></h1>
+    <p>Layout A, the inspo-style cover. The big tilted wordmark crosses the guest's body, the series name stays fixed, and the guest's line changes each episode. Photos here are illustrated placeholders. Your real guest photos go in their place.</p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <div>
+        <h2>The two cover types</h2>
+        <p>"Now building" uses a soft lavender pill. "Hot take" uses deep violet and italic quotes, so it reads louder.</p>
+      </div>
+      <label class="toggle" for="igToggle"><input type="checkbox" id="igToggle"> Show IG overlay &amp; grid crop</label>
+    </div>
+    <div class="hero" id="hero"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div>
+        <h2>On your profile grid</h2>
+        <p>The grid shows only the middle 3:4 of each cover. All text stays inside that band, so nothing gets cut off. The last tile is the no-photo version for teasers.</p>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div><h2>Spec</h2><p>Sizes are on the 1080 px-wide canvas.</p></div></div>
+    <div class="spec-wrap">
+      <table>
+        <thead><tr><th>Element</th><th>Font</th><th>Size</th><th>Colour</th><th>Placement</th></tr></thead>
+        <tbody>
+          <tr><td>Clover</td><td>Caprasimo</td><td>252 px, −2% tracking</td><td><span class="sw" style="background:#f6f3ff"></span>YOURS-ON <code>#f6f3ff</code></td><td>Rotated −6°, centred around y 900–1150</td></tr>
+          <tr><td>humans</td><td>Cormorant Garamond Italic</td><td>108 px, 0.32em spacing</td><td><span class="sw" style="background:#f6f3ff"></span>YOURS-ON</td><td>Tucked under the right half of the wordmark, same angle</td></tr>
+          <tr><td>EP 001</td><td>DM Sans Medium, caps</td><td>30 px, 0.22em spacing</td><td><span class="sw" style="background:#f6f3ff"></span>YOURS-ON 85%</td><td>Centred at y 300, just inside the grid crop</td></tr>
+          <tr><td>Pill</td><td>DM Sans Medium, caps</td><td>28 px</td><td><span class="sw" style="background:#ddd5f5"></span>Building: YOURS / YOURS-LINE text<br><span class="sw" style="background:#4a2f7d"></span>Hot take: YOURS-LINE / YOURS-ON text</td><td>y 1300</td></tr>
+          <tr><td>Descriptor</td><td>Cormorant Garamond Medium (italic for hot takes)</td><td>80 px, 2 lines max</td><td><span class="sw" style="background:#f6f3ff"></span>YOURS-ON</td><td>Under the pill, about 18 characters per line</td></tr>
+          <tr><td>Guest</td><td>DM Sans Light</td><td>32 px</td><td><span class="sw" style="background:#f6f3ff"></span>YOURS-ON 80%</td><td>Last line, ends above y 1680</td></tr>
+          <tr><td>Scrim</td><td>n/a</td><td>n/a</td><td><span class="sw" style="background:#1e3d28"></span>CLOVER, 0% → 62%</td><td>Fades in from y 900 so text reads on any photo</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notes">
+      <div class="note"><b>Colour logic</b><p>The fixed series brand sits in cream on Clover green. Whatever the guest says goes in lavender, because in your system lavender is the user's voice.</p></div>
+      <div class="note"><b>Shooting tip</b><p>Frame guests centred, from the knees or waist up, with their face in the top third. The wordmark then crosses their body, not their face.</p></div>
+      <div class="note"><b>Copy length</b><p>Keep descriptors to about 3–5 words ("promise tracker ring"). Longer hot takes wrap to 2 lines, which is the maximum.</p></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const PHOTOS = {
+  warm:  { wallA: '#ddd5c8', wallB: '#b7ad9f', floor: '#8a8277', win: '#efece6', outfit: '#55563f', hair: '#c79a5e', skin: '#e7c3a6', shoe: '#2a2622' },
+  cool:  { wallA: '#cfd3d9', wallB: '#99a0aa', floor: '#6f747c', win: '#eef1f4', outfit: '#2e3a4c', hair: '#2b2420', skin: '#d6a985', shoe: '#1b1b1f' },
+  rose:  { wallA: '#e6d3cd', wallB: '#bfa49c', floor: '#8f7a74', win: '#f5ece8', outfit: '#6d3a3a', hair: '#4a2e22', skin: '#a8765a', shoe: '#2a1f1c' },
+  sage:  { wallA: '#d6dccf', wallB: '#a3ab98', floor: '#77806c', win: '#eff2ea', outfit: '#d9d2c0', hair: '#15110f', skin: '#c58f6b', shoe: '#2b2b25' },
+};
+
+function photo(p, id) {
+  return `<svg viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="w${id}" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="${p.wallA}"/><stop offset="1" stop-color="${p.wallB}"/></linearGradient>
+      <radialGradient id="l${id}" cx="0.78" cy="0.22" r="0.7"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+      <filter id="b${id}"><feGaussianBlur stdDeviation="3"/></filter>
+    </defs>
+    <rect width="1080" height="1920" fill="url(#w${id})"/>
+    <g opacity=".85"><rect x="690" y="160" width="330" height="820" fill="${p.win}"/>
+      <rect x="850" y="160" width="10" height="820" fill="${p.wallB}"/><rect x="690" y="560" width="330" height="10" fill="${p.wallB}"/></g>
+    <rect x="70" y="330" width="250" height="330" rx="6" fill="${p.wallB}" opacity=".45"/>
+    <rect y="1560" width="1080" height="360" fill="${p.floor}"/>
+    <rect width="1080" height="1920" fill="url(#l${id})"/>
+    <g filter="url(#b${id})">
+      <ellipse cx="540" cy="1790" rx="330" ry="40" fill="#000" opacity=".18"/>
+      <path d="M430 520 Q430 400 540 395 Q650 400 650 520 L668 820 Q540 860 412 820 Z" fill="${p.hair}"/>
+      <rect x="512" y="640" width="56" height="90" fill="${p.skin}"/>
+      <ellipse cx="540" cy="560" rx="84" ry="104" fill="${p.skin}"/>
+      <path d="M455 520 Q470 430 540 430 Q620 432 628 520 Q600 470 540 468 Q480 470 455 520Z" fill="${p.hair}"/>
+      <path d="M370 760 Q540 700 710 760 L770 1360 Q540 1420 310 1360 Z" fill="${p.outfit}"/>
+      <path d="M370 770 Q330 1000 360 1180 L430 1170 Q420 1000 440 820Z" fill="${p.outfit}" opacity=".9"/>
+      <path d="M710 770 Q750 1000 720 1180 L650 1170 Q660 1000 640 820Z" fill="${p.outfit}" opacity=".9"/>
+      <path d="M330 1340 L300 1720 L505 1735 L540 1440 L575 1735 L780 1720 L750 1340 Z" fill="${p.outfit}"/>
+      <path d="M300 1700 L505 1712 L505 1790 L300 1790Z M575 1712 L780 1700 L780 1790 L575 1790Z" fill="${p.shoe}"/>
+    </g>
+  </svg>`;
+}
+
+const IG = ep => `<div class="ig">
+  <div class="top"><div class="t">Reels</div></div>
+  <div class="crop" style="top:240px"><span>GRID CROP TOP</span></div>
+  <div class="crop" style="top:1680px"><span>GRID CROP BOTTOM</span></div>
+  <div class="rail"><i></i><i></i><i></i><i></i></div>
+  <div class="bot"></div>
+  <div class="handle"><i></i>clover.app</div>
+  <div class="cap">Episode ${ep}: Clover humans ♡ …</div>
+</div>`;
+
+const COVERS = [
+  { mode: 'building', ep: '001', desc: 'promise tracker ring', guest: 'with Maya · hardware founder', photo: 'warm' },
+  { mode: 'hottake',  ep: '002', desc: '“hustle culture is overrated”', guest: 'with Jun · indie game dev', photo: 'cool' },
+  { mode: 'building', ep: '003', desc: 'a zine for night-shift workers', guest: 'with Priya · writer', photo: 'rose' },
+  { mode: 'hottake',  ep: '004', desc: '“your MVP is too big”', guest: 'with Sam · product designer', photo: null },
+];
+
+function cover(c, i) {
+  const pill = c.mode === 'building' ? 'NOW BUILDING' : 'HOT TAKE';
+  const bg = c.photo ? `<div class="photo">${photo(PHOTOS[c.photo], i)}</div><div class="scrim"></div>`
+                     : `<div class="leaf"></div><div class="leaf2"></div>`;
+  return `<div class="cover ${c.mode} ${c.photo ? '' : 'plain'}">
+    ${bg}
+    <div class="ep">EP ${c.ep}<i>·</i>CLOVER HUMANS</div>
+    <div class="mark"><span class="word">Clover.</span><span class="sub">humans</span></div>
+    <div class="info"><div class="pill">${pill}</div><div class="desc">${c.desc}</div><div class="guest">${c.guest}</div></div>
+    ${IG(c.ep)}
+  </div>`;
+}
+
+const hero = document.getElementById('hero');
+hero.innerHTML = [0, 1].map(i => `<figure>
+  <div class="frame">${cover(COVERS[i], 'h' + i)}</div>
+  <figcaption><b>${COVERS[i].mode === 'building' ? 'Now building' : 'Hot take'}</b><span>${COVERS[i].mode === 'building' ? 'What they’re making, in 3–5 words' : 'Their opinion, in quotes and italics'}</span></figcaption>
+</figure>`).join('');
+
+const grid = document.getElementById('grid');
+grid.innerHTML = COVERS.map((c, i) => `<div class="frame grid34" data-crop="1">${cover(c, 'g' + i)}</div>`).join('');
+
+function fit() {
+  document.querySelectorAll('.frame').forEach(f => {
+    const s = f.clientWidth / 1080;
+    const cv = f.querySelector('.cover');
+    const dy = f.dataset.crop ? -240 * s : 0;
+    cv.style.transform = `translateY(${dy}px) scale(${s})`;
+  });
+}
+fit();
+if ('ResizeObserver' in window) new ResizeObserver(fit).observe(document.getElementById('app'));
+else window.addEventListener('resize', fit);
+
+document.getElementById('igToggle').addEventListener('change', e => {
+  hero.classList.toggle('show-ig', e.target.checked);
+});
+</script>
